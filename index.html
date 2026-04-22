@@ -375,6 +375,44 @@
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       }
     }
+
+    /* Elementos só visíveis na impressão */
+    .print-only { display: none; }
+
+    /* Ajustes para impressão (Dashboard e Relatório por Segurado) */
+    @media print {
+      body { background: white !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      header, .tabs, .sub-tabs, .no-print { display: none !important; }
+      button { display: none !important; }
+      .tab-content { display: block !important; animation: none !important; }
+      .kpi-card, .chart-container, .section {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 10px;
+      }
+      .chart-grid, .kpi-grid { page-break-inside: avoid; }
+      .print-only { display: block !important; }
+      .print-header {
+        text-align: center;
+        margin-bottom: 18px;
+        border-bottom: 2px solid #1B3A5C;
+        padding-bottom: 8px;
+      }
+      .print-header h1 { color: #1B3A5C; font-size: 20px; margin-bottom: 4px; }
+      .print-header p { font-size: 11px; color: #555; margin: 0; }
+      table.table { font-size: 10.5px; }
+      table.table th, table.table td { padding: 5px 6px; }
+      .container { max-width: 100%; margin: 0; padding: 0; }
+      .kpi-icon { display: none; }
+      .kpi-value { font-size: 18px !important; }
+      .kpi-label { font-size: 11px; }
+      .kpi-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 6px; }
+      .chart-grid { grid-template-columns: 1fr 1fr !important; gap: 12px; }
+      .page-break { page-break-after: always; }
+      @page { margin: 1.5cm; size: A4; }
+    }
   </style>
 </head>
 <body>
@@ -403,6 +441,18 @@ function nextMesAno(mesAno) {
   const [y, m] = mesAno.split('-').map(Number);
   const next = new Date(y, m, 1);   // m = month index (1-based becomes 0-based +1 = next)
   return `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}`;
+}
+// Formato monetário BR — sempre 2 casas (evita "R$ 49.435,8")
+function fmtBRL(n) {
+  const v = Number(n) || 0;
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+// Formato mês/ano amigável (2021-12 → "dez/2021")
+const _MESES_ABR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function fmtMesAno(mesAno) {
+  if (!/^\d{4}-\d{2}$/.test(mesAno || '')) return mesAno || '';
+  const [y, m] = mesAno.split('-').map(Number);
+  return `${_MESES_ABR[m-1]}/${y}`;
 }
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -436,6 +486,7 @@ function CalculadoraSaude() {
   const [configMesReajuste, setConfigMesReajuste] = React.useState(() => ls('configMesReajuste', 12));
   const [configCnpjFilter, setConfigCnpjFilter] = React.useState('');
   const [resultadosTab, setResultadosTab] = React.useState('segurado');
+  const [relatorioBenId, setRelatorioBenId] = React.useState('');
 
   // ── Salva automaticamente no localStorage a cada alteração ────────────────
   React.useEffect(() => { try { localStorage.setItem('calc_activeTab', JSON.stringify(activeTab)); } catch(e) {} }, [activeTab]);
@@ -770,28 +821,42 @@ function CalculadoraSaude() {
     });
     chartsInstances.current = {};
 
-    const agrupado = {};
+    // Agrega totais POR SEGURADO (melhor para juntada processual do que série temporal)
+    const porBen = {};
     resultados.todosPorSeguro.forEach(row => {
-      if (!agrupado[row.mesAno]) agrupado[row.mesAno] = { valorPago: 0, valorDevido: 0, diferenca: 0 };
-      agrupado[row.mesAno].valorPago += row.valorPago;
-      agrupado[row.mesAno].valorDevido += row.valorDevido;
-      agrupado[row.mesAno].diferenca += row.diferenca;
+      if (!porBen[row.beneficiario]) porBen[row.beneficiario] = { valorPago: 0, valorDevido: 0, diferenca: 0, totalAtualizado: 0 };
+      porBen[row.beneficiario].valorPago += row.valorPago;
+      porBen[row.beneficiario].valorDevido += row.valorDevido;
+      if (!row.prescrito) {
+        porBen[row.beneficiario].diferenca += row.diferenca;
+        porBen[row.beneficiario].totalAtualizado += row.totalAtualizado;
+      }
     });
+    const nomes = Object.keys(porBen).sort();
 
-    const meses = Object.keys(agrupado).sort();
-    if (chartEvolucao.current && meses.length > 0) {
+    if (chartEvolucao.current && nomes.length > 0) {
       const ctxEvol = chartEvolucao.current.getContext('2d');
       chartsInstances.current.evolucao = new Chart(ctxEvol, {
         type: 'bar',
         data: {
-          labels: meses,
+          labels: nomes,
           datasets: [
-            { label: 'Valor Pago', type: 'line', data: meses.map(m => agrupado[m].valorPago), borderColor: '#1B3A5C', tension: 0.4, fill: false },
-            { label: 'Valor Devido', type: 'line', data: meses.map(m => agrupado[m].valorDevido), borderColor: '#C8A96E', tension: 0.4, fill: false },
-            { label: 'Diferença', type: 'bar', data: meses.map(m => agrupado[m].diferenca), backgroundColor: '#F39C12', borderColor: '#E67E22', borderRadius: 4 }
+            { label: 'Total Pago',             data: nomes.map(n => porBen[n].valorPago),        backgroundColor: '#1B3A5C', borderRadius: 4 },
+            { label: 'Total Devido (correto)', data: nomes.map(n => porBen[n].valorDevido),      backgroundColor: '#C8A96E', borderRadius: 4 },
+            { label: 'Excesso (a restituir)',  data: nomes.map(n => porBen[n].diferenca),        backgroundColor: '#F39C12', borderRadius: 4 },
+            { label: 'Total Atualizado',       data: nomes.map(n => porBen[n].totalAtualizado),  backgroundColor: '#9B59B6', borderRadius: 4 }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}` } }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: (v) => fmtBRL(v) } }
+          }
+        }
       });
     }
 
@@ -919,54 +984,117 @@ function CalculadoraSaude() {
       </header>
       <div className="container">
         <div className="tabs">
-          {['dashboard', 'cadastro', 'reajustes', 'resultados', 'indices', 'github'].map(tab => (
+          {['dashboard', 'cadastro', 'reajustes', 'resultados', 'relatorio', 'indices', 'github'].map(tab => (
             <button key={tab} className={`tab-button ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)}>
-              {tab === 'dashboard' ? '📊 Dashboard' : tab === 'cadastro' ? '👥 Cadastro' : tab === 'reajustes' ? '📅 Reajustes' : tab === 'resultados' ? '📋 Resultados' : tab === 'indices' ? '📈 Índices ANS' : '☁️ GitHub'}
+              {tab === 'dashboard' ? '📊 Dashboard' : tab === 'cadastro' ? '👥 Cadastro' : tab === 'reajustes' ? '📅 Reajustes' : tab === 'resultados' ? '📋 Resultados' : tab === 'relatorio' ? '📄 Relatório' : tab === 'indices' ? '📈 Índices ANS' : '☁️ GitHub'}
             </button>
           ))}
         </div>
 
         {activeTab === 'dashboard' && (
           <div className="tab-content active">
+            <div className="print-only print-header">
+              <h1>Demonstrativo de Revisão de Mensalidades — Plano de Saúde</h1>
+              <p>Scozziero Advocacia · Falso Coletivo (ANS) · {(() => { const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })()}</p>
+              <p>{ghCasoNome ? `Caso: ${ghCasoNome}` : ''}{cnpjs[0] ? ` · CNPJ Contratante: ${cnpjs[0].cnpj} (${cnpjs[0].empresa || ''})` : ''}</p>
+            </div>
+            <div className="no-print" style={{display:'flex',justifyContent:'flex-end',marginBottom:'14px'}}>
+              <button onClick={() => window.print()} style={{background:'#1B3A5C',color:'white',border:'none',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Imprimir Dashboard</button>
+            </div>
             <div className="kpi-grid">
               <div className="kpi-card green">
                 <div className="kpi-icon">💰</div>
                 <div className="kpi-label">Total a Restituir</div>
-                <div className="kpi-value">R$ {metricas.totalRestituir.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</div>
-                <div className="info-text">Repetição Indébito: R$ {(metricas.totalRestituir * 2).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</div>
+                <div className="kpi-value">{fmtBRL(metricas.totalRestituir)}</div>
+                <div className="info-text">Repetição Indébito: {fmtBRL(metricas.totalRestituir * 2)}</div>
               </div>
               <div className="kpi-card orange">
                 <div className="kpi-icon">📊</div>
                 <div className="kpi-label">Excesso Bruto</div>
-                <div className="kpi-value">R$ {metricas.excesso.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</div>
+                <div className="kpi-value">{fmtBRL(metricas.excesso)}</div>
                 <div className="info-text">{beneficiarios.length} Segurados</div>
               </div>
               <div className="kpi-card blue">
                 <div className="kpi-icon">📈</div>
                 <div className="kpi-label">Correção Monetária</div>
-                <div className="kpi-value">R$ {metricas.correcao.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</div>
+                <div className="kpi-value">{fmtBRL(metricas.correcao)}</div>
                 <div className="info-text">{cnpjs.length} CNPJs</div>
               </div>
               <div className="kpi-card purple">
                 <div className="kpi-icon">💳</div>
                 <div className="kpi-label">Juros de Mora</div>
-                <div className="kpi-value">R$ {metricas.juros.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</div>
+                <div className="kpi-value">{fmtBRL(metricas.juros)}</div>
               </div>
               <div className="kpi-card gray">
                 <div className="kpi-icon">🔒</div>
                 <div className="kpi-label">Prescrito</div>
-                <div className="kpi-value">R$ {metricas.prescrito.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</div>
+                <div className="kpi-value">{fmtBRL(metricas.prescrito)}</div>
               </div>
             </div>
             <div className="chart-grid">
               <div className="chart-container">
-                <h3>Evolução Mensal</h3>
+                <h3>Totais por Segurado</h3>
                 <canvas ref={chartEvolucao} style={{ height: '300px' }}></canvas>
               </div>
               <div className="chart-container">
                 <h3>Composição do Crédito</h3>
                 <canvas ref={chartComposicao} style={{ height: '300px' }}></canvas>
               </div>
+            </div>
+
+            {/* Tabela consolidada — essencial para juntada processual */}
+            <div className="section">
+              <h3 style={{marginBottom:'12px'}}>Consolidado por Segurado</h3>
+              {(() => {
+                const porBen = {};
+                resultados.todosPorSeguro.forEach(r => {
+                  if (!porBen[r.beneficiario]) porBen[r.beneficiario] = { pago: 0, devido: 0, excesso: 0, prescrito: 0, total: 0, cnpj: r.cnpj };
+                  porBen[r.beneficiario].pago   += r.valorPago;
+                  porBen[r.beneficiario].devido += r.valorDevido;
+                  if (r.prescrito) porBen[r.beneficiario].prescrito += r.diferenca;
+                  else { porBen[r.beneficiario].excesso += r.diferenca; porBen[r.beneficiario].total += r.totalAtualizado; }
+                });
+                const nomes = Object.keys(porBen).sort();
+                if (nomes.length === 0) return <p style={{color:'#999',padding:'20px',textAlign:'center'}}>Cadastre reajustes para visualizar o consolidado.</p>;
+                const tot = { pago:0, devido:0, excesso:0, prescrito:0, total:0 };
+                nomes.forEach(n => { tot.pago+=porBen[n].pago; tot.devido+=porBen[n].devido; tot.excesso+=porBen[n].excesso; tot.prescrito+=porBen[n].prescrito; tot.total+=porBen[n].total; });
+                return (
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Segurado</th>
+                        <th>CNPJ</th>
+                        <th className="text-right">Total Pago</th>
+                        <th className="text-right">Total Devido</th>
+                        <th className="text-right">Excesso</th>
+                        <th className="text-right">Prescrito</th>
+                        <th className="text-right">A Restituir (atualizado)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {nomes.map(n => (
+                        <tr key={n}>
+                          <td>{n}</td>
+                          <td>{porBen[n].cnpj}</td>
+                          <td className="text-right">{fmtBRL(porBen[n].pago)}</td>
+                          <td className="text-right">{fmtBRL(porBen[n].devido)}</td>
+                          <td className="text-right">{fmtBRL(porBen[n].excesso)}</td>
+                          <td className="text-right">{fmtBRL(porBen[n].prescrito)}</td>
+                          <td className="text-right"><strong>{fmtBRL(porBen[n].total)}</strong></td>
+                        </tr>
+                      ))}
+                      <tr style={{background:'#f0f4f8',fontWeight:'700'}}>
+                        <td colSpan="2">TOTAL</td>
+                        <td className="text-right">{fmtBRL(tot.pago)}</td>
+                        <td className="text-right">{fmtBRL(tot.devido)}</td>
+                        <td className="text-right">{fmtBRL(tot.excesso)}</td>
+                        <td className="text-right">{fmtBRL(tot.prescrito)}</td>
+                        <td className="text-right">{fmtBRL(tot.total)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                );
+              })()}
             </div>
           </div>
         )}
@@ -1114,7 +1242,7 @@ function CalculadoraSaude() {
                     <tbody>
                       {reajustes.sort((a,b) => a.mesAno.localeCompare(b.mesAno)).map(r => {
                         const ben = beneficiarios.find(b => b.id.toString() === r.beneficiarioId);
-                        return <tr key={r.id}><td>{ben?.nome || 'N/A'}</td><td>{r.mesAno}</td><td>R$ {parseFloat(r.valorPago).toFixed(2)}</td><td>{r.reajusteAplicado}%</td><td><button className="danger" onClick={() => deleteReajuste(r.id)}>Deletar</button></td></tr>
+                        return <tr key={r.id}><td>{ben?.nome || 'N/A'}</td><td>{fmtMesAno(r.mesAno)}</td><td>{fmtBRL(parseFloat(r.valorPago))}</td><td>{r.reajusteAplicado}%</td><td><button className="danger" onClick={() => deleteReajuste(r.id)}>Deletar</button></td></tr>
                       })}
                     </tbody>
                   </table>
@@ -1202,15 +1330,15 @@ function CalculadoraSaude() {
                           const status = row.prescrito ? 'prescrito' : row.diferenca > 0 ? 'excesso' : 'ok';
                           return (
                             <tr key={idx} style={{backgroundColor: status === 'prescrito' ? '#E8DAEF' : status === 'excesso' ? '#FADBD8' : 'inherit'}}>
-                              <td>{row.mesAno}</td>
+                              <td>{fmtMesAno(row.mesAno)}</td>
                               <td>{row.beneficiario}</td>
-                              <td className="text-right">R$ {row.valorPago.toFixed(2)}</td>
-                              <td className="text-right">R$ {row.valorDevido.toFixed(2)}</td>
+                              <td className="text-right">{fmtBRL(row.valorPago)}</td>
+                              <td className="text-right">{fmtBRL(row.valorDevido)}</td>
                               <td className="text-right"><span className={`badge ${status}`}>{status === 'prescrito' ? 'Prescrito' : status === 'excesso' ? 'Excesso' : 'OK'}</span></td>
                               <td className="text-center">{row.prescrito ? 'Sim' : 'Não'}</td>
                               <td className="text-right">{row.fatorCorrecao.toFixed(6)}</td>
                               <td className="text-right">{(row.jurosPercent * 100).toFixed(2)}%</td>
-                              <td className="text-right"><strong>R$ {row.totalAtualizado.toFixed(2)}</strong></td>
+                              <td className="text-right"><strong>{fmtBRL(row.totalAtualizado)}</strong></td>
                             </tr>
                           );
                         })}
@@ -1234,7 +1362,7 @@ function CalculadoraSaude() {
                           const totalExcesso = cnpjData.rows.reduce((sum, r) => sum + r.diferenca, 0);
                           const totalAtualizado = cnpjData.rows.reduce((sum, r) => sum + r.totalAtualizado, 0);
                           return (
-                            <tr key={idx}><td>{cnpjData.cnpj}</td><td>{cnpjData.empresa}</td><td className="text-right">R$ {totalExcesso.toFixed(2)}</td><td className="text-right"><strong>R$ {totalAtualizado.toFixed(2)}</strong></td></tr>
+                            <tr key={idx}><td>{cnpjData.cnpj}</td><td>{cnpjData.empresa}</td><td className="text-right">{fmtBRL(totalExcesso)}</td><td className="text-right"><strong>{fmtBRL(totalAtualizado)}</strong></td></tr>
                           );
                         })}
                       </tbody>
@@ -1245,6 +1373,162 @@ function CalculadoraSaude() {
             )}
           </div>
         )}
+
+        {activeTab === 'relatorio' && (() => {
+          // Relatório Analítico Individual — um segurado por vez, para juntada processual
+          const benList = beneficiarios.slice().sort((a,b) => (a.nome||'').localeCompare(b.nome||''));
+          const curId = relatorioBenId || (benList[0]?.id?.toString() || '');
+          const ben = beneficiarios.find(b => b.id.toString() === curId);
+          const cnpj = ben ? cnpjs.find(c => c.id.toString() === ben.cnpjId) : null;
+          const rowsBen = resultados.todosPorSeguro.filter(r => {
+            if (!ben) return false;
+            const rej = reajustes.find(x => x.mesAno === r.mesAno && x.beneficiarioId === ben.id.toString());
+            return !!rej;
+          });
+          let tot = { pago:0, devido:0, excesso:0, prescrito:0, correcao:0, juros:0, total:0 };
+          rowsBen.forEach(r => {
+            tot.pago += r.valorPago;
+            tot.devido += r.valorDevido;
+            if (r.prescrito) { tot.prescrito += r.diferenca; }
+            else {
+              tot.excesso += r.diferenca;
+              tot.correcao += r.diferenca * (r.fatorCorrecao - 1);
+              tot.juros   += r.diferenca * r.fatorCorrecao * r.jurosPercent;
+              tot.total   += r.totalAtualizado;
+            }
+          });
+          const dataHoje = (() => { const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })();
+          return (
+            <div className="tab-content active">
+              <div className="print-only print-header">
+                <h1>Relatório Analítico Individual — Revisão de Mensalidades</h1>
+                <p>Scozziero Advocacia · Falso Coletivo (ANS) · {dataHoje}</p>
+                <p>Beneficiário: <strong>{ben?.nome || '—'}</strong>{ben?.cpf ? ` · CPF: ${ben.cpf}` : ''}{cnpj ? ` · CNPJ Contratante: ${cnpj.cnpj}${cnpj.empresa ? ' ('+cnpj.empresa+')' : ''}` : ''}</p>
+              </div>
+
+              <div className="section no-print">
+                <h2>Relatório Analítico Individual</h2>
+                <div className="form-row">
+                  <div className="form-group" style={{gridColumn: '1 / span 2'}}>
+                    <label>Beneficiário</label>
+                    <select value={curId} onChange={e => setRelatorioBenId(e.target.value)}>
+                      {benList.length === 0 && <option value="">Nenhum beneficiário cadastrado</option>}
+                      {benList.map(b => <option key={b.id} value={b.id}>{b.nome}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group" style={{alignSelf:'end'}}>
+                    <button onClick={() => window.print()} style={{background:'#1B3A5C',color:'white',border:'none',padding:'10px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Imprimir Relatório</button>
+                  </div>
+                </div>
+              </div>
+
+              {!ben ? (
+                <div className="section"><p style={{color:'#999',padding:'20px',textAlign:'center'}}>Selecione um beneficiário para gerar o relatório.</p></div>
+              ) : (
+                <React.Fragment>
+                  <div className="section">
+                    <h3>Identificação</h3>
+                    <table className="table">
+                      <tbody>
+                        <tr><th style={{width:'40%'}}>Nome</th><td>{ben.nome || '—'}</td></tr>
+                        <tr><th>CPF</th><td>{ben.cpf || '—'}</td></tr>
+                        <tr><th>Data de Nascimento</th><td>{ben.dataNascimento || '—'}</td></tr>
+                        <tr><th>Data de Adesão</th><td>{ben.dataAdesao || '—'}</td></tr>
+                        <tr><th>Carteirinha</th><td>{ben.numeroCarteirinha || '—'}</td></tr>
+                        <tr><th>CNPJ Contratante</th><td>{cnpj?.cnpj || '—'}</td></tr>
+                        <tr><th>Empresa</th><td>{cnpj?.empresa || '—'}</td></tr>
+                        <tr><th>Operadora</th><td>{cnpj?.operadora || '—'}</td></tr>
+                        <tr><th>Contrato</th><td>{cnpj?.nrContrato || '—'}</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="section">
+                    <h3>Parâmetros da Revisão</h3>
+                    <table className="table">
+                      <tbody>
+                        <tr><th style={{width:'40%'}}>Indexador (correção)</th><td>{configIndexador === 'ca' ? 'IPCA' : configIndexador === 'ia' ? 'INPC' : configIndexador === 'fa' ? 'FIPE' : 'Sem correção'}</td></tr>
+                        <tr><th>Juros</th><td>{configJuros === 'hybrid' ? '1% a.m. até ago/2024 + SELIC acumulada' : configJuros === 'selic' ? 'SELIC acumulada' : 'Sem juros'}</td></tr>
+                        <tr><th>Modo Fator</th><td>{configRefMes === 'baseplanilha' ? 'Padrão planilha (fator direto)' : `Dividir por ${configRefMes}`}</td></tr>
+                        <tr><th>Mês de aniversário</th><td>{['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][configMesReajuste-1]}</td></tr>
+                        <tr><th>Data-limite do cálculo</th><td>{fmtMesAno(configDataFim)}</td></tr>
+                        <tr><th>Data inicial de cobrança</th><td>{configDataInicio}</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="section">
+                    <h3>Demonstrativo Mês a Mês</h3>
+                    {rowsBen.length === 0 ? (
+                      <p style={{color:'#999',padding:'10px'}}>Não há reajustes lançados para este beneficiário.</p>
+                    ) : (
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Mês</th>
+                            <th className="text-right">Valor Pago</th>
+                            <th className="text-right">Valor Devido</th>
+                            <th className="text-right">Excesso</th>
+                            <th className="text-center">Prescrito</th>
+                            <th className="text-right">Fator</th>
+                            <th className="text-right">Juros %</th>
+                            <th className="text-right">Total Atualizado</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rowsBen.map((r, i) => (
+                            <tr key={i} style={{backgroundColor: r.prescrito ? '#E8DAEF' : (r.diferenca > 0 ? '#FADBD8' : 'inherit')}}>
+                              <td>{fmtMesAno(r.mesAno)}</td>
+                              <td className="text-right">{fmtBRL(r.valorPago)}</td>
+                              <td className="text-right">{fmtBRL(r.valorDevido)}</td>
+                              <td className="text-right">{fmtBRL(r.diferenca)}</td>
+                              <td className="text-center">{r.prescrito ? 'Sim' : 'Não'}</td>
+                              <td className="text-right">{r.fatorCorrecao.toFixed(6)}</td>
+                              <td className="text-right">{(r.jurosPercent * 100).toFixed(2)}%</td>
+                              <td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td>
+                            </tr>
+                          ))}
+                          <tr style={{background:'#f0f4f8',fontWeight:'700'}}>
+                            <td>TOTAL</td>
+                            <td className="text-right">{fmtBRL(tot.pago)}</td>
+                            <td className="text-right">{fmtBRL(tot.devido)}</td>
+                            <td className="text-right">{fmtBRL(tot.excesso)}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td className="text-right">{fmtBRL(tot.total)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+
+                  <div className="section">
+                    <h3>Resumo Financeiro</h3>
+                    <table className="table">
+                      <tbody>
+                        <tr><th style={{width:'60%'}}>Total Pago ao longo do período</th><td className="text-right">{fmtBRL(tot.pago)}</td></tr>
+                        <tr><th>Total Devido (conforme limite ANS)</th><td className="text-right">{fmtBRL(tot.devido)}</td></tr>
+                        <tr><th>Excesso Bruto (cobrança a maior)</th><td className="text-right">{fmtBRL(tot.excesso)}</td></tr>
+                        <tr><th>Correção Monetária aplicada</th><td className="text-right">{fmtBRL(tot.correcao)}</td></tr>
+                        <tr><th>Juros de Mora aplicados</th><td className="text-right">{fmtBRL(tot.juros)}</td></tr>
+                        <tr><th>Parcelas Prescritas (não exigíveis)</th><td className="text-right">{fmtBRL(tot.prescrito)}</td></tr>
+                        <tr style={{background:'#d4edda',fontWeight:'700'}}>
+                          <th>VALOR A RESTITUIR (atualizado)</th>
+                          <td className="text-right"><strong>{fmtBRL(tot.total)}</strong></td>
+                        </tr>
+                        <tr style={{background:'#fff3cd',fontWeight:'700'}}>
+                          <th>REPETIÇÃO DE INDÉBITO (dobro — art. 42 CDC)</th>
+                          <td className="text-right"><strong>{fmtBRL(tot.total * 2)}</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </React.Fragment>
+              )}
+            </div>
+          );
+        })()}
 
         {activeTab === 'github' && (
           <div className="tab-content active">
