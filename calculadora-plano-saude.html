@@ -387,6 +387,59 @@
       }
     }
 
+    /* ── Modais (Link Mágico, Desbloqueio, Seletor de Caso) ───────────── */
+    .lm-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.78);
+      z-index: 9998; display: flex; align-items: center; justify-content: center;
+      padding: 20px; backdrop-filter: blur(4px);
+    }
+    .lm-dialog {
+      background: white; border-radius: 12px; max-width: 560px; width: 100%;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: lmFade 0.2s ease-out;
+    }
+    @keyframes lmFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .lm-dialog .lm-header {
+      background: linear-gradient(135deg, #1B3A5C 0%, #2C5282 100%); color: white;
+      padding: 20px 24px; border-radius: 12px 12px 0 0;
+    }
+    .lm-dialog .lm-header h2 { margin: 0 0 4px 0; font-size: 20px; font-weight: 700; }
+    .lm-dialog .lm-header p { margin: 0; font-size: 13px; opacity: 0.9; }
+    .lm-dialog .lm-body { padding: 24px; }
+    .lm-dialog .lm-field { margin-bottom: 14px; }
+    .lm-dialog .lm-field label { display: block; font-size: 13px; font-weight: 600; color: #1B3A5C; margin-bottom: 4px; }
+    .lm-dialog .lm-field input {
+      width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 6px;
+      font-size: 15px; box-sizing: border-box; font-family: inherit;
+    }
+    .lm-dialog .lm-field input:focus { outline: none; border-color: #1B3A5C; box-shadow: 0 0 0 3px rgba(27,58,92,0.15); }
+    .lm-dialog .lm-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+    .lm-dialog .lm-btn {
+      padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;
+    }
+    .lm-dialog .lm-btn.primary { background: #1B3A5C; color: white; }
+    .lm-dialog .lm-btn.primary:hover { background: #2C5282; }
+    .lm-dialog .lm-btn.secondary { background: #E2E8F0; color: #1B3A5C; }
+    .lm-dialog .lm-btn.secondary:hover { background: #CBD5E1; }
+    .lm-dialog .lm-btn.gold { background: #C8A96E; color: #1B3A5C; }
+    .lm-dialog .lm-btn.gold:hover { background: #B89559; }
+    .lm-dialog .lm-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .lm-dialog .lm-error { color: #B91C1C; font-size: 13px; margin-top: 8px; background: #FEE2E2; padding: 8px 12px; border-radius: 6px; }
+    .lm-dialog .lm-ok    { color: #065F46; font-size: 13px; margin-top: 8px; background: #D1FAE5; padding: 8px 12px; border-radius: 6px; }
+    .lm-dialog .lm-note  { color: #475569; font-size: 13px; line-height: 1.5; background: #F1F5F9; padding: 10px 12px; border-radius: 6px; margin-bottom: 14px; }
+    .lm-dialog .lm-link-output {
+      background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 6px; padding: 10px;
+      font-family: 'Courier New', monospace; font-size: 11px; word-break: break-all; margin-top: 8px; max-height: 120px; overflow-y: auto;
+    }
+    .lm-caso-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 8px;
+      background: white; transition: all 0.15s;
+    }
+    .lm-caso-item:hover { border-color: #1B3A5C; background: #F8FAFC; }
+    .lm-caso-item .nome { font-weight: 600; color: #1B3A5C; }
+    .lm-caso-item .meta { font-size: 11px; color: #64748B; }
+
     /* Elementos só visíveis na impressão */
     .print-only { display: none; }
 
@@ -501,6 +554,58 @@ function fmtMesAno(mesAno) {
   const [y, m] = mesAno.split('-').map(Number);
   return `${_MESES_ABR[m-1]}/${y}`;
 }
+
+// ── Crypto helpers para Link Mágico (AES-GCM + PBKDF2) ──────────────────────
+// Cifra o token do GitHub com um PIN do usuário. Permite distribuir um URL com
+// o token embutido no hash fragment (que não vai ao servidor do GitHub Pages).
+function _b64urlEnc(buf) {
+  const bytes = new Uint8Array(buf);
+  let s = '';
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function _b64urlDec(str) {
+  str = str.replace(/-/g,'+').replace(/_/g,'/');
+  while (str.length % 4) str += '=';
+  const bin = atob(str);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return arr;
+}
+async function _deriveKey(pin, salt) {
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+async function encryptWithPin(plaintext, pin) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await _deriveKey(pin, salt);
+  const ct   = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(plaintext));
+  const packed = new Uint8Array(1 + salt.length + iv.length + ct.byteLength);
+  packed[0] = 1; // versão
+  packed.set(salt, 1);
+  packed.set(iv, 1 + salt.length);
+  packed.set(new Uint8Array(ct), 1 + salt.length + iv.length);
+  return _b64urlEnc(packed);
+}
+async function decryptWithPin(encoded, pin) {
+  const packed = _b64urlDec(encoded);
+  if (packed[0] !== 1) throw new Error('Versão de link não suportada');
+  const salt = packed.slice(1, 17);
+  const iv   = packed.slice(17, 29);
+  const ct   = packed.slice(29);
+  const key  = await _deriveKey(pin, salt);
+  const pt   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+  return new TextDecoder().decode(pt);
+}
 // ────────────────────────────────────────────────────────────────────────────
 
 function CalculadoraSaude() {
@@ -574,6 +679,19 @@ function CalculadoraSaude() {
   React.useEffect(() => { try { localStorage.setItem('calc_ghCasoNome', JSON.stringify(ghCasoNome)); } catch(e) {} }, [ghCasoNome]);
   const [ghCasos, setGhCasos] = React.useState([]);
   const [ghHistorico, setGhHistorico] = React.useState(null);
+
+  // ── Link Mágico + Seletor de Caso (multi-dispositivo) ────────────────────
+  const [bootModal, setBootModal] = React.useState(null); // 'unlock' | 'select' | 'setup' | null
+  const [bootError, setBootError] = React.useState('');
+  const [unlockPin, setUnlockPin] = React.useState('');
+  const [unlockBusy, setUnlockBusy] = React.useState(false);
+  const [linkGenOpen, setLinkGenOpen] = React.useState(false);
+  const [linkPin1, setLinkPin1] = React.useState('');
+  const [linkPin2, setLinkPin2] = React.useState('');
+  const [linkGenResult, setLinkGenResult] = React.useState('');
+  const [linkGenError, setLinkGenError] = React.useState('');
+  const [linkCopyStatus, setLinkCopyStatus] = React.useState('');
+  const bootRanRef = React.useRef(false);
 
   // GitHub helper functions
   const toBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
@@ -680,6 +798,109 @@ function CalculadoraSaude() {
     }, 5000);
     return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
   }, [cnpjs, beneficiarios, reajustes, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configMesReajuste]);
+
+  // ── Link Mágico — gerador ────────────────────────────────────────────────
+  const gerarLinkMagico = async () => {
+    setLinkGenError(''); setLinkCopyStatus(''); setLinkGenResult('');
+    if (!ghToken) { setLinkGenError('Configure o token do GitHub antes de gerar o link.'); return; }
+    if (!/^\d{4,8}$/.test(linkPin1)) { setLinkGenError('O PIN deve ter de 4 a 8 dígitos numéricos.'); return; }
+    if (linkPin1 !== linkPin2) { setLinkGenError('Os PINs não conferem.'); return; }
+    try {
+      const payload = JSON.stringify({ t: ghToken, o: GH_OWNER, r: GH_REPO });
+      const cipher = await encryptWithPin(payload, linkPin1);
+      const base = window.location.origin + window.location.pathname;
+      const url = `${base}#lm=${cipher}`;
+      setLinkGenResult(url);
+    } catch(e) { setLinkGenError('Erro ao gerar o link: ' + e.message); }
+  };
+
+  const copiarLinkMagico = async () => {
+    try {
+      await navigator.clipboard.writeText(linkGenResult);
+      setLinkCopyStatus('✅ Link copiado para a área de transferência');
+    } catch(e) {
+      setLinkCopyStatus('⚠️ Copie manualmente o link abaixo');
+    }
+  };
+
+  const fecharLinkGen = () => {
+    setLinkGenOpen(false); setLinkPin1(''); setLinkPin2(''); setLinkGenResult(''); setLinkGenError(''); setLinkCopyStatus('');
+  };
+
+  // ── Link Mágico — desbloqueio via hash ────────────────────────────────────
+  const desbloquearLink = async () => {
+    setBootError('');
+    if (!unlockPin) { setBootError('Informe o PIN.'); return; }
+    setUnlockBusy(true);
+    try {
+      const hash = window.location.hash.replace(/^#/, '');
+      const params = new URLSearchParams(hash);
+      const cipher = params.get('lm');
+      if (!cipher) throw new Error('Link sem dados cifrados.');
+      const payload = await decryptWithPin(cipher, unlockPin);
+      const parsed = JSON.parse(payload);
+      if (!parsed.t) throw new Error('Conteúdo inválido.');
+      setGhToken(parsed.t);
+      // Limpa o hash para não reusar
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch(e) {}
+      setUnlockPin('');
+      setUnlockBusy(false);
+      // Depois do unlock, vai para o seletor de casos
+      setBootModal('select');
+      // Lista casos imediatamente
+      setTimeout(() => { try { ghListCasosComToken(parsed.t); } catch(e) {} }, 50);
+    } catch(e) {
+      setUnlockBusy(false);
+      setBootError('PIN incorreto ou link corrompido.');
+    }
+  };
+
+  // Versão de ghListCasos que aceita token explícito (o state pode ainda não ter propagado)
+  const ghListCasosComToken = async (tokenExplicito) => {
+    const tok = tokenExplicito || ghToken;
+    if (!tok) return;
+    setGhLoading(true); setGhStatus('🔍 Buscando casos...');
+    try {
+      const hdrs = { 'Authorization': `token ${tok}`, 'Accept': 'application/vnd.github.v3+json' };
+      const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/casos`, { headers: hdrs });
+      if (res.status === 404) { setGhCasos([]); setGhStatus('📂 Nenhum caso salvo ainda'); }
+      else if (res.ok) {
+        const files = await res.json();
+        const arr = Array.isArray(files) ? files.filter(f => f.name.endsWith('.json')) : [];
+        setGhCasos(arr);
+        setGhStatus(`✅ ${arr.length} caso(s) encontrado(s)`);
+      } else { const e = await res.json(); setGhStatus(`❌ ${e.message}`); }
+    } catch(e) { setGhStatus(`❌ ${e.message}`); }
+    setGhLoading(false);
+  };
+
+  // Limpa estado local para começar um caso novo "em branco"
+  const novoCasoEmBranco = () => {
+    setCnpjs([]); setBeneficiarios([]); setReajustes([]);
+    setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha');
+    setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigMesReajuste(12);
+    setGhCasoNome('');
+    setActiveTab('cnpjs');
+    setBootModal(null);
+  };
+
+  // ── useEffect de boot: roda só uma vez ───────────────────────────────────
+  React.useEffect(() => {
+    if (bootRanRef.current) return;
+    bootRanRef.current = true;
+    const hash = window.location.hash.replace(/^#/, '');
+    const params = new URLSearchParams(hash);
+    if (params.get('lm')) {
+      setBootModal('unlock');
+      return;
+    }
+    // Se tem token mas o caso atual está vazio → oferece seletor
+    const temDados = cnpjs.length > 0 || beneficiarios.length > 0 || reajustes.length > 0;
+    if (ghToken && !temDados) {
+      setBootModal('select');
+      setTimeout(() => { try { ghListCasosComToken(ghToken); } catch(e) {} }, 50);
+    }
+  }, []);
 
   const addCnpj = () => {
     if (!formCnpj.cnpj.trim()) return;
@@ -1005,6 +1226,11 @@ function CalculadoraSaude() {
               reader.readAsText(f);
             }} />
           </label>
+          {ghToken && (
+            <button onClick={() => { setBootModal('select'); ghListCasosComToken(ghToken); }} style={{background:'rgba(200,169,110,0.2)',color:'#FFD580',border:'1px solid rgba(200,169,110,0.5)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
+              📁 Trocar Caso
+            </button>
+          )}
           <button onClick={() => setActiveTab('github')} style={{background:'rgba(255,255,255,0.15)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
             ☁️ GitHub
           </button>
@@ -1605,6 +1831,20 @@ function CalculadoraSaude() {
               {ghStatus && <div style={{padding:'10px 14px',borderRadius:'6px',background: ghStatus.startsWith('✅') ? '#d4edda' : ghStatus.startsWith('❌') ? '#f8d7da' : '#fff3cd',color: ghStatus.startsWith('✅') ? '#155724' : ghStatus.startsWith('❌') ? '#721c24' : '#856404',marginBottom:'16px',fontWeight:'500'}}>{ghStatus}</div>}
             </div>
 
+            <div className="section" style={{borderLeft:'4px solid #C8A96E',background:'#FEFCF7'}}>
+              <h3>🔗 Link Mágico — Acesso Multi-Dispositivo</h3>
+              <p style={{color:'#555',marginBottom:'12px',lineHeight:'1.5'}}>
+                Gera um URL que contém seu token GitHub <strong>cifrado com um PIN</strong>. Salve esse URL como favorito no celular e em outros computadores. Ao abri-lo, a calculadora pede o PIN, decripta o token e carrega seus casos automaticamente.
+              </p>
+              <p style={{color:'#8B6914',marginBottom:'16px',fontSize:'13px',background:'#FFF4D6',padding:'10px 12px',borderRadius:'6px',border:'1px solid #F5DE8A'}}>
+                ⚠️ Guarde o link e o PIN em lugares separados. Se alguém tiver os dois, terá acesso ao seu repositório GitHub. Você pode revogar o token a qualquer momento em github.com/settings/tokens.
+              </p>
+              <button onClick={() => setLinkGenOpen(true)} disabled={!ghToken} style={{background:'#C8A96E',color:'#1B3A5C',border:'none',padding:'12px 24px',borderRadius:'6px',cursor:'pointer',fontWeight:'700',fontSize:'15px'}}>
+                🔗 Gerar Link Mágico
+              </button>
+              {!ghToken && <small style={{color:'#888',marginLeft:'10px'}}>Preencha o token acima para habilitar.</small>}
+            </div>
+
             <div className="section">
               <h3>💾 Salvar Caso Atual</h3>
               <div style={{display:'flex',gap:'12px',alignItems:'flex-end',flexWrap:'wrap'}}>
@@ -1693,6 +1933,144 @@ function CalculadoraSaude() {
           </div>
         )}
       </div>
+
+      {/* ── Modal: Desbloqueio do Link Mágico (boot com #lm=) ───────────── */}
+      {bootModal === 'unlock' && (
+        <div className="lm-overlay no-print">
+          <div className="lm-dialog">
+            <div className="lm-header">
+              <h2>🔒 Informe o PIN</h2>
+              <p>Este link contém o acesso cifrado à Calculadora Scozziero. Informe o PIN de 4 a 8 dígitos para desbloquear.</p>
+            </div>
+            <div className="lm-body">
+              <div className="lm-note">
+                Ao desbloquear, o token do GitHub fica salvo <strong>neste navegador</strong>, permitindo abrir e salvar casos automaticamente.
+              </div>
+              <div className="lm-field">
+                <label>PIN</label>
+                <input type="password" inputMode="numeric" autoFocus maxLength="8"
+                  placeholder="••••"
+                  value={unlockPin}
+                  onChange={e => { setUnlockPin(e.target.value.replace(/\D/g,'')); setBootError(''); }}
+                  onKeyDown={e => { if (e.key === 'Enter') desbloquearLink(); }} />
+              </div>
+              {bootError && <div className="lm-error">{bootError}</div>}
+              <div className="lm-actions">
+                <button className="lm-btn secondary" onClick={() => { setBootModal(null); try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch(e) {} }}>
+                  Cancelar
+                </button>
+                <button className="lm-btn primary" onClick={desbloquearLink} disabled={unlockBusy}>
+                  {unlockBusy ? '⏳ Decifrando...' : '🔓 Desbloquear'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Seletor de Caso (boot com token configurado) ────────── */}
+      {bootModal === 'select' && (
+        <div className="lm-overlay no-print">
+          <div className="lm-dialog">
+            <div className="lm-header">
+              <h2>📂 Seus Casos</h2>
+              <p>Escolha um caso para carregar ou inicie um novo em branco.</p>
+            </div>
+            <div className="lm-body">
+              {ghLoading && <div className="lm-note">⏳ Buscando casos no GitHub...</div>}
+              {!ghLoading && ghCasos.length === 0 && (
+                <div className="lm-note">Nenhum caso salvo no repositório ainda. Comece um novo abaixo.</div>
+              )}
+              {!ghLoading && ghCasos.length > 0 && (
+                <div style={{maxHeight:'320px',overflowY:'auto',marginBottom:'12px'}}>
+                  {ghCasos.map(f => (
+                    <div key={f.sha} className="lm-caso-item">
+                      <div>
+                        <div className="nome">📄 {f.name.replace('.json','').replace(/_/g,' ')}</div>
+                        <div className="meta">{(f.size/1024).toFixed(1)} KB</div>
+                      </div>
+                      <button className="lm-btn primary" onClick={async () => { await ghCarregar(f); setBootModal(null); }} style={{padding:'6px 14px',fontSize:'13px'}}>
+                        📂 Carregar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="lm-actions" style={{justifyContent:'space-between'}}>
+                <button className="lm-btn secondary" onClick={() => ghListCasosComToken(ghToken)} disabled={ghLoading}>
+                  🔄 Atualizar lista
+                </button>
+                <div style={{display:'flex',gap:'8px'}}>
+                  <button className="lm-btn secondary" onClick={() => setBootModal(null)}>
+                    Fechar
+                  </button>
+                  <button className="lm-btn gold" onClick={novoCasoEmBranco}>
+                    🆕 Novo Caso em Branco
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Gerar Link Mágico ───────────────────────────────────── */}
+      {linkGenOpen && (
+        <div className="lm-overlay no-print">
+          <div className="lm-dialog">
+            <div className="lm-header">
+              <h2>🔗 Gerar Link Mágico</h2>
+              <p>Crie um PIN para cifrar o token. Você precisará dele ao abrir o link em outros dispositivos.</p>
+            </div>
+            <div className="lm-body">
+              {!linkGenResult && (
+                <>
+                  <div className="lm-note">
+                    O token do GitHub será cifrado com seu PIN (AES-GCM + PBKDF2 250k iterações). O PIN <strong>não fica salvo</strong> em lugar nenhum — se esquecer, gera outro link.
+                  </div>
+                  <div className="lm-field">
+                    <label>PIN (4 a 8 dígitos)</label>
+                    <input type="password" inputMode="numeric" maxLength="8" autoFocus
+                      placeholder="••••"
+                      value={linkPin1}
+                      onChange={e => { setLinkPin1(e.target.value.replace(/\D/g,'')); setLinkGenError(''); }} />
+                  </div>
+                  <div className="lm-field">
+                    <label>Confirme o PIN</label>
+                    <input type="password" inputMode="numeric" maxLength="8"
+                      placeholder="••••"
+                      value={linkPin2}
+                      onChange={e => { setLinkPin2(e.target.value.replace(/\D/g,'')); setLinkGenError(''); }}
+                      onKeyDown={e => { if (e.key === 'Enter') gerarLinkMagico(); }} />
+                  </div>
+                  {linkGenError && <div className="lm-error">{linkGenError}</div>}
+                  <div className="lm-actions">
+                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Cancelar</button>
+                    <button className="lm-btn primary" onClick={gerarLinkMagico}>Gerar Link</button>
+                  </div>
+                </>
+              )}
+              {linkGenResult && (
+                <>
+                  <div className="lm-ok">✅ Link gerado. Salve como favorito nos dispositivos onde quer acessar.</div>
+                  <div className="lm-link-output">{linkGenResult}</div>
+                  {linkCopyStatus && <div className={linkCopyStatus.startsWith('✅') ? 'lm-ok' : 'lm-note'}>{linkCopyStatus}</div>}
+                  <div className="lm-note" style={{marginTop:'12px'}}>
+                    <strong>Próximos passos</strong>:<br/>
+                    1. Envie o link para o seu celular/outro PC (email, WhatsApp para si mesmo, etc.)<br/>
+                    2. Abra o link no outro dispositivo → digite o PIN → pronto, a calculadora lista seus casos.<br/>
+                    3. Guarde o PIN num lugar separado do link.
+                  </div>
+                  <div className="lm-actions">
+                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Fechar</button>
+                    <button className="lm-btn primary" onClick={copiarLinkMagico}>📋 Copiar Link</button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
