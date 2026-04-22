@@ -143,32 +143,40 @@
       color: #1B3A5C;
     }
 
+    /* R$ sempre em linha acima do valor — uniformiza leitura de KPIs e tabela consolidada. */
+    .brl-stack { display: inline-flex; flex-direction: column; line-height: 1.1; align-items: flex-start; vertical-align: middle; }
+    .brl-stack-cifra { font-size: 0.6em; font-weight: 500; color: #64748B; letter-spacing: 0.5px; }
+    .brl-stack-valor { font-weight: inherit; }
+    td.text-right .brl-stack { align-items: flex-end; }
+
     .kpi-icon {
       font-size: 28px;
       margin-bottom: 8px;
     }
 
-    /* Capa do Caso — cabeçalho institucional que serve de frente para dashboard e relatório individual */
+    /* Capa do Caso — cabeçalho institucional (fundo off-white, mais leve, mantém identidade via faixas) */
     .capa-caso {
-      background: linear-gradient(135deg, #1B3A5C 0%, #2C5282 100%);
-      color: white;
+      background: #FAFBFC;
+      color: #1B3A5C;
       padding: 28px 32px;
       border-radius: 10px;
       margin-bottom: 22px;
-      box-shadow: 0 4px 16px rgba(27, 58, 92, 0.22);
+      box-shadow: 0 1px 4px rgba(27, 58, 92, 0.08);
+      border: 1px solid #E2E8F0;
+      border-top: 3px solid #1B3A5C;
       border-left: 6px solid #C8A96E;
     }
     .capa-caso .capa-topo {
       display: flex; justify-content: space-between; align-items: flex-start;
-      border-bottom: 1px solid rgba(255,255,255,0.22);
+      border-bottom: 1px solid #E2E8F0;
       padding-bottom: 14px; margin-bottom: 16px; gap: 20px; flex-wrap: wrap;
     }
     .capa-caso h2 {
-      margin: 0 0 4px 0; font-size: 22px; color: white; font-weight: 700;
+      margin: 0 0 4px 0; font-size: 22px; color: #1B3A5C; font-weight: 700;
     }
-    .capa-caso .capa-sub { font-size: 13px; color: #C8A96E; letter-spacing: 0.5px; }
-    .capa-caso .capa-escritorio { text-align: right; font-size: 12px; line-height: 1.4; }
-    .capa-caso .capa-escritorio strong { font-size: 14px; color: #C8A96E; display: block; }
+    .capa-caso .capa-sub { font-size: 13px; color: #8B6914; letter-spacing: 0.5px; font-weight: 600; }
+    .capa-caso .capa-escritorio { text-align: right; font-size: 12px; line-height: 1.4; color: #475569; }
+    .capa-caso .capa-escritorio strong { font-size: 14px; color: #8B6914; display: block; }
     .capa-caso .capa-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -178,10 +186,10 @@
       display: flex; flex-direction: column; gap: 2px;
     }
     .capa-caso .capa-item .rotulo {
-      font-size: 10.5px; text-transform: uppercase; color: rgba(255,255,255,0.65); letter-spacing: 0.8px; font-weight: 600;
+      font-size: 10.5px; text-transform: uppercase; color: #64748B; letter-spacing: 0.8px; font-weight: 600;
     }
-    .capa-caso .capa-item .valor { font-size: 14px; color: white; font-weight: 600; word-break: break-word; }
-    .capa-caso .capa-item .valor.destaque { font-size: 16px; color: #C8A96E; }
+    .capa-caso .capa-item .valor { font-size: 14px; color: #1B3A5C; font-weight: 600; word-break: break-word; }
+    .capa-caso .capa-item .valor.destaque { font-size: 16px; color: #8B6914; }
 
     .section {
       background: white;
@@ -501,17 +509,21 @@
           color: #555;
         }
       }
-      /* Capa institucional mantém impacto visual mesmo em tinta preta */
+      /* Capa institucional — fundo claro com acentos azul e dourado para economizar tinta sem perder identidade */
       .capa-caso {
-        background: #1B3A5C !important;
-        color: white !important;
+        background: #FAFBFC !important;
+        color: #1B3A5C !important;
         box-shadow: none !important;
+        border: 1px solid #CBD5E1 !important;
+        border-top: 3px solid #1B3A5C !important;
+        border-left: 6px solid #C8A96E !important;
         page-break-inside: avoid;
         break-inside: avoid;
       }
-      .capa-caso h2, .capa-caso .capa-item .valor { color: white !important; }
-      .capa-caso .capa-sub, .capa-caso .capa-item .valor.destaque, .capa-caso .capa-escritorio strong { color: #C8A96E !important; }
-      .capa-caso .capa-item .rotulo { color: rgba(255,255,255,0.75) !important; }
+      .capa-caso h2, .capa-caso .capa-item .valor { color: #1B3A5C !important; }
+      .capa-caso .capa-sub, .capa-caso .capa-item .valor.destaque, .capa-caso .capa-escritorio strong { color: #8B6914 !important; }
+      .capa-caso .capa-item .rotulo { color: #475569 !important; }
+      .capa-caso .capa-topo { border-bottom-color: #CBD5E1 !important; }
     }
   </style>
 </head>
@@ -546,6 +558,16 @@ function nextMesAno(mesAno) {
 function fmtBRL(n) {
   const v = Number(n) || 0;
   return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+// Componente que renderiza o valor monetário com "R$" sempre em linha separada acima do número.
+// Útil em KPIs e tabelas consolidadas onde queremos leitura uniforme independentemente da largura do valor.
+function BRLStack(props) {
+  const v = Number(props.n) || 0;
+  const numero = v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return React.createElement('span', { className: 'brl-stack' },
+    React.createElement('span', { className: 'brl-stack-cifra' }, 'R$'),
+    React.createElement('span', { className: 'brl-stack-valor' }, numero)
+  );
 }
 // Formato mês/ano amigável (2021-12 → "dez/2021")
 const _MESES_ABR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -1291,30 +1313,30 @@ function CalculadoraSaude() {
               <div className="kpi-card green">
                 <div className="kpi-icon">💰</div>
                 <div className="kpi-label">Total a Restituir</div>
-                <div className="kpi-value">{fmtBRL(metricas.totalRestituir)}</div>
+                <div className="kpi-value"><BRLStack n={metricas.totalRestituir}/></div>
                 <div className="info-text">Repetição Indébito: {fmtBRL(metricas.totalRestituir * 2)}</div>
               </div>
               <div className="kpi-card orange">
                 <div className="kpi-icon">📊</div>
                 <div className="kpi-label">Excesso Bruto</div>
-                <div className="kpi-value">{fmtBRL(metricas.excesso)}</div>
-                <div className="info-text">{beneficiarios.length} Segurados</div>
+                <div className="kpi-value"><BRLStack n={metricas.excesso}/></div>
+                <div className="info-text">{beneficiarios.length} Segurado{beneficiarios.length !== 1 ? 's' : ''}</div>
               </div>
               <div className="kpi-card blue">
                 <div className="kpi-icon">📈</div>
                 <div className="kpi-label">Correção Monetária</div>
-                <div className="kpi-value">{fmtBRL(metricas.correcao)}</div>
-                <div className="info-text">{cnpjs.length} CNPJs</div>
+                <div className="kpi-value"><BRLStack n={metricas.correcao}/></div>
+                <div className="info-text">{cnpjs.length} CNPJ{cnpjs.length !== 1 ? 's' : ''}</div>
               </div>
               <div className="kpi-card purple">
                 <div className="kpi-icon">💳</div>
                 <div className="kpi-label">Juros de Mora</div>
-                <div className="kpi-value">{fmtBRL(metricas.juros)}</div>
+                <div className="kpi-value"><BRLStack n={metricas.juros}/></div>
               </div>
               <div className="kpi-card gray">
                 <div className="kpi-icon">🔒</div>
                 <div className="kpi-label">Prescrito</div>
-                <div className="kpi-value">{fmtBRL(metricas.prescrito)}</div>
+                <div className="kpi-value"><BRLStack n={metricas.prescrito}/></div>
               </div>
             </div>
             {/* Tabela consolidada — essencial para juntada processual */}
@@ -1367,24 +1389,24 @@ function CalculadoraSaude() {
                         <tr key={n}>
                           <td>{n}</td>
                           <td>{porBen[n].cnpj}</td>
-                          <td className="text-right">{fmtBRL(porBen[n].pago)}</td>
-                          <td className="text-right">{fmtBRL(porBen[n].devido)}</td>
-                          <td className="text-right">{fmtBRL(porBen[n].excesso)}</td>
-                          <td className="text-right">{fmtBRL(porBen[n].correcao)}</td>
-                          <td className="text-right">{fmtBRL(porBen[n].juros)}</td>
-                          <td className="text-right">{fmtBRL(porBen[n].prescrito)}</td>
-                          <td className="text-right"><strong>{fmtBRL(porBen[n].total)}</strong></td>
+                          <td className="text-right"><BRLStack n={porBen[n].pago}/></td>
+                          <td className="text-right"><BRLStack n={porBen[n].devido}/></td>
+                          <td className="text-right"><BRLStack n={porBen[n].excesso}/></td>
+                          <td className="text-right"><BRLStack n={porBen[n].correcao}/></td>
+                          <td className="text-right"><BRLStack n={porBen[n].juros}/></td>
+                          <td className="text-right"><BRLStack n={porBen[n].prescrito}/></td>
+                          <td className="text-right"><strong><BRLStack n={porBen[n].total}/></strong></td>
                         </tr>
                       ))}
                       <tr style={{background:'#f0f4f8',fontWeight:'700'}}>
                         <td colSpan="2">TOTAL</td>
-                        <td className="text-right">{fmtBRL(tot.pago)}</td>
-                        <td className="text-right">{fmtBRL(tot.devido)}</td>
-                        <td className="text-right">{fmtBRL(tot.excesso)}</td>
-                        <td className="text-right">{fmtBRL(tot.correcao)}</td>
-                        <td className="text-right">{fmtBRL(tot.juros)}</td>
-                        <td className="text-right">{fmtBRL(tot.prescrito)}</td>
-                        <td className="text-right">{fmtBRL(tot.total)}</td>
+                        <td className="text-right"><BRLStack n={tot.pago}/></td>
+                        <td className="text-right"><BRLStack n={tot.devido}/></td>
+                        <td className="text-right"><BRLStack n={tot.excesso}/></td>
+                        <td className="text-right"><BRLStack n={tot.correcao}/></td>
+                        <td className="text-right"><BRLStack n={tot.juros}/></td>
+                        <td className="text-right"><BRLStack n={tot.prescrito}/></td>
+                        <td className="text-right"><BRLStack n={tot.total}/></td>
                       </tr>
                     </tbody>
                   </table>
@@ -1717,32 +1739,32 @@ function CalculadoraSaude() {
                     <div className="kpi-card green">
                       <div className="kpi-icon">💰</div>
                       <div className="kpi-label">A Restituir (atualizado)</div>
-                      <div className="kpi-value">{fmtBRL(tot.total)}</div>
+                      <div className="kpi-value"><BRLStack n={tot.total}/></div>
                       <div className="info-text">Repetição Indébito: {fmtBRL(tot.total * 2)}</div>
                     </div>
                     <div className="kpi-card orange">
                       <div className="kpi-icon">📊</div>
                       <div className="kpi-label">Excesso Bruto</div>
-                      <div className="kpi-value">{fmtBRL(tot.excesso)}</div>
-                      <div className="info-text">{rowsBen.filter(r => !r.prescrito).length} parcelas exigíveis</div>
+                      <div className="kpi-value"><BRLStack n={tot.excesso}/></div>
+                      <div className="info-text">{rowsBen.filter(r => !r.prescrito).length} parcela{rowsBen.filter(r => !r.prescrito).length !== 1 ? 's exigíveis' : ' exigível'}</div>
                     </div>
                     <div className="kpi-card blue">
                       <div className="kpi-icon">📈</div>
                       <div className="kpi-label">Correção Monetária</div>
-                      <div className="kpi-value">{fmtBRL(tot.correcao)}</div>
+                      <div className="kpi-value"><BRLStack n={tot.correcao}/></div>
                       <div className="info-text">{configIndexador === 'ca' ? 'IPCA' : configIndexador === 'ia' ? 'INPC' : configIndexador === 'fa' ? 'FIPE' : 'Sem correção'}</div>
                     </div>
                     <div className="kpi-card purple">
                       <div className="kpi-icon">💳</div>
                       <div className="kpi-label">Juros de Mora</div>
-                      <div className="kpi-value">{fmtBRL(tot.juros)}</div>
+                      <div className="kpi-value"><BRLStack n={tot.juros}/></div>
                       <div className="info-text">{configJuros === 'hybrid' ? '1% a.m. + SELIC' : configJuros === 'selic' ? 'SELIC' : 'Sem juros'}</div>
                     </div>
                     <div className="kpi-card gray">
                       <div className="kpi-icon">🔒</div>
                       <div className="kpi-label">Prescrito</div>
-                      <div className="kpi-value">{fmtBRL(tot.prescrito)}</div>
-                      <div className="info-text">{rowsBen.filter(r => r.prescrito).length} parcelas prescritas</div>
+                      <div className="kpi-value"><BRLStack n={tot.prescrito}/></div>
+                      <div className="info-text">{rowsBen.filter(r => r.prescrito).length} parcela{rowsBen.filter(r => r.prescrito).length !== 1 ? 's prescritas' : ' prescrita'}</div>
                     </div>
                   </div>
                   <div className="section">
