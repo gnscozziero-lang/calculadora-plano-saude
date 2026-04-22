@@ -148,6 +148,41 @@
       margin-bottom: 8px;
     }
 
+    /* Capa do Caso — cabeçalho institucional que serve de frente para dashboard e relatório individual */
+    .capa-caso {
+      background: linear-gradient(135deg, #1B3A5C 0%, #2C5282 100%);
+      color: white;
+      padding: 28px 32px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 16px rgba(27, 58, 92, 0.22);
+      border-left: 6px solid #C8A96E;
+    }
+    .capa-caso .capa-topo {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      border-bottom: 1px solid rgba(255,255,255,0.22);
+      padding-bottom: 14px; margin-bottom: 16px; gap: 20px; flex-wrap: wrap;
+    }
+    .capa-caso h2 {
+      margin: 0 0 4px 0; font-size: 22px; color: white; font-weight: 700;
+    }
+    .capa-caso .capa-sub { font-size: 13px; color: #C8A96E; letter-spacing: 0.5px; }
+    .capa-caso .capa-escritorio { text-align: right; font-size: 12px; line-height: 1.4; }
+    .capa-caso .capa-escritorio strong { font-size: 14px; color: #C8A96E; display: block; }
+    .capa-caso .capa-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px 28px;
+    }
+    .capa-caso .capa-item {
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .capa-caso .capa-item .rotulo {
+      font-size: 10.5px; text-transform: uppercase; color: rgba(255,255,255,0.65); letter-spacing: 0.8px; font-weight: 600;
+    }
+    .capa-caso .capa-item .valor { font-size: 14px; color: white; font-weight: 600; word-break: break-word; }
+    .capa-caso .capa-item .valor.destaque { font-size: 16px; color: #C8A96E; }
+
     .chart-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -412,6 +447,17 @@
       .chart-grid { grid-template-columns: 1fr 1fr !important; gap: 12px; }
       .page-break { page-break-after: always; }
       @page { margin: 1.5cm; size: A4; }
+      /* Capa institucional mantém impacto visual mesmo em tinta preta */
+      .capa-caso {
+        background: #1B3A5C !important;
+        color: white !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .capa-caso h2, .capa-caso .capa-item .valor { color: white !important; }
+      .capa-caso .capa-sub, .capa-caso .capa-item .valor.destaque, .capa-caso .capa-escritorio strong { color: #C8A96E !important; }
+      .capa-caso .capa-item .rotulo { color: rgba(255,255,255,0.75) !important; }
     }
   </style>
 </head>
@@ -810,14 +856,23 @@ function CalculadoraSaude() {
   }, [resultados]);
 
   React.useEffect(() => {
-    if (activeTab === 'dashboard') {
-      setTimeout(() => renderCharts(), 100);
-    }
+    if (activeTab !== 'dashboard') return;
+    // Espera dois frames para garantir que o layout do wrapper já definiu a altura
+    const id1 = requestAnimationFrame(() => {
+      const id2 = requestAnimationFrame(() => renderCharts());
+      chartsInstances.current.__raf2 = id2;
+    });
+    chartsInstances.current.__raf1 = id1;
+    return () => {
+      if (chartsInstances.current.__raf1) cancelAnimationFrame(chartsInstances.current.__raf1);
+      if (chartsInstances.current.__raf2) cancelAnimationFrame(chartsInstances.current.__raf2);
+    };
   }, [activeTab, resultados]);
 
   const renderCharts = () => {
     Object.keys(chartsInstances.current).forEach(key => {
-      if (chartsInstances.current[key]) chartsInstances.current[key].destroy();
+      const inst = chartsInstances.current[key];
+      if (inst && typeof inst.destroy === 'function') inst.destroy();
     });
     chartsInstances.current = {};
 
@@ -914,6 +969,60 @@ function CalculadoraSaude() {
     ? resultados.todosPorSeguro.filter(r => r.cnpjId === parseInt(configCnpjFilter))
     : resultados.todosPorSeguro;
 
+  // ── Capa institucional do Caso (cabeçalho grande p/ Dashboard + Relatório Individual) ──
+  const dataRelatorioHoje = (() => {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  })();
+  const cnpjContratante = cnpjs[0] || null;
+  const renderCapa = (tituloPeca, beneficiarioNome) => (
+    <div className="capa-caso">
+      <div className="capa-topo">
+        <div>
+          <h2>{tituloPeca}</h2>
+          <div className="capa-sub">Falso Coletivo · Aplicação do Teto ANS (art. 35-E, Lei 9.656/98)</div>
+        </div>
+        <div className="capa-escritorio">
+          <strong>SCOZZIERO ADVOCACIA</strong>
+          Saúde Suplementar · Direito do Consumidor<br/>
+          Emissão: {dataRelatorioHoje}
+        </div>
+      </div>
+      <div className="capa-grid">
+        <div className="capa-item">
+          <span className="rotulo">Empresa Contratante</span>
+          <span className="valor destaque">{cnpjContratante?.empresa || '—'}</span>
+        </div>
+        <div className="capa-item">
+          <span className="rotulo">CNPJ</span>
+          <span className="valor">{cnpjContratante?.cnpj || '—'}</span>
+        </div>
+        <div className="capa-item">
+          <span className="rotulo">Operadora</span>
+          <span className="valor">{cnpjContratante?.operadora || '—'}</span>
+        </div>
+        <div className="capa-item">
+          <span className="rotulo">Nº do Contrato / Apólice</span>
+          <span className="valor">{cnpjContratante?.nrContrato || '—'}</span>
+        </div>
+        <div className="capa-item">
+          <span className="rotulo">Caso</span>
+          <span className="valor">{ghCasoNome || '—'}</span>
+        </div>
+        <div className="capa-item">
+          <span className="rotulo">Período Apurado</span>
+          <span className="valor">{configDataInicio || '—'} a {fmtMesAno(configDataFim)}</span>
+        </div>
+        {beneficiarioNome && (
+          <div className="capa-item" style={{gridColumn: '1 / -1', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', marginTop: '4px'}}>
+            <span className="rotulo">Beneficiário(a)</span>
+            <span className="valor destaque">{beneficiarioNome}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div>
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'18px 40px'}}>
@@ -993,11 +1102,7 @@ function CalculadoraSaude() {
 
         {activeTab === 'dashboard' && (
           <div className="tab-content active">
-            <div className="print-only print-header">
-              <h1>Demonstrativo de Revisão de Mensalidades — Plano de Saúde</h1>
-              <p>Scozziero Advocacia · Falso Coletivo (ANS) · {(() => { const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })()}</p>
-              <p>{ghCasoNome ? `Caso: ${ghCasoNome}` : ''}{cnpjs[0] ? ` · CNPJ Contratante: ${cnpjs[0].cnpj} (${cnpjs[0].empresa || ''})` : ''}</p>
-            </div>
+            {renderCapa('Demonstrativo Consolidado de Revisão de Mensalidades', null)}
             <div className="no-print" style={{display:'flex',justifyContent:'flex-end',marginBottom:'14px'}}>
               <button onClick={() => window.print()} style={{background:'#1B3A5C',color:'white',border:'none',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Imprimir Dashboard</button>
             </div>
@@ -1034,11 +1139,15 @@ function CalculadoraSaude() {
             <div className="chart-grid">
               <div className="chart-container">
                 <h3>Totais por Segurado</h3>
-                <canvas ref={chartEvolucao} style={{ height: '300px' }}></canvas>
+                <div style={{ position: 'relative', height: '320px', width: '100%' }}>
+                  <canvas ref={chartEvolucao}></canvas>
+                </div>
               </div>
               <div className="chart-container">
                 <h3>Composição do Crédito</h3>
-                <canvas ref={chartComposicao} style={{ height: '300px' }}></canvas>
+                <div style={{ position: 'relative', height: '320px', width: '100%' }}>
+                  <canvas ref={chartComposicao}></canvas>
+                </div>
               </div>
             </div>
 
@@ -1048,16 +1157,30 @@ function CalculadoraSaude() {
               {(() => {
                 const porBen = {};
                 resultados.todosPorSeguro.forEach(r => {
-                  if (!porBen[r.beneficiario]) porBen[r.beneficiario] = { pago: 0, devido: 0, excesso: 0, prescrito: 0, total: 0, cnpj: r.cnpj };
+                  if (!porBen[r.beneficiario]) porBen[r.beneficiario] = { pago: 0, devido: 0, excesso: 0, correcao: 0, juros: 0, prescrito: 0, total: 0, cnpj: r.cnpj };
                   porBen[r.beneficiario].pago   += r.valorPago;
                   porBen[r.beneficiario].devido += r.valorDevido;
-                  if (r.prescrito) porBen[r.beneficiario].prescrito += r.diferenca;
-                  else { porBen[r.beneficiario].excesso += r.diferenca; porBen[r.beneficiario].total += r.totalAtualizado; }
+                  if (r.prescrito) {
+                    porBen[r.beneficiario].prescrito += r.diferenca;
+                  } else {
+                    porBen[r.beneficiario].excesso  += r.diferenca;
+                    porBen[r.beneficiario].correcao += r.diferenca * (r.fatorCorrecao - 1);
+                    porBen[r.beneficiario].juros    += r.diferenca * r.fatorCorrecao * r.jurosPercent;
+                    porBen[r.beneficiario].total    += r.totalAtualizado;
+                  }
                 });
                 const nomes = Object.keys(porBen).sort();
                 if (nomes.length === 0) return <p style={{color:'#999',padding:'20px',textAlign:'center'}}>Cadastre reajustes para visualizar o consolidado.</p>;
-                const tot = { pago:0, devido:0, excesso:0, prescrito:0, total:0 };
-                nomes.forEach(n => { tot.pago+=porBen[n].pago; tot.devido+=porBen[n].devido; tot.excesso+=porBen[n].excesso; tot.prescrito+=porBen[n].prescrito; tot.total+=porBen[n].total; });
+                const tot = { pago:0, devido:0, excesso:0, correcao:0, juros:0, prescrito:0, total:0 };
+                nomes.forEach(n => {
+                  tot.pago     += porBen[n].pago;
+                  tot.devido   += porBen[n].devido;
+                  tot.excesso  += porBen[n].excesso;
+                  tot.correcao += porBen[n].correcao;
+                  tot.juros    += porBen[n].juros;
+                  tot.prescrito+= porBen[n].prescrito;
+                  tot.total    += porBen[n].total;
+                });
                 return (
                   <table className="table">
                     <thead>
@@ -1067,6 +1190,8 @@ function CalculadoraSaude() {
                         <th className="text-right">Total Pago</th>
                         <th className="text-right">Total Devido</th>
                         <th className="text-right">Excesso</th>
+                        <th className="text-right">Correção</th>
+                        <th className="text-right">Juros</th>
                         <th className="text-right">Prescrito</th>
                         <th className="text-right">A Restituir (atualizado)</th>
                       </tr>
@@ -1079,6 +1204,8 @@ function CalculadoraSaude() {
                           <td className="text-right">{fmtBRL(porBen[n].pago)}</td>
                           <td className="text-right">{fmtBRL(porBen[n].devido)}</td>
                           <td className="text-right">{fmtBRL(porBen[n].excesso)}</td>
+                          <td className="text-right">{fmtBRL(porBen[n].correcao)}</td>
+                          <td className="text-right">{fmtBRL(porBen[n].juros)}</td>
                           <td className="text-right">{fmtBRL(porBen[n].prescrito)}</td>
                           <td className="text-right"><strong>{fmtBRL(porBen[n].total)}</strong></td>
                         </tr>
@@ -1088,6 +1215,8 @@ function CalculadoraSaude() {
                         <td className="text-right">{fmtBRL(tot.pago)}</td>
                         <td className="text-right">{fmtBRL(tot.devido)}</td>
                         <td className="text-right">{fmtBRL(tot.excesso)}</td>
+                        <td className="text-right">{fmtBRL(tot.correcao)}</td>
+                        <td className="text-right">{fmtBRL(tot.juros)}</td>
                         <td className="text-right">{fmtBRL(tot.prescrito)}</td>
                         <td className="text-right">{fmtBRL(tot.total)}</td>
                       </tr>
@@ -1291,7 +1420,7 @@ function CalculadoraSaude() {
                   <div className="info-text">{configRefMes === 'baseplanilha' ? 'Usa Fator IPCA/SELIC acumulado direto (compatível com planilha do escritório).' : 'Divide fator do mês pelo fator do mês de referência.'}</div>
                 </div>
                 <div className="form-group">
-                  <label>Data Início Cobrança</label>
+                  <label>Data Inicial das Diferenças</label>
                   <input type="date" value={configDataInicio} onChange={(e) => setConfigDataInicio(e.target.value)} />
                 </div>
                 <div className="form-group">
@@ -1380,11 +1509,7 @@ function CalculadoraSaude() {
           const curId = relatorioBenId || (benList[0]?.id?.toString() || '');
           const ben = beneficiarios.find(b => b.id.toString() === curId);
           const cnpj = ben ? cnpjs.find(c => c.id.toString() === ben.cnpjId) : null;
-          const rowsBen = resultados.todosPorSeguro.filter(r => {
-            if (!ben) return false;
-            const rej = reajustes.find(x => x.mesAno === r.mesAno && x.beneficiarioId === ben.id.toString());
-            return !!rej;
-          });
+          const rowsBen = ben ? resultados.todosPorSeguro.filter(r => r.beneficiario === ben.nome) : [];
           let tot = { pago:0, devido:0, excesso:0, prescrito:0, correcao:0, juros:0, total:0 };
           rowsBen.forEach(r => {
             tot.pago += r.valorPago;
@@ -1397,17 +1522,12 @@ function CalculadoraSaude() {
               tot.total   += r.totalAtualizado;
             }
           });
-          const dataHoje = (() => { const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })();
           return (
             <div className="tab-content active">
-              <div className="print-only print-header">
-                <h1>Relatório Analítico Individual — Revisão de Mensalidades</h1>
-                <p>Scozziero Advocacia · Falso Coletivo (ANS) · {dataHoje}</p>
-                <p>Beneficiário: <strong>{ben?.nome || '—'}</strong>{ben?.cpf ? ` · CPF: ${ben.cpf}` : ''}{cnpj ? ` · CNPJ Contratante: ${cnpj.cnpj}${cnpj.empresa ? ' ('+cnpj.empresa+')' : ''}` : ''}</p>
-              </div>
+              {renderCapa('Relatório Analítico Individual — Revisão de Mensalidades', ben?.nome || null)}
 
               <div className="section no-print">
-                <h2>Relatório Analítico Individual</h2>
+                <h2 style={{marginTop:0}}>Seleção do Segurado</h2>
                 <div className="form-row">
                   <div className="form-group" style={{gridColumn: '1 / span 2'}}>
                     <label>Beneficiário</label>
@@ -1426,6 +1546,39 @@ function CalculadoraSaude() {
                 <div className="section"><p style={{color:'#999',padding:'20px',textAlign:'center'}}>Selecione um beneficiário para gerar o relatório.</p></div>
               ) : (
                 <React.Fragment>
+                  {/* KPIs individuais — mesmos totalizadores do Dashboard, filtrados para o beneficiário */}
+                  <div className="kpi-grid">
+                    <div className="kpi-card green">
+                      <div className="kpi-icon">💰</div>
+                      <div className="kpi-label">A Restituir (atualizado)</div>
+                      <div className="kpi-value">{fmtBRL(tot.total)}</div>
+                      <div className="info-text">Repetição Indébito: {fmtBRL(tot.total * 2)}</div>
+                    </div>
+                    <div className="kpi-card orange">
+                      <div className="kpi-icon">📊</div>
+                      <div className="kpi-label">Excesso Bruto</div>
+                      <div className="kpi-value">{fmtBRL(tot.excesso)}</div>
+                      <div className="info-text">{rowsBen.filter(r => !r.prescrito).length} parcelas exigíveis</div>
+                    </div>
+                    <div className="kpi-card blue">
+                      <div className="kpi-icon">📈</div>
+                      <div className="kpi-label">Correção Monetária</div>
+                      <div className="kpi-value">{fmtBRL(tot.correcao)}</div>
+                      <div className="info-text">{configIndexador === 'ca' ? 'IPCA' : configIndexador === 'ia' ? 'INPC' : configIndexador === 'fa' ? 'FIPE' : 'Sem correção'}</div>
+                    </div>
+                    <div className="kpi-card purple">
+                      <div className="kpi-icon">💳</div>
+                      <div className="kpi-label">Juros de Mora</div>
+                      <div className="kpi-value">{fmtBRL(tot.juros)}</div>
+                      <div className="info-text">{configJuros === 'hybrid' ? '1% a.m. + SELIC' : configJuros === 'selic' ? 'SELIC' : 'Sem juros'}</div>
+                    </div>
+                    <div className="kpi-card gray">
+                      <div className="kpi-icon">🔒</div>
+                      <div className="kpi-label">Prescrito</div>
+                      <div className="kpi-value">{fmtBRL(tot.prescrito)}</div>
+                      <div className="info-text">{rowsBen.filter(r => r.prescrito).length} parcelas prescritas</div>
+                    </div>
+                  </div>
                   <div className="section">
                     <h3>Identificação</h3>
                     <table className="table">
@@ -1452,7 +1605,7 @@ function CalculadoraSaude() {
                         <tr><th>Modo Fator</th><td>{configRefMes === 'baseplanilha' ? 'Padrão planilha (fator direto)' : `Dividir por ${configRefMes}`}</td></tr>
                         <tr><th>Mês de aniversário</th><td>{['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][configMesReajuste-1]}</td></tr>
                         <tr><th>Data-limite do cálculo</th><td>{fmtMesAno(configDataFim)}</td></tr>
-                        <tr><th>Data inicial de cobrança</th><td>{configDataInicio}</td></tr>
+                        <tr><th>Data inicial das diferenças</th><td>{configDataInicio}</td></tr>
                       </tbody>
                     </table>
                   </div>
