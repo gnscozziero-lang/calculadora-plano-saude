@@ -752,6 +752,42 @@ function CalculadoraSaude() {
     setGhLoading(false);
   };
 
+  const ghRenomear = async (file) => {
+    const nomeAtualExibido = file.name.replace('.json','').replace(/_/g,' ');
+    const nomeAtualSafe = file.name.replace('.json','');
+    const entrada = window.prompt(`Renomear caso "${nomeAtualExibido}" para:`, nomeAtualExibido);
+    if (entrada === null) return;
+    const novoNome = entrada.trim();
+    if (!novoNome) { setGhStatus('❌ Nome do caso não pode ficar vazio'); return; }
+    if (novoNome === nomeAtualExibido) { setGhStatus('⚠️ O nome não foi alterado'); return; }
+    const novoSafe = novoNome.replace(/[^\w\s\-]/g, '').replace(/\s+/g, '_');
+    if (!novoSafe) { setGhStatus('❌ O nome informado ficou vazio após sanitização (remova caracteres especiais)'); return; }
+    if (novoSafe === nomeAtualSafe) { setGhStatus('⚠️ O nome normalizado é igual ao atual'); return; }
+    const colisao = ghCasos.find(c => c.name === `${novoSafe}.json` && c.sha !== file.sha);
+    if (colisao) { setGhStatus(`❌ Já existe um caso salvo com o nome "${novoNome}"`); return; }
+    if (!window.confirm(`Renomear "${nomeAtualExibido}" → "${novoNome}"?\n\nO arquivo antigo será removido do repositório. O histórico de versões do arquivo antigo permanece acessível via GitHub, mas não será mais listado aqui.`)) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    setGhLoading(true); setGhStatus('✏️ Renomeando...');
+    const novoPath = `casos/${novoSafe}.json`;
+    try {
+      const resGet = await fetch(file.download_url + '?t=' + Date.now());
+      if (!resGet.ok) throw new Error('Falha ao baixar o caso atual');
+      const data = await resGet.json();
+      if (data.metadados) data.metadados.nome = novoNome;
+      else data.metadados = { nome: novoNome, salvoEm: new Date().toISOString(), versao: '1.0' };
+      const bodyCreate = { message: `Renomeado: "${nomeAtualExibido}" → "${novoNome}"`, content: toBase64(JSON.stringify(data, null, 2)) };
+      const createRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${novoPath}`, { method: 'PUT', headers: ghHdrs(), body: JSON.stringify(bodyCreate) });
+      if (!createRes.ok) { const e = await createRes.json(); throw new Error(`Falha ao criar novo arquivo: ${e.message}`); }
+      const bodyDel = { message: `Remove arquivo antigo após renomear para "${novoNome}"`, sha: file.sha };
+      const delRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${file.path}`, { method: 'DELETE', headers: ghHdrs(), body: JSON.stringify(bodyDel) });
+      if (!delRes.ok) { const e = await delRes.json(); setGhStatus(`⚠️ Novo caso criado, mas falhou ao excluir o antigo: ${e.message}. Remova manualmente pelo GitHub se quiser.`); ghListCasos(); setGhLoading(false); return; }
+      if (ghCasoNome === nomeAtualExibido || ghCasoNome === nomeAtualSafe.replace(/_/g,' ')) setGhCasoNome(novoNome);
+      setGhStatus(`✅ Caso renomeado para "${novoNome}"`);
+      ghListCasos();
+    } catch(e) { setGhStatus(`❌ ${e.message}`); }
+    setGhLoading(false);
+  };
+
   const ghVerHistorico = async (filePath) => {
     setGhLoading(true); setGhStatus('🕐 Carregando histórico...');
     try {
@@ -1863,14 +1899,15 @@ function CalculadoraSaude() {
               <div className="section">
                 <h3>📂 Casos Salvos ({ghCasos.length})</h3>
                 <table className="table">
-                  <thead><tr><th>Nome do Caso</th><th style={{width:'200px',textAlign:'center'}}>Ações</th></tr></thead>
+                  <thead><tr><th>Nome do Caso</th><th style={{width:'320px',textAlign:'center'}}>Ações</th></tr></thead>
                   <tbody>
                     {ghCasos.map(f => (
                       <tr key={f.sha}>
                         <td style={{fontWeight:'500'}}>📄 {f.name.replace('.json','').replace(/_/g,' ')}</td>
-                        <td style={{textAlign:'center'}}>
-                          <button onClick={() => ghCarregar(f)} style={{background:'#1B3A5C',color:'white',border:'none',padding:'6px 14px',borderRadius:'5px',cursor:'pointer',marginRight:'8px',fontSize:'13px'}}>📂 Carregar</button>
-                          <button onClick={() => ghVerHistorico(f.path)} style={{background:'#6c757d',color:'white',border:'none',padding:'6px 14px',borderRadius:'5px',cursor:'pointer',fontSize:'13px'}}>🕐 Versões</button>
+                        <td style={{textAlign:'center',whiteSpace:'nowrap'}}>
+                          <button onClick={() => ghCarregar(f)} style={{background:'#1B3A5C',color:'white',border:'none',padding:'6px 12px',borderRadius:'5px',cursor:'pointer',marginRight:'6px',fontSize:'13px'}}>📂 Carregar</button>
+                          <button onClick={() => ghRenomear(f)} disabled={ghLoading} style={{background:'#C8A96E',color:'#1B3A5C',border:'none',padding:'6px 12px',borderRadius:'5px',cursor:'pointer',marginRight:'6px',fontSize:'13px',fontWeight:'600'}}>✏️ Renomear</button>
+                          <button onClick={() => ghVerHistorico(f.path)} style={{background:'#6c757d',color:'white',border:'none',padding:'6px 12px',borderRadius:'5px',cursor:'pointer',fontSize:'13px'}}>🕐 Versões</button>
                         </td>
                       </tr>
                     ))}
