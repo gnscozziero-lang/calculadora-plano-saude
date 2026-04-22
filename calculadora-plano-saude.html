@@ -183,26 +183,6 @@
     .capa-caso .capa-item .valor { font-size: 14px; color: white; font-weight: 600; word-break: break-word; }
     .capa-caso .capa-item .valor.destaque { font-size: 16px; color: #C8A96E; }
 
-    .chart-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-      gap: 30px;
-      margin-bottom: 30px;
-    }
-
-    .chart-container {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
-
-    .chart-container h3 {
-      margin-bottom: 15px;
-      color: #1B3A5C;
-      font-size: 16px;
-    }
-
     .section {
       background: white;
       padding: 20px;
@@ -402,10 +382,6 @@
     }
 
     @media (max-width: 1024px) {
-      .chart-grid {
-        grid-template-columns: 1fr;
-      }
-
       .kpi-grid {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       }
@@ -420,14 +396,24 @@
       header, .tabs, .sub-tabs, .no-print { display: none !important; }
       button { display: none !important; }
       .tab-content { display: block !important; animation: none !important; }
-      .kpi-card, .chart-container, .section {
+      /* .section NÃO tem page-break-inside para permitir fluxo natural (evita quebra prematura entre Parâmetros e Demonstrativo) */
+      .section {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        margin-bottom: 10px;
+      }
+      /* KPI cards e grid permanecem inquebráveis */
+      .kpi-card {
         box-shadow: none !important;
         border: 1px solid #ccc !important;
         break-inside: avoid;
         page-break-inside: avoid;
         margin-bottom: 10px;
       }
-      .chart-grid, .kpi-grid { page-break-inside: avoid; }
+      .kpi-grid { page-break-inside: avoid; break-inside: avoid; }
+      /* Linhas da tabela do demonstrativo não devem quebrar no meio */
+      table.table tr { page-break-inside: avoid; break-inside: avoid; }
+      table.table thead { display: table-header-group; }
       .print-only { display: block !important; }
       .print-header {
         text-align: center;
@@ -444,9 +430,24 @@
       .kpi-value { font-size: 18px !important; }
       .kpi-label { font-size: 11px; }
       .kpi-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 6px; }
-      .chart-grid { grid-template-columns: 1fr 1fr !important; gap: 12px; }
       .page-break { page-break-after: always; }
-      @page { margin: 1.5cm; size: A4; }
+      /* Numeração de páginas no rodapé (Chromium/Edge/Firefox) */
+      @page {
+        margin: 1.5cm 1.5cm 2cm 1.5cm;
+        size: A4;
+        @bottom-right {
+          content: "Página " counter(page) " de " counter(pages);
+          font-family: 'Segoe UI', Arial, sans-serif;
+          font-size: 10px;
+          color: #555;
+        }
+        @bottom-left {
+          content: "Scozziero Advocacia · Revisão de Mensalidade de Plano de Saúde";
+          font-family: 'Segoe UI', Arial, sans-serif;
+          font-size: 10px;
+          color: #555;
+        }
+      }
       /* Capa institucional mantém impacto visual mesmo em tinta preta */
       .capa-caso {
         background: #1B3A5C !important;
@@ -642,12 +643,6 @@ function CalculadoraSaude() {
     } catch(e) { setGhStatus(`❌ ${e.message}`); }
     setGhLoading(false);
   };
-
-  const chartEvolucao = React.useRef(null);
-  const chartReajuste = React.useRef(null);
-  const chartComposicao = React.useRef(null);
-  const chartRanking = React.useRef(null);
-  const chartsInstances = React.useRef({});
 
   // ── Auto-save GitHub ──────────────────────────────────────────────────────
   const [autoSaveStatus, setAutoSaveStatus] = React.useState('');
@@ -855,82 +850,6 @@ function CalculadoraSaude() {
     return { totalRestituir: parseFloat(totalRestituir.toFixed(2)), excesso: parseFloat(excesso.toFixed(2)), correcao: parseFloat(correcao.toFixed(2)), juros: parseFloat(juros.toFixed(2)), prescrito: parseFloat(prescrito.toFixed(2)) };
   }, [resultados]);
 
-  React.useEffect(() => {
-    if (activeTab !== 'dashboard') return;
-    // Espera dois frames para garantir que o layout do wrapper já definiu a altura
-    const id1 = requestAnimationFrame(() => {
-      const id2 = requestAnimationFrame(() => renderCharts());
-      chartsInstances.current.__raf2 = id2;
-    });
-    chartsInstances.current.__raf1 = id1;
-    return () => {
-      if (chartsInstances.current.__raf1) cancelAnimationFrame(chartsInstances.current.__raf1);
-      if (chartsInstances.current.__raf2) cancelAnimationFrame(chartsInstances.current.__raf2);
-    };
-  }, [activeTab, resultados]);
-
-  const renderCharts = () => {
-    Object.keys(chartsInstances.current).forEach(key => {
-      const inst = chartsInstances.current[key];
-      if (inst && typeof inst.destroy === 'function') inst.destroy();
-    });
-    chartsInstances.current = {};
-
-    // Agrega totais POR SEGURADO (melhor para juntada processual do que série temporal)
-    const porBen = {};
-    resultados.todosPorSeguro.forEach(row => {
-      if (!porBen[row.beneficiario]) porBen[row.beneficiario] = { valorPago: 0, valorDevido: 0, diferenca: 0, totalAtualizado: 0 };
-      porBen[row.beneficiario].valorPago += row.valorPago;
-      porBen[row.beneficiario].valorDevido += row.valorDevido;
-      if (!row.prescrito) {
-        porBen[row.beneficiario].diferenca += row.diferenca;
-        porBen[row.beneficiario].totalAtualizado += row.totalAtualizado;
-      }
-    });
-    const nomes = Object.keys(porBen).sort();
-
-    if (chartEvolucao.current && nomes.length > 0) {
-      const ctxEvol = chartEvolucao.current.getContext('2d');
-      chartsInstances.current.evolucao = new Chart(ctxEvol, {
-        type: 'bar',
-        data: {
-          labels: nomes,
-          datasets: [
-            { label: 'Total Pago',             data: nomes.map(n => porBen[n].valorPago),        backgroundColor: '#1B3A5C', borderRadius: 4 },
-            { label: 'Total Devido (correto)', data: nomes.map(n => porBen[n].valorDevido),      backgroundColor: '#C8A96E', borderRadius: 4 },
-            { label: 'Excesso (a restituir)',  data: nomes.map(n => porBen[n].diferenca),        backgroundColor: '#F39C12', borderRadius: 4 },
-            { label: 'Total Atualizado',       data: nomes.map(n => porBen[n].totalAtualizado),  backgroundColor: '#9B59B6', borderRadius: 4 }
-          ]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top' },
-            tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}` } }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { callback: (v) => fmtBRL(v) } }
-          }
-        }
-      });
-    }
-
-    if (chartComposicao.current) {
-      const ctxComp = chartComposicao.current.getContext('2d');
-      chartsInstances.current.composicao = new Chart(ctxComp, {
-        type: 'doughnut',
-        data: {
-          labels: ['Excesso Bruto', 'Correção', 'Juros', 'Prescrito'],
-          datasets: [{
-            data: [metricas.excesso, metricas.correcao, metricas.juros, metricas.prescrito],
-            backgroundColor: ['#F39C12', '#3498DB', '#9B59B6', '#95A5A6']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-  };
-
   const handleCsvImport = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -1136,21 +1055,6 @@ function CalculadoraSaude() {
                 <div className="kpi-value">{fmtBRL(metricas.prescrito)}</div>
               </div>
             </div>
-            <div className="chart-grid">
-              <div className="chart-container">
-                <h3>Totais por Segurado</h3>
-                <div style={{ position: 'relative', height: '320px', width: '100%' }}>
-                  <canvas ref={chartEvolucao}></canvas>
-                </div>
-              </div>
-              <div className="chart-container">
-                <h3>Composição do Crédito</h3>
-                <div style={{ position: 'relative', height: '320px', width: '100%' }}>
-                  <canvas ref={chartComposicao}></canvas>
-                </div>
-              </div>
-            </div>
-
             {/* Tabela consolidada — essencial para juntada processual */}
             <div className="section">
               <h3 style={{marginBottom:'12px'}}>Consolidado por Segurado</h3>
