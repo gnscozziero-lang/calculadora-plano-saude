@@ -306,6 +306,10 @@
       background: #E8EAED;
     }
 
+    /* Tabela com agrupamento por ano — desliga zebra striping para que o backgroundColor inline (definido por ano) seja a cor dominante. */
+    .table-ano tbody tr:nth-child(even) { background: inherit; }
+    .table-ano tbody tr:hover { filter: brightness(0.97); }
+
     .badge {
       display: inline-block;
       padding: 4px 12px;
@@ -1802,8 +1806,20 @@ function CalculadoraSaude() {
                     <h3>Demonstrativo Mês a Mês</h3>
                     {rowsBen.length === 0 ? (
                       <p style={{color:'#999',padding:'10px'}}>Não há reajustes lançados para este beneficiário.</p>
-                    ) : (
-                      <table className="table">
+                    ) : (() => {
+                      // Agrupamento por ano — cor de fundo alterna a cada troca de ano (não por linha)
+                      const yearOrder = [];
+                      const yearIdx = {};
+                      rowsBen.forEach(r => {
+                        const y = (r.mesAno || '').slice(0,4);
+                        if (!yearOrder.includes(y)) yearOrder.push(y);
+                      });
+                      yearOrder.forEach((y, idx) => { yearIdx[y] = idx; });
+                      const bgPar = '#FFFFFF';
+                      const bgImpar = '#F1F5F9';
+                      const bgPrescrito = '#EDE5ED';
+                      return (
+                      <table className="table table-ano">
                         <thead>
                           <tr>
                             <th>Mês</th>
@@ -1817,19 +1833,25 @@ function CalculadoraSaude() {
                           </tr>
                         </thead>
                         <tbody>
-                          {rowsBen.map((r, i) => (
-                            <tr key={i} style={{backgroundColor: r.prescrito ? '#E8DAEF' : (r.diferenca > 0 ? '#FADBD8' : 'inherit')}}>
-                              <td>{fmtMesAno(r.mesAno)}</td>
-                              <td className="text-right">{fmtBRL(r.valorPago)}</td>
-                              <td className="text-right">{fmtBRL(r.valorDevido)}</td>
-                              <td className="text-right">{fmtBRL(r.diferenca)}</td>
-                              <td className="text-center">{r.prescrito ? 'Sim' : 'Não'}</td>
-                              <td className="text-right">{r.fatorCorrecao.toFixed(6)}</td>
-                              <td className="text-right">{(r.jurosPercent * 100).toFixed(2)}%</td>
-                              <td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td>
-                            </tr>
-                          ))}
-                          <tr style={{background:'#f0f4f8',fontWeight:'700'}}>
+                          {rowsBen.map((r, i) => {
+                            const y = (r.mesAno || '').slice(0,4);
+                            const idx = yearIdx[y] ?? 0;
+                            const bgAno = idx % 2 === 0 ? bgPar : bgImpar;
+                            const bg = r.prescrito ? bgPrescrito : bgAno;
+                            return (
+                              <tr key={i} style={{backgroundColor: bg}}>
+                                <td>{fmtMesAno(r.mesAno)}</td>
+                                <td className="text-right">{fmtBRL(r.valorPago)}</td>
+                                <td className="text-right">{fmtBRL(r.valorDevido)}</td>
+                                <td className="text-right">{fmtBRL(r.diferenca)}</td>
+                                <td className="text-center">{r.prescrito ? 'Sim' : 'Não'}</td>
+                                <td className="text-right">{r.fatorCorrecao.toFixed(6)}</td>
+                                <td className="text-right">{(r.jurosPercent * 100).toFixed(2)}%</td>
+                                <td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td>
+                              </tr>
+                            );
+                          })}
+                          <tr style={{background:'#E2E8F0',fontWeight:'700'}}>
                             <td>TOTAL</td>
                             <td className="text-right">{fmtBRL(tot.pago)}</td>
                             <td className="text-right">{fmtBRL(tot.devido)}</td>
@@ -1841,7 +1863,8 @@ function CalculadoraSaude() {
                           </tr>
                         </tbody>
                       </table>
-                    )}
+                      );
+                    })()}
                   </div>
 
                   <div className="section">
