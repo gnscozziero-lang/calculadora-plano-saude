@@ -430,9 +430,10 @@ function CalculadoraSaude() {
   const [formReajuste, setFormReajuste] = React.useState({ beneficiarioId: '', mesAno: '', valorPago: '', reajusteAplicado: '', reajusteNegativo: '', mudancaIdade: '', observacao: '' });
   const [configIndexador, setConfigIndexador] = React.useState(() => ls('configIndexador', 'ca'));
   const [configJuros, setConfigJuros] = React.useState(() => ls('configJuros', 'hybrid'));
-  const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', '2026-02'));
+  const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'baseplanilha'));
   const [configDataFim, setConfigDataFim] = React.useState(() => ls('configDataFim', '2026-02'));
   const [configDataInicio, setConfigDataInicio] = React.useState(() => ls('configDataInicio', '2000-01-01'));
+  const [configMesReajuste, setConfigMesReajuste] = React.useState(() => ls('configMesReajuste', 12));
   const [configCnpjFilter, setConfigCnpjFilter] = React.useState('');
   const [resultadosTab, setResultadosTab] = React.useState('segurado');
 
@@ -446,6 +447,7 @@ function CalculadoraSaude() {
   React.useEffect(() => { try { localStorage.setItem('calc_configRefMes', JSON.stringify(configRefMes)); } catch(e) {} }, [configRefMes]);
   React.useEffect(() => { try { localStorage.setItem('calc_configDataFim', JSON.stringify(configDataFim)); } catch(e) {} }, [configDataFim]);
   React.useEffect(() => { try { localStorage.setItem('calc_configDataInicio', JSON.stringify(configDataInicio)); } catch(e) {} }, [configDataInicio]);
+  React.useEffect(() => { try { localStorage.setItem('calc_configMesReajuste', JSON.stringify(configMesReajuste)); } catch(e) {} }, [configMesReajuste]);
 
   // GitHub integration state
   // Auto-avança mês: quando troca o beneficiário, pré-preenche o mês seguinte ao último lançado
@@ -504,7 +506,7 @@ function CalculadoraSaude() {
     const payload = {
       metadados: { nome: ghCasoNome.trim(), salvoEm: new Date().toISOString(), versao: '1.0' },
       cnpjs, beneficiarios, reajustes,
-      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio }
+      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, mesReajuste: configMesReajuste }
     };
     try {
       const checkRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`, { headers: ghHdrs() });
@@ -525,7 +527,7 @@ function CalculadoraSaude() {
       if (res.ok) {
         const data = await res.json();
         setCnpjs(data.cnpjs || []); setBeneficiarios(data.beneficiarios || []); setReajustes(data.reajustes || []);
-        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'2026-02'); setConfigDataFim(data.config.dataFim||data.config.refMes||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); }
+        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigMesReajuste(data.config.mesReajuste || 12); }
         setGhCasoNome(data.metadados?.nome || file.name.replace('.json',''));
         setGhStatus(`✅ Caso carregado: "${data.metadados?.nome || file.name}"`);
         setActiveTab('dashboard');
@@ -580,12 +582,12 @@ function CalculadoraSaude() {
       const payload = {
         metadados: { nome: ghCasoNome.trim(), salvoEm: new Date().toISOString(), versao: '1.0' },
         cnpjs, beneficiarios, reajustes,
-        config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio }
+        config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, mesReajuste: configMesReajuste }
       };
       ghAutoSave(ghToken, ghCasoNome, payload);
     }, 5000);
     return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
-  }, [cnpjs, beneficiarios, reajustes, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio]);
+  }, [cnpjs, beneficiarios, reajustes, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configMesReajuste]);
 
   const addCnpj = () => {
     if (!formCnpj.cnpj.trim()) return;
@@ -642,7 +644,11 @@ function CalculadoraSaude() {
           if (idx === 0) {
             valorDevido = valorPago;
           } else {
-            const ansRate = INDICES[mesAno]?.an || 0;  // already decimal e.g. 0.0814
+            // Reajuste devido (D): ANS do ano SÓ no mês de aniversário do contrato (configMesReajuste).
+            // Nos demais meses, D=0. Replica comportamento da planilha do escritório.
+            const mesNum = parseInt(mesAno.slice(5), 10);
+            const isMesAniversario = mesNum === parseInt(configMesReajuste, 10);
+            const ansRate = isMesAniversario ? (INDICES[mesAno]?.an || 0) : 0;
             const hasReajuste = rej.reajusteAplicado !== '' && rej.reajusteAplicado != null && !isNaN(reajusteAplicado);
             const applied = hasReajuste ? reajusteAplicado / 100 : null;
 
@@ -668,22 +674,27 @@ function CalculadoraSaude() {
           const years = Math.floor(daysDiff) / 365.25;
           const prescrito = years >= 3;
 
+          // Modo "padrão planilha": quando configRefMes === 'baseplanilha' ou vazio,
+          // usa o Fator IPCA/INPC/FIPE/SELIC acumulado DIRETO (sem dividir por refMes).
+          // Equivale a uma data-base virtual pós-tabela com acum=1.0. A planilha original
+          // do escritório trabalha exatamente assim e foi aceita em juízo.
+          const isBasePlanilha = !configRefMes || configRefMes === 'baseplanilha' || !INDICES[configRefMes];
+
           let fatorCorrecao = 1.0;
           if (configIndexador !== 'sem') {
-            // ca/ia/fa are accumulated factors FROM that month TO end of table.
-            // Factor from mesAno to refMes = INDICES[mesAno][key] / INDICES[refMes][key]
             const correcaoMes = INDICES[mesAno]?.[configIndexador];
-            const correcaoRef = INDICES[configRefMes]?.[configIndexador];
-            if (correcaoRef && correcaoMes) {
-              fatorCorrecao = correcaoMes / correcaoRef;
+            if (isBasePlanilha) {
+              if (correcaoMes) fatorCorrecao = correcaoMes;
+            } else {
+              const correcaoRef = INDICES[configRefMes]?.[configIndexador];
+              if (correcaoRef && correcaoMes) fatorCorrecao = correcaoMes / correcaoRef;
             }
           }
 
           let jurosPercent = 0;
           if (configJuros !== 'sem') {
-            const selicRef = INDICES[configRefMes]?.sa || 1;
             const selicMes = INDICES[mesAno]?.sa || 1;
-            // sa é fator forward-looking (mês → fim da tabela). SELIC de mesAno a refMes = sa[mesAno] / sa[refMes] - 1.
+            const selicRef = isBasePlanilha ? 1 : (INDICES[configRefMes]?.sa || 1);
             const selicAccum = selicMes / selicRef - 1;
 
             if (configJuros === 'selic') {
@@ -728,7 +739,7 @@ function CalculadoraSaude() {
 
       return { todosPorSeguro, todosPorCNPJ };
     };
-  }, [beneficiarios, reajustes, cnpjs, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio]);
+  }, [beneficiarios, reajustes, cnpjs, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configMesReajuste]);
 
   const resultados = calcularResultados();
 
@@ -863,7 +874,7 @@ function CalculadoraSaude() {
           )}
           <button onClick={() => {
             if (!window.confirm('Iniciar novo caso? Todos os dados atuais serão apagados.')) return;
-            ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
+            ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configMesReajuste','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
             setCnpjs([]); setBeneficiarios([]); setReajustes([]);
             setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('2026-02'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01');
             setGhCasoNome(''); setActiveTab('cadastro');
@@ -885,9 +896,10 @@ function CalculadoraSaude() {
                   if (data.config) {
                     setConfigIndexador(data.config.indexador || 'ca');
                     setConfigJuros(data.config.juros || 'hybrid');
-                    setConfigRefMes(data.config.refMes || '2026-02');
-                    setConfigDataFim(data.config.dataFim || data.config.refMes || '2026-02');
+                    setConfigRefMes(data.config.refMes || 'baseplanilha');
+                    setConfigDataFim(data.config.dataFim || '2026-02');
                     setConfigDataInicio(data.config.dataInicio || '2000-01-01');
+                    setConfigMesReajuste(data.config.mesReajuste || 12);
                   }
                   setGhCasoNome(data.metadados?.nome || f.name.replace('.json',''));
                   setActiveTab('dashboard');
@@ -1141,11 +1153,25 @@ function CalculadoraSaude() {
                 </div>
                 <div className="form-group">
                   <label>Data Referência (correção)</label>
-                  <input type="month" value={configRefMes} onChange={(e) => setConfigRefMes(e.target.value)} />
+                  <select value={configRefMes === 'baseplanilha' ? 'baseplanilha' : 'custom'} onChange={(e) => { if (e.target.value === 'baseplanilha') setConfigRefMes('baseplanilha'); else setConfigRefMes('2026-02'); }}>
+                    <option value="baseplanilha">Padrão planilha (fator direto)</option>
+                    <option value="custom">Data específica (dividir fator)</option>
+                  </select>
+                  {configRefMes !== 'baseplanilha' && (
+                    <input type="month" value={configRefMes} onChange={(e) => setConfigRefMes(e.target.value)} style={{marginTop:'6px'}} />
+                  )}
+                  <div className="info-text">{configRefMes === 'baseplanilha' ? 'Usa Fator IPCA/SELIC acumulado direto (compatível com planilha do escritório).' : 'Divide fator do mês pelo fator do mês de referência.'}</div>
                 </div>
                 <div className="form-group">
                   <label>Data Início Cobrança</label>
                   <input type="date" value={configDataInicio} onChange={(e) => setConfigDataInicio(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label>Mês de Reajuste das Parcelas</label>
+                  <select value={configMesReajuste} onChange={(e) => setConfigMesReajuste(parseInt(e.target.value,10))}>
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(m => <option key={m} value={m}>{String(m).padStart(2,'0')} — {['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][m-1]}</option>)}
+                  </select>
+                  <div className="info-text">Mês em que o índice ANS é aplicado como limitador (aniversário do contrato). Nos demais meses, o limite não se aplica.</div>
                 </div>
                 <div className="form-group">
                   <label>CNPJ</label>
