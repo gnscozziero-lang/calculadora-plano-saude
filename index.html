@@ -694,6 +694,25 @@ function CalculadoraSaude() {
     }
   }, [formReajuste.beneficiarioId]);
 
+  // ── Índices editáveis (sobrepõem os hardcoded INDICES e ANS_ANO) ─────────
+  const [indicesCustomMensais, setIndicesCustomMensais] = React.useState(() => ls('indicesCustomMensais', {}));
+  const [indicesCustomAns, setIndicesCustomAns] = React.useState(() => ls('indicesCustomAns', {}));
+  React.useEffect(() => { try { localStorage.setItem('calc_indicesCustomMensais', JSON.stringify(indicesCustomMensais)); } catch(e) {} }, [indicesCustomMensais]);
+  React.useEffect(() => { try { localStorage.setItem('calc_indicesCustomAns', JSON.stringify(indicesCustomAns)); } catch(e) {} }, [indicesCustomAns]);
+  const INDICES_MERGED = React.useMemo(() => ({ ...INDICES, ...indicesCustomMensais }), [indicesCustomMensais]);
+  const ANS_ANO_MERGED = React.useMemo(() => ({ ...ANS_ANO, ...indicesCustomAns }), [indicesCustomAns]);
+
+  // Form state para edição de índices
+  const [formAnsAno, setFormAnsAno] = React.useState('');
+  const [formAnsPct, setFormAnsPct] = React.useState('');
+  const [formMensalMesAno, setFormMensalMesAno] = React.useState('');
+  const [formMensalIa, setFormMensalIa] = React.useState('');
+  const [formMensalAn, setFormMensalAn] = React.useState('');
+  const [formMensalCa, setFormMensalCa] = React.useState('');
+  const [formMensalFa, setFormMensalFa] = React.useState('');
+  const [formMensalSa, setFormMensalSa] = React.useState('');
+  const [filtroAnoMensal, setFiltroAnoMensal] = React.useState('');
+
   const GH_OWNER = 'gnscozziero-lang';
   const GH_REPO = 'calculadora-plano-saude';
   const [ghToken, setGhToken] = React.useState(() => ls('ghToken', ''));
@@ -823,6 +842,169 @@ function CalculadoraSaude() {
     } catch(e) { setGhStatus(`❌ ${e.message}`); }
     setGhLoading(false);
   };
+
+  // ── CRUD de Índices ────────────────────────────────────────────────────────
+  // ANS anual: a alteração propaga automaticamente para os 12 meses correspondentes
+  // (mês 05 do ano até mês 04 do ano seguinte, conforme padrão do mercado).
+  const propagarAnsParaMensal = React.useCallback((ano, valor, baseMensais) => {
+    const novoMensais = { ...baseMensais };
+    const mesesAbrangidos = [];
+    for (let m = 5; m <= 12; m++) mesesAbrangidos.push(`${ano}-${String(m).padStart(2,'0')}`);
+    for (let m = 1; m <= 4; m++) mesesAbrangidos.push(`${parseInt(ano,10)+1}-${String(m).padStart(2,'0')}`);
+    mesesAbrangidos.forEach(mesAno => {
+      const base = INDICES[mesAno] || novoMensais[mesAno] || { ia: 1, an: 0, ca: 1, fa: 1, sa: 1 };
+      novoMensais[mesAno] = { ...base, ...(novoMensais[mesAno] || {}), an: valor };
+    });
+    return novoMensais;
+  }, []);
+
+  const addOrUpdateAnsAnual = (ano, percentualStr) => {
+    if (!/^\d{4}$/.test(String(ano))) { alert('Ano inválido. Use 4 dígitos.'); return false; }
+    const pct = parseFloat(String(percentualStr).replace(',', '.'));
+    if (isNaN(pct)) { alert('Percentual inválido.'); return false; }
+    const valor = pct / 100;
+    setIndicesCustomAns(prev => ({ ...prev, [ano]: valor }));
+    setIndicesCustomMensais(prev => propagarAnsParaMensal(ano, valor, prev));
+    return true;
+  };
+
+  const deleteAnsAnual = (ano) => {
+    const ehCustom = Object.prototype.hasOwnProperty.call(indicesCustomAns, ano);
+    const ehPadrao = Object.prototype.hasOwnProperty.call(ANS_ANO, ano);
+    if (!ehCustom && !ehPadrao) return;
+    const msg = ehPadrao && !ehCustom
+      ? `Excluir ANS ${ano} (valor padrão da tabela)? Os 12 meses correspondentes ficarão com ANS = 0.`
+      : `Restaurar ANS ${ano} ao valor padrão?`;
+    if (!window.confirm(msg)) return;
+    if (ehCustom) {
+      setIndicesCustomAns(prev => { const n = { ...prev }; delete n[ano]; return n; });
+      // Ao remover custom, re-propaga o padrão (se existir) para os 12 meses
+      const valorPadrao = ANS_ANO[ano] ?? 0;
+      setIndicesCustomMensais(prev => {
+        const limpo = { ...prev };
+        // Remove override monthly que veio da propagação do custom
+        const mesesAbrangidos = [];
+        for (let m = 5; m <= 12; m++) mesesAbrangidos.push(`${ano}-${String(m).padStart(2,'0')}`);
+        for (let m = 1; m <= 4; m++) mesesAbrangidos.push(`${parseInt(ano,10)+1}-${String(m).padStart(2,'0')}`);
+        mesesAbrangidos.forEach(mesAno => {
+          // Se o mensal custom SÓ tem override de 'an', remove inteiro (volta ao padrão)
+          // Se tem outros campos, mantém outros e restaura 'an' do padrão
+          if (limpo[mesAno]) {
+            const { an, ...resto } = limpo[mesAno];
+            const basePadrao = INDICES[mesAno];
+            const temOutrasMudancas = basePadrao && Object.keys(resto).some(k => resto[k] !== basePadrao[k]);
+            if (!temOutrasMudancas) { delete limpo[mesAno]; }
+            else { limpo[mesAno] = resto; }
+          }
+        });
+        return limpo;
+      });
+    } else {
+      // Excluir valor padrão: grava um override zerado no custom
+      setIndicesCustomAns(prev => ({ ...prev, [ano]: 0 }));
+      setIndicesCustomMensais(prev => propagarAnsParaMensal(ano, 0, prev));
+    }
+  };
+
+  const addOrUpdateIndiceMensal = (mesAno, campos) => {
+    if (!/^\d{4}-\d{2}$/.test(mesAno)) { alert('Mês-Ano inválido. Use formato AAAA-MM.'); return false; }
+    const mm = parseInt(mesAno.slice(5), 10);
+    if (mm < 1 || mm > 12) { alert('Mês inválido.'); return false; }
+    const baseExistente = INDICES[mesAno] || indicesCustomMensais[mesAno] || { ia: 1, an: 0, ca: 1, fa: 1, sa: 1 };
+    const novo = { ...baseExistente };
+    ['ia','an','ca','fa','sa'].forEach(k => {
+      if (campos[k] !== undefined && campos[k] !== '' && campos[k] !== null) {
+        const v = parseFloat(String(campos[k]).replace(',', '.'));
+        if (!isNaN(v)) novo[k] = v;
+      }
+    });
+    setIndicesCustomMensais(prev => ({ ...prev, [mesAno]: novo }));
+    return true;
+  };
+
+  const deleteIndiceMensal = (mesAno) => {
+    const ehCustom = Object.prototype.hasOwnProperty.call(indicesCustomMensais, mesAno);
+    if (!ehCustom) {
+      if (!window.confirm(`Excluir mês ${mesAno} da tabela padrão? Um override zerado será criado.`)) return;
+      setIndicesCustomMensais(prev => ({ ...prev, [mesAno]: { ia: 1, an: 0, ca: 1, fa: 1, sa: 1 } }));
+      return;
+    }
+    if (!window.confirm(`Restaurar ${mesAno} ao valor padrão?`)) return;
+    setIndicesCustomMensais(prev => { const n = { ...prev }; delete n[mesAno]; return n; });
+  };
+
+  // ── GitHub: persistência de índices globais ───────────────────────────────
+  const [ghIndicesStatus, setGhIndicesStatus] = React.useState('');
+  const [ghIndicesLoading, setGhIndicesLoading] = React.useState(false);
+  const indicesLoadedRef = React.useRef(false);
+  const indicesAutoSaveTimer = React.useRef(null);
+
+  const ghSaveIndices = React.useCallback(async (token, ansCustom, mensaisCustom) => {
+    if (!token) return;
+    const path = 'indices/indices.json';
+    const payload = {
+      metadados: { atualizadoEm: new Date().toISOString(), versao: '1.0' },
+      ansAnual: ansCustom,
+      mensais: mensaisCustom
+    };
+    setGhIndicesStatus('☁️ Salvando índices...');
+    try {
+      const hdrs = { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+      const checkRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`, { headers: hdrs });
+      const body = { message: `Índices atualizados — ${new Date().toLocaleString('pt-BR')}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))) };
+      if (checkRes.ok) { const ex = await checkRes.json(); body.sha = ex.sha; }
+      const saveRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`, { method: 'PUT', headers: hdrs, body: JSON.stringify(body) });
+      if (saveRes.ok) { setGhIndicesStatus('✅ Índices salvos ' + new Date().toLocaleTimeString('pt-BR')); }
+      else { const e = await saveRes.json(); setGhIndicesStatus('❌ ' + e.message); }
+    } catch(e) { setGhIndicesStatus('❌ ' + e.message); }
+  }, []);
+
+  const ghLoadIndices = async () => {
+    if (!ghToken) { setGhIndicesStatus('❌ Informe o token GitHub primeiro'); return; }
+    setGhIndicesLoading(true); setGhIndicesStatus('🔍 Carregando índices...');
+    try {
+      const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/indices/indices.json`, { headers: ghHdrs() });
+      if (res.status === 404) { setGhIndicesStatus('📂 Nenhum índice customizado salvo ainda'); }
+      else if (res.ok) {
+        const file = await res.json();
+        const content = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+        setIndicesCustomAns(content.ansAnual || {});
+        setIndicesCustomMensais(content.mensais || {});
+        setGhIndicesStatus(`✅ Índices carregados (${Object.keys(content.ansAnual || {}).length} ANS custom, ${Object.keys(content.mensais || {}).length} mensais custom)`);
+      } else { const e = await res.json(); setGhIndicesStatus(`❌ ${e.message}`); }
+    } catch(e) { setGhIndicesStatus(`❌ ${e.message}`); }
+    setGhIndicesLoading(false);
+  };
+
+  // Boot: carrega índices do GitHub ao iniciar (se token disponível)
+  React.useEffect(() => {
+    if (!ghToken || indicesLoadedRef.current) return;
+    indicesLoadedRef.current = true;
+    (async () => {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/indices/indices.json`, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
+        if (res.ok) {
+          const file = await res.json();
+          const content = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+          if (content.ansAnual) setIndicesCustomAns(content.ansAnual);
+          if (content.mensais) setIndicesCustomMensais(content.mensais);
+        }
+      } catch(e) { /* silencioso no boot */ }
+    })();
+  }, [ghToken]);
+
+  // Auto-save de índices (debounce 5s) — só dispara após primeira mudança do usuário
+  const indicesFirstRender = React.useRef(true);
+  React.useEffect(() => {
+    if (indicesFirstRender.current) { indicesFirstRender.current = false; return; }
+    if (!ghToken) return;
+    if (indicesAutoSaveTimer.current) clearTimeout(indicesAutoSaveTimer.current);
+    setGhIndicesStatus('⏳ Aguardando...');
+    indicesAutoSaveTimer.current = setTimeout(() => {
+      ghSaveIndices(ghToken, indicesCustomAns, indicesCustomMensais);
+    }, 5000);
+    return () => { if (indicesAutoSaveTimer.current) clearTimeout(indicesAutoSaveTimer.current); };
+  }, [indicesCustomAns, indicesCustomMensais, ghToken, ghSaveIndices]);
 
   // ── Auto-save GitHub ──────────────────────────────────────────────────────
   const [autoSaveStatus, setAutoSaveStatus] = React.useState('');
@@ -1023,7 +1205,7 @@ function CalculadoraSaude() {
             // Nos demais meses, D=0. Replica comportamento da planilha do escritório.
             const mesNum = parseInt(mesAno.slice(5), 10);
             const isMesAniversario = mesNum === parseInt(configMesReajuste, 10);
-            const ansRate = isMesAniversario ? (INDICES[mesAno]?.an || 0) : 0;
+            const ansRate = isMesAniversario ? (INDICES_MERGED[mesAno]?.an || 0) : 0;
             const hasReajuste = rej.reajusteAplicado !== '' && rej.reajusteAplicado != null && !isNaN(reajusteAplicado);
             const applied = hasReajuste ? reajusteAplicado / 100 : null;
 
@@ -1053,23 +1235,23 @@ function CalculadoraSaude() {
           // usa o Fator IPCA/INPC/FIPE/SELIC acumulado DIRETO (sem dividir por refMes).
           // Equivale a uma data-base virtual pós-tabela com acum=1.0. A planilha original
           // do escritório trabalha exatamente assim e foi aceita em juízo.
-          const isBasePlanilha = !configRefMes || configRefMes === 'baseplanilha' || !INDICES[configRefMes];
+          const isBasePlanilha = !configRefMes || configRefMes === 'baseplanilha' || !INDICES_MERGED[configRefMes];
 
           let fatorCorrecao = 1.0;
           if (configIndexador !== 'sem') {
-            const correcaoMes = INDICES[mesAno]?.[configIndexador];
+            const correcaoMes = INDICES_MERGED[mesAno]?.[configIndexador];
             if (isBasePlanilha) {
               if (correcaoMes) fatorCorrecao = correcaoMes;
             } else {
-              const correcaoRef = INDICES[configRefMes]?.[configIndexador];
+              const correcaoRef = INDICES_MERGED[configRefMes]?.[configIndexador];
               if (correcaoRef && correcaoMes) fatorCorrecao = correcaoMes / correcaoRef;
             }
           }
 
           let jurosPercent = 0;
           if (configJuros !== 'sem') {
-            const selicMes = INDICES[mesAno]?.sa || 1;
-            const selicRef = isBasePlanilha ? 1 : (INDICES[configRefMes]?.sa || 1);
+            const selicMes = INDICES_MERGED[mesAno]?.sa || 1;
+            const selicRef = isBasePlanilha ? 1 : (INDICES_MERGED[configRefMes]?.sa || 1);
             const selicAccum = selicMes / selicRef - 1;
 
             if (configJuros === 'selic') {
@@ -1520,7 +1702,7 @@ function CalculadoraSaude() {
                 <div className="form-group">
                   <label>Mês/Ano</label>
                   <input type="month" value={formReajuste.mesAno} onChange={(e) => setFormReajuste({...formReajuste, mesAno: e.target.value})} />
-                  {INDICES[formReajuste.mesAno] && <div className="info-text">ANS: {(INDICES[formReajuste.mesAno].an * 100).toFixed(2)}%</div>}
+                  {INDICES_MERGED[formReajuste.mesAno] && <div className="info-text">ANS: {(INDICES_MERGED[formReajuste.mesAno].an * 100).toFixed(2)}%</div>}
                 </div>
                 <div className="form-group">
                   <label>Valor Pago (R$)</label>
@@ -1985,30 +2167,168 @@ function CalculadoraSaude() {
 
         {activeTab === 'indices' && (
           <div className="tab-content active">
+            <div className="section" style={{background:'#FFF9E6', border:'1px solid #F2D86B', padding:'12px 16px', borderRadius:'6px', marginBottom:'16px'}}>
+              <strong>⚙️ Edição de índices — escopo global.</strong> Alterações aqui afetam TODOS os casos (atuais e futuros).
+              {ghToken && (
+                <span style={{marginLeft:'10px', color:'#64748B', fontSize:'0.9em'}}>
+                  {ghIndicesStatus || '☁️ Sincronizado com GitHub (auto-save 5s)'}
+                </span>
+              )}
+              {!ghToken && (
+                <span style={{marginLeft:'10px', color:'#8B4513', fontSize:'0.9em'}}>
+                  ⚠️ Sem token GitHub — alterações salvas apenas neste navegador.
+                </span>
+              )}
+              {ghToken && (
+                <button onClick={ghLoadIndices} disabled={ghIndicesLoading} style={{marginLeft:'12px', padding:'4px 10px', fontSize:'0.85em'}}>
+                  {ghIndicesLoading ? '🕐 Carregando...' : '🔄 Recarregar do GitHub'}
+                </button>
+              )}
+            </div>
+
+            {/* ── ANS anual ──────────────────────────────────────────────── */}
             <div className="section">
               <h2>Taxas ANS por Ano</h2>
+              <p style={{color:'#64748B', fontSize:'0.9em', marginTop:'-8px', marginBottom:'14px'}}>
+                A alteração de um ano propaga automaticamente para os 12 meses correspondentes (maio do ano até abril do ano seguinte).
+              </p>
+              <div style={{display:'flex', gap:'10px', alignItems:'flex-end', marginBottom:'16px', flexWrap:'wrap'}}>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>Ano</label>
+                  <input type="text" value={formAnsAno} onChange={e => setFormAnsAno(e.target.value)} placeholder="2026" maxLength={4} style={{width:'90px'}} />
+                </div>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>Percentual (%)</label>
+                  <input type="text" value={formAnsPct} onChange={e => setFormAnsPct(e.target.value)} placeholder="6,06" style={{width:'120px'}} />
+                </div>
+                <button onClick={() => {
+                  if (addOrUpdateAnsAnual(formAnsAno.trim(), formAnsPct)) { setFormAnsAno(''); setFormAnsPct(''); }
+                }} className="btn-primary">➕ Adicionar / Atualizar</button>
+              </div>
               <table className="table">
                 <thead>
-                  <tr><th>Ano</th><th>Taxa ANS (%)</th></tr>
+                  <tr><th>Ano</th><th className="text-right">Taxa ANS (%)</th><th>Fonte</th><th style={{width:'280px'}}>Ações</th></tr>
                 </thead>
                 <tbody>
-                  {Object.entries(ANS_ANO).map(([ano, taxa]) => (
-                    <tr key={ano}><td>{ano}</td><td className="text-right">{(taxa * 100).toFixed(2)}%</td></tr>
-                  ))}
+                  {(() => {
+                    const anos = Array.from(new Set([...Object.keys(ANS_ANO), ...Object.keys(indicesCustomAns)])).sort();
+                    return anos.map(ano => {
+                      const valor = ANS_ANO_MERGED[ano];
+                      const ehCustom = Object.prototype.hasOwnProperty.call(indicesCustomAns, ano);
+                      return (
+                        <tr key={ano} style={ehCustom ? {backgroundColor:'#FFF9E6'} : {}}>
+                          <td>{ano}</td>
+                          <td className="text-right">{(valor * 100).toFixed(2)}%</td>
+                          <td><span style={{fontSize:'0.85em', color: ehCustom ? '#C8A96E' : '#64748B'}}>{ehCustom ? '✏️ Custom' : 'Padrão'}</span></td>
+                          <td>
+                            <button onClick={() => { setFormAnsAno(ano); setFormAnsPct((valor * 100).toFixed(4)); }} style={{marginRight:'6px', fontSize:'0.85em'}}>✏️ Editar</button>
+                            <button onClick={() => deleteAnsAnual(ano)} style={{fontSize:'0.85em', color:'#B91C1C'}}>{ehCustom ? '↩️ Restaurar' : '🗑️ Excluir'}</button>
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
                 </tbody>
               </table>
             </div>
 
+            {/* ── Índices mensais ────────────────────────────────────────── */}
             <div className="section">
-              <h2>Índices Acumulados (Dezembro)</h2>
+              <h2>Índices Mensais (IPCA, INPC, FIPE, SELIC, ANS)</h2>
+              <p style={{color:'#64748B', fontSize:'0.9em', marginTop:'-8px', marginBottom:'14px'}}>
+                Valores acumulados mês a mês. Deixe um campo em branco para preservar o valor atual.
+              </p>
+              <div style={{display:'grid', gridTemplateColumns:'110px 100px 100px 100px 100px 100px auto', gap:'8px', alignItems:'flex-end', marginBottom:'16px'}}>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>Mês/Ano</label>
+                  <input type="text" value={formMensalMesAno} onChange={e => setFormMensalMesAno(e.target.value)} placeholder="2026-03" maxLength={7} />
+                </div>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>IPCA (ca)</label>
+                  <input type="text" value={formMensalCa} onChange={e => setFormMensalCa(e.target.value)} placeholder="1,0606" />
+                </div>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>INPC (ia)</label>
+                  <input type="text" value={formMensalIa} onChange={e => setFormMensalIa(e.target.value)} placeholder="1,0095" />
+                </div>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>FIPE (fa)</label>
+                  <input type="text" value={formMensalFa} onChange={e => setFormMensalFa(e.target.value)} placeholder="1,0011" />
+                </div>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>SELIC (sa)</label>
+                  <input type="text" value={formMensalSa} onChange={e => setFormMensalSa(e.target.value)} placeholder="1,0015" />
+                </div>
+                <div>
+                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>ANS (an)</label>
+                  <input type="text" value={formMensalAn} onChange={e => setFormMensalAn(e.target.value)} placeholder="0,0606" />
+                </div>
+                <button onClick={() => {
+                  const campos = { ca: formMensalCa, ia: formMensalIa, fa: formMensalFa, sa: formMensalSa, an: formMensalAn };
+                  if (addOrUpdateIndiceMensal(formMensalMesAno.trim(), campos)) {
+                    setFormMensalMesAno(''); setFormMensalCa(''); setFormMensalIa(''); setFormMensalFa(''); setFormMensalSa(''); setFormMensalAn('');
+                  }
+                }} className="btn-primary">➕ Adicionar / Atualizar</button>
+              </div>
+
+              <div style={{marginBottom:'12px'}}>
+                <label style={{fontSize:'0.9em', marginRight:'8px'}}>Filtrar por ano:</label>
+                <select value={filtroAnoMensal} onChange={e => setFiltroAnoMensal(e.target.value)} style={{padding:'4px 8px'}}>
+                  <option value="">Todos</option>
+                  {(() => {
+                    const anos = Array.from(new Set(Object.keys(INDICES_MERGED).map(k => k.slice(0,4)))).sort();
+                    return anos.map(a => <option key={a} value={a}>{a}</option>);
+                  })()}
+                </select>
+                <span style={{marginLeft:'16px', fontSize:'0.85em', color:'#64748B'}}>
+                  {Object.keys(indicesCustomMensais).length} mês(es) customizado(s)
+                </span>
+              </div>
+
               <table className="table">
                 <thead>
-                  <tr><th>Ano-Mês</th><th>IPCA</th><th>INPC</th><th>FIPE</th><th>SELIC</th></tr>
+                  <tr>
+                    <th>Mês/Ano</th>
+                    <th className="text-right">IPCA</th>
+                    <th className="text-right">INPC</th>
+                    <th className="text-right">FIPE</th>
+                    <th className="text-right">SELIC</th>
+                    <th className="text-right">ANS</th>
+                    <th>Fonte</th>
+                    <th style={{width:'230px'}}>Ações</th>
+                  </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(INDICES).filter(([key]) => key.endsWith('-12')).map(([mes, dados]) => (
-                    <tr key={mes}><td>{mes}</td><td className="text-right">{dados.ca.toFixed(6)}</td><td className="text-right">{dados.ia.toFixed(6)}</td><td className="text-right">{dados.fa.toFixed(6)}</td><td className="text-right">{dados.sa.toFixed(6)}</td></tr>
-                  ))}
+                  {(() => {
+                    const chaves = Object.keys(INDICES_MERGED).sort();
+                    const filtradas = filtroAnoMensal ? chaves.filter(k => k.startsWith(filtroAnoMensal)) : chaves;
+                    return filtradas.map(mesAno => {
+                      const dados = INDICES_MERGED[mesAno] || {};
+                      const ehCustom = Object.prototype.hasOwnProperty.call(indicesCustomMensais, mesAno);
+                      return (
+                        <tr key={mesAno} style={ehCustom ? {backgroundColor:'#FFF9E6'} : {}}>
+                          <td>{mesAno}</td>
+                          <td className="text-right">{(dados.ca ?? 0).toFixed(6)}</td>
+                          <td className="text-right">{(dados.ia ?? 0).toFixed(6)}</td>
+                          <td className="text-right">{(dados.fa ?? 0).toFixed(6)}</td>
+                          <td className="text-right">{(dados.sa ?? 0).toFixed(6)}</td>
+                          <td className="text-right">{((dados.an ?? 0) * 100).toFixed(4)}%</td>
+                          <td><span style={{fontSize:'0.85em', color: ehCustom ? '#C8A96E' : '#64748B'}}>{ehCustom ? '✏️ Custom' : 'Padrão'}</span></td>
+                          <td>
+                            <button onClick={() => {
+                              setFormMensalMesAno(mesAno);
+                              setFormMensalCa((dados.ca ?? 1).toString());
+                              setFormMensalIa((dados.ia ?? 1).toString());
+                              setFormMensalFa((dados.fa ?? 1).toString());
+                              setFormMensalSa((dados.sa ?? 1).toString());
+                              setFormMensalAn((dados.an ?? 0).toString());
+                            }} style={{marginRight:'6px', fontSize:'0.85em'}}>✏️ Editar</button>
+                            <button onClick={() => deleteIndiceMensal(mesAno)} style={{fontSize:'0.85em', color:'#B91C1C'}}>{ehCustom ? '↩️ Restaurar' : '🗑️ Excluir'}</button>
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
                 </tbody>
               </table>
             </div>
