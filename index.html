@@ -683,7 +683,8 @@ function CalculadoraSaude() {
           if (configJuros !== 'sem') {
             const selicRef = INDICES[configRefMes]?.sa || 1;
             const selicMes = INDICES[mesAno]?.sa || 1;
-            const selicAccum = selicRef / selicMes - 1;
+            // sa é fator forward-looking (mês → fim da tabela). SELIC de mesAno a refMes = sa[mesAno] / sa[refMes] - 1.
+            const selicAccum = selicMes / selicRef - 1;
 
             if (configJuros === 'selic') {
               jurosPercent = Math.max(0, selicAccum);
