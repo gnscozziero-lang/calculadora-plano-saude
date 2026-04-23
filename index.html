@@ -2691,4 +2691,38 @@ function CalculadoraSaude() {
                   </div>
                   {linkGenError && <div className="lm-error">{linkGenError}</div>}
                   <div className="lm-actions">
-                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Cancelar</but
+                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Cancelar</button>
+                    <button className="lm-btn primary" onClick={gerarLinkMagico}>Gerar Link</button>
+                  </div>
+                </>
+              )}
+              {linkGenResult && (
+                <>
+                  <div className="lm-ok">✅ Link gerado. Salve como favorito nos dispositivos onde quer acessar.</div>
+                  <div className="lm-link-output">{linkGenResult}</div>
+                  {linkCopyStatus && <div className={linkCopyStatus.startsWith('✅') ? 'lm-ok' : 'lm-note'}>{linkCopyStatus}</div>}
+                  <div className="lm-note" style={{marginTop:'12px'}}>
+                    <strong>Próximos passos</strong>:<br/>
+                    1. Envie o link para o seu celular/outro PC (email, WhatsApp para si mesmo, etc.)<br/>
+                    2. Abra o link no outro dispositivo → digite o PIN → pronto, a calculadora lista seus casos.<br/>
+                    3. Guarde o PIN num lugar separado do link.
+                  </div>
+                  <div className="lm-actions">
+                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Fechar</button>
+                    <button className="lm-btn primary" onClick={copiarLinkMagico}>📋 Copiar Link</button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<CalculadoraSaude />);
+  </script>
+</body>
+</html>
