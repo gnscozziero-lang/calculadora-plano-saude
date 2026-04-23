@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -634,6 +635,160 @@ async function decryptWithPin(encoded, pin) {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
+// ─── Importador XLSX (template padrão do escritório) ────────────────────────
+// Aceita apenas o layout Guilherme - ferramenta_inteligente_de_revisao_de_plano_de_saude_fn.xlsx
+// Abas lidas: Segurado1-7. Aba é considerada vazia se C2 (nome do beneficiário) estiver em branco.
+// CNPJ e Empresa não existem na planilha — ficam em branco, usuário completa depois.
+function _xlsxCell(ws, ref) { const c = ws && ws[ref]; return c ? c.v : null; }
+function _xlsxDateToYm(v) {
+  if (!v) return null;
+  if (v instanceof Date) { const y = v.getFullYear(); const m = String(v.getMonth()+1).padStart(2,'0'); return y + '-' + m; }
+  if (typeof v === 'string' && /^\d{4}-\d{2}/.test(v)) return v.slice(0,7);
+  return null;
+}
+function _xlsxDateToYmd(v) {
+  if (!v) return '';
+  if (v instanceof Date) { const y = v.getFullYear(); const m = String(v.getMonth()+1).padStart(2,'0'); const d = String(v.getDate()).padStart(2,'0'); return y + '-' + m + '-' + d; }
+  if (typeof v === 'string') return v;
+  return '';
+}
+function _xlsxMapIndexador(raw) {
+  if (!raw) return 'ca';
+  const s = String(raw).trim().toUpperCase();
+  if (s.indexOf('IPCA') === 0) return 'ca';
+  if (s.indexOf('INPC') === 0) return 'ia';
+  if (s.indexOf('FIPE') === 0) return 'fa';
+  return 'ca';
+}
+function _xlsxNum(v) {
+  if (v === null || v === undefined || v === '' || v === '-') return NaN;
+  if (typeof v === 'number') return v;
+  const n = parseFloat(String(v).replace(',', '.'));
+  return isNaN(n) ? NaN : n;
+}
+function parseXlsxToPayload(workbook, nomeCaso) {
+  const SHEETS = ['Segurado1','Segurado2','Segurado3','Segurado4','Segurado5','Segurado6','Segurado7'];
+  const beneficiarios = [];
+  const reajustes = [];
+  const reajustesSuspeitos = [];
+  let operadora = '', nrContrato = '';
+  let configIndexador = 'ca', configMesReajuste = 12;
+  let configDataInicio = '', configDataFim = '';
+  const baseId = Date.now();
+  const cnpjId = baseId;
+  let idx = 0;
+  const abasLidas = [], abasPuladas = [];
+
+  for (const sheetName of SHEETS) {
+    const ws = workbook.Sheets[sheetName];
+    if (!ws) { abasPuladas.push(sheetName + ' (inexistente)'); continue; }
+    const nome = _xlsxCell(ws, 'C2');
+    if (!nome || String(nome).trim() === '') { abasPuladas.push(sheetName + ' (vazia)'); continue; }
+
+    if (!operadora)  operadora  = String(_xlsxCell(ws, 'C3') || '').trim();
+    if (!nrContrato) nrContrato = String(_xlsxCell(ws, 'C4') || '').trim();
+    const mesReaj = _xlsxCell(ws, 'C6');
+    if (typeof mesReaj === 'number' && mesReaj >= 1 && mesReaj <= 12) configMesReajuste = mesReaj;
+    const idxRaw = _xlsxCell(ws, 'J6');
+    if (idxRaw) configIndexador = _xlsxMapIndexador(idxRaw);
+    const dIni = _xlsxDateToYmd(_xlsxCell(ws, 'J2') || _xlsxCell(ws, 'C5'));
+    const dFim = _xlsxDateToYm(_xlsxCell(ws, 'E5'));
+    if (dIni && !configDataInicio) configDataInicio = dIni;
+    if (dFim && !configDataFim)    configDataFim    = dFim;
+
+    idx++;
+    const benId = baseId + idx;
+    beneficiarios.push({
+      id: benId,
+      cnpjId: String(cnpjId),
+      nome: String(nome).trim(),
+      cpf: '',
+      dataNascimento: '',
+      dataAdesao: '',
+      numeroCarteirinha: ''
+    });
+
+    let ridx = 0;
+    let valorAnterior = null;
+    // Planilha guarda porcentagens como decimal (0.19 = 19%). O motor espera % inteiro (19).
+    const _toPct = (n) => isNaN(n) ? '' : String(Math.round(n * 100 * 1e6) / 1e6);
+    for (let r = 12; r <= 10000; r++) {
+      const a = _xlsxCell(ws, 'A'+r);
+      if (a === null || a === undefined || a === '') break;
+      const mesAno = _xlsxDateToYm(a);
+      if (!mesAno) break;
+      const b = _xlsxNum(_xlsxCell(ws, 'B'+r));
+      if (isNaN(b)) continue;
+      const c = _xlsxNum(_xlsxCell(ws, 'C'+r));
+      const e = _xlsxNum(_xlsxCell(ws, 'E'+r));
+      const f = _xlsxNum(_xlsxCell(ws, 'F'+r));
+      ridx++;
+      // Detecta célula de reajuste vazia com mudança de valor (cache do Excel).
+      // Sugestão: reajuste = B[r]/B[r-1] - 1, descontando mudança de idade (F) quando presente.
+      let observacao = '';
+      if (isNaN(c) && valorAnterior !== null && Math.abs(b - valorAnterior) > 0.01) {
+        const fatorIdade = isNaN(f) ? 1 : (1 + f);
+        const sugerido = (b / valorAnterior) / fatorIdade - 1;
+        if (Math.abs(sugerido) > 0.001) {
+          const pctSug = Math.round(sugerido * 100 * 1e6) / 1e6;
+          reajustesSuspeitos.push({
+            beneficiario: String(nome).trim(),
+            mesAno: mesAno,
+            valorAnterior: valorAnterior,
+            valorNovo: b,
+            sugestaoPct: pctSug
+          });
+          observacao = 'Reajuste vazio na planilha; sugestão calculada: ' + pctSug.toFixed(4) + '%';
+        }
+      }
+      reajustes.push({
+        id: baseId * 1000 + idx * 100000 + ridx,
+        beneficiarioId: String(benId),
+        mesAno: mesAno,
+        valorPago: String(b),
+        reajusteAplicado: _toPct(c),
+        reajusteNegativo: _toPct(e),
+        mudancaIdade:     _toPct(f),
+        observacao: observacao
+      });
+      valorAnterior = b;
+    }
+    abasLidas.push(sheetName + ' → ' + String(nome).trim() + ' (' + ridx + ' parcelas)');
+  }
+
+  if (beneficiarios.length === 0) {
+    throw new Error('Nenhum segurado encontrado na planilha. Verifique se o nome está preenchido em C2 de alguma aba Segurado1-7.');
+  }
+
+  return {
+    _info: { abasLidas: abasLidas, abasPuladas: abasPuladas, reajustesSuspeitos: reajustesSuspeitos },
+    metadados: {
+      nome: nomeCaso || 'Import_XLSX_' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-'),
+      salvoEm: new Date().toISOString(),
+      versao: '1.0',
+      origem: 'Importação automática de planilha XLSX padrão do escritório'
+    },
+    cnpjs: [{
+      id: cnpjId,
+      cnpj: '',
+      empresa: '',
+      operadora: operadora,
+      nrContrato: nrContrato
+    }],
+    beneficiarios: beneficiarios,
+    reajustes: reajustes,
+    config: {
+      indexador: configIndexador,
+      juros: 'hybrid',
+      refMes: 'baseplanilha',
+      dataFim: configDataFim || '2026-02',
+      dataInicio: configDataInicio || '',
+      mesReajuste: configMesReajuste
+    }
+  };
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 function CalculadoraSaude() {
   // ── Migração one-shot: chave antiga cnjps → cnpjs ─────────────────────────
   try {
@@ -1128,6 +1283,81 @@ function CalculadoraSaude() {
     setBootModal(null);
   };
 
+  // ── Importador de planilha XLSX (template padrão do escritório) ──────────
+  const [importXlsxStatus, setImportXlsxStatus] = React.useState('');
+  const importarXlsx = async (file) => {
+    if (!file) return;
+    if (typeof XLSX === 'undefined') {
+      alert('Biblioteca de leitura XLSX ainda não carregou. Recarregue a página e tente novamente.');
+      return;
+    }
+    const temDados = cnpjs.length > 0 || beneficiarios.length > 0 || reajustes.length > 0;
+    if (temDados) {
+      if (ghToken && ghCasoNome && ghCasoNome.trim()) {
+        setImportXlsxStatus('💾 Salvando caso atual antes de importar...');
+        try {
+          await ghSalvar();
+        } catch (err) {
+          if (!window.confirm('Falha ao salvar o caso atual (' + (err.message || err) + '). Continuar com a importação mesmo assim? Os dados atuais serão perdidos.')) {
+            setImportXlsxStatus('');
+            return;
+          }
+        }
+      } else {
+        const motivo = !ghToken
+          ? 'GitHub não está configurado (sem token).'
+          : 'O caso atual não tem nome definido.';
+        if (!window.confirm('Há um caso carregado e não foi possível salvar automaticamente: ' + motivo + '\n\nImportar mesmo assim vai SUBSTITUIR os dados atuais. Continuar?')) {
+          setImportXlsxStatus('');
+          return;
+        }
+      }
+    }
+    setImportXlsxStatus('📥 Lendo planilha...');
+    try {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+      const nomePadrao = file.name.replace(/\.xlsx$/i, '').replace(/[^\w\s\-]/g, '').replace(/\s+/g, '_') + '_' + new Date().toISOString().slice(0,10);
+      const payload = parseXlsxToPayload(wb, nomePadrao);
+      setCnpjs(payload.cnpjs || []);
+      setBeneficiarios(payload.beneficiarios || []);
+      setReajustes(payload.reajustes || []);
+      if (payload.config) {
+        setConfigIndexador(payload.config.indexador || 'ca');
+        setConfigJuros(payload.config.juros || 'hybrid');
+        setConfigRefMes(payload.config.refMes || 'baseplanilha');
+        setConfigDataFim(payload.config.dataFim || '2026-02');
+        setConfigDataInicio(payload.config.dataInicio || '');
+        setConfigMesReajuste(payload.config.mesReajuste || 12);
+      }
+      setGhCasoNome(payload.metadados?.nome || nomePadrao);
+      setActiveTab('cadastro');
+      const info = payload._info || {};
+      const lidas = (info.abasLidas || []).join('\n  • ');
+      const puladas = (info.abasPuladas || []).filter(s => s.indexOf('(vazia)') >= 0).join(', ');
+      const suspeitos = info.reajustesSuspeitos || [];
+      let avisoSuspeitos = '';
+      if (suspeitos.length > 0) {
+        avisoSuspeitos = '\n⚠️ ATENÇÃO — ' + suspeitos.length + ' mês(es) com reajuste vazio na planilha mas valor mudou (provável cache do Excel).\nVerifique e preencha manualmente na aba Reajustes:\n';
+        suspeitos.forEach(function(su) {
+          avisoSuspeitos += '  • ' + su.beneficiario + ' ' + su.mesAno + ': ' + su.valorAnterior.toFixed(2) + ' → ' + su.valorNovo.toFixed(2) + ' (sugestão ~' + su.sugestaoPct.toFixed(4) + '%)\n';
+        });
+      }
+      setImportXlsxStatus('');
+      alert(
+        '✅ Planilha importada com sucesso.\n\n' +
+        'Segurados importados:\n  • ' + lidas + '\n\n' +
+        (puladas ? 'Abas puladas por estarem vazias: ' + puladas + '\n\n' : '') +
+        '⚠️ CNPJ e Empresa NÃO constam na planilha — preencha manualmente na aba Cadastro.\n' +
+        '⚠️ CPF, data de nascimento, data de adesão e carteirinha também ficaram em branco.' +
+        avisoSuspeitos
+      );
+    } catch (err) {
+      setImportXlsxStatus('');
+      alert('❌ Erro ao importar planilha: ' + (err.message || err));
+    }
+  };
+
   // ── useEffect de boot: roda só uma vez ───────────────────────────────────
   React.useEffect(() => {
     if (bootRanRef.current) return;
@@ -1470,6 +1700,20 @@ function CalculadoraSaude() {
               reader.readAsText(f);
             }} />
           </label>
+          <label style={{background:'rgba(200,169,110,0.25)',color:'#FFE8B5',border:'1px solid rgba(200,169,110,0.6)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',display:'inline-block',fontWeight:'600'}} title="Importa a planilha padrão do escritório (abas Segurado1-7). Se já há caso carregado, será salvo automaticamente no GitHub antes.">
+            📊 Importar Planilha (.xlsx)
+            <input type="file" accept=".xlsx,.xlsm" style={{display:'none'}} onChange={async (e) => {
+              const f = e.target.files[0];
+              e.target.value = '';
+              if (!f) return;
+              await importarXlsx(f);
+            }} />
+          </label>
+          {importXlsxStatus && (
+            <span style={{fontSize:'12px',color:'#FFE8B5',background:'rgba(0,0,0,0.2)',padding:'4px 10px',borderRadius:'20px'}}>
+              {importXlsxStatus}
+            </span>
+          )}
           {ghToken && (
             <button onClick={() => { setBootModal('select'); ghListCasosComToken(ghToken); }} style={{background:'rgba(200,169,110,0.2)',color:'#FFD580',border:'1px solid rgba(200,169,110,0.5)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
               📁 Trocar Caso
@@ -2447,38 +2691,4 @@ function CalculadoraSaude() {
                   </div>
                   {linkGenError && <div className="lm-error">{linkGenError}</div>}
                   <div className="lm-actions">
-                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Cancelar</button>
-                    <button className="lm-btn primary" onClick={gerarLinkMagico}>Gerar Link</button>
-                  </div>
-                </>
-              )}
-              {linkGenResult && (
-                <>
-                  <div className="lm-ok">✅ Link gerado. Salve como favorito nos dispositivos onde quer acessar.</div>
-                  <div className="lm-link-output">{linkGenResult}</div>
-                  {linkCopyStatus && <div className={linkCopyStatus.startsWith('✅') ? 'lm-ok' : 'lm-note'}>{linkCopyStatus}</div>}
-                  <div className="lm-note" style={{marginTop:'12px'}}>
-                    <strong>Próximos passos</strong>:<br/>
-                    1. Envie o link para o seu celular/outro PC (email, WhatsApp para si mesmo, etc.)<br/>
-                    2. Abra o link no outro dispositivo → digite o PIN → pronto, a calculadora lista seus casos.<br/>
-                    3. Guarde o PIN num lugar separado do link.
-                  </div>
-                  <div className="lm-actions">
-                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Fechar</button>
-                    <button className="lm-btn primary" onClick={copiarLinkMagico}>📋 Copiar Link</button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<CalculadoraSaude />);
-  </script>
-</body>
-</html>
+                    <button className="lm-btn secondary" onClick={fecharLinkGen}>Cancelar</but
