@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- BUILD-VERIFY: 2026-04-23T14:58Z md5=75e99ef7 2728linhas CORRETO -->
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -812,6 +811,10 @@ function CalculadoraSaude() {
   const [formCnpj, setFormCnpj] = React.useState({ cnpj: '', empresa: '', operadora: '', nrContrato: '' });
   const [formBeneficiario, setFormBeneficiario] = React.useState({ cnpjId: '', nome: '', cpf: '', dataNascimento: '', dataAdesao: '', numeroCarteirinha: '' });
   const [formReajuste, setFormReajuste] = React.useState({ beneficiarioId: '', mesAno: '', valorPago: '', reajusteAplicado: '', reajusteNegativo: '', mudancaIdade: '', observacao: '' });
+  // IDs em edição — null = modo "adicionar"; id definido = modo "atualizar"
+  const [editandoCnpjId, setEditandoCnpjId] = React.useState(null);
+  const [editandoBeneficiarioId, setEditandoBeneficiarioId] = React.useState(null);
+  const [editandoReajusteId, setEditandoReajusteId] = React.useState(null);
   const [configIndexador, setConfigIndexador] = React.useState(() => ls('configIndexador', 'ca'));
   const [configJuros, setConfigJuros] = React.useState(() => ls('configJuros', 'hybrid'));
   const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'baseplanilha'));
@@ -835,8 +838,10 @@ function CalculadoraSaude() {
   React.useEffect(() => { try { localStorage.setItem('calc_configMesReajuste', JSON.stringify(configMesReajuste)); } catch(e) {} }, [configMesReajuste]);
 
   // GitHub integration state
-  // Auto-avança mês: quando troca o beneficiário, pré-preenche o mês seguinte ao último lançado
+  // Auto-avança mês: quando troca o beneficiário, pré-preenche o mês seguinte ao último lançado.
+  // Não dispara em modo edição (senão sobrescreve o mês do reajuste carregado para editar).
   React.useEffect(() => {
+    if (editandoReajusteId !== null) return;
     const benId = formReajuste.beneficiarioId;
     if (!benId) return;
     const lançamentos = reajustes
@@ -848,13 +853,38 @@ function CalculadoraSaude() {
       const proximo = nextMesAno(lançamentos[lançamentos.length - 1]);
       setFormReajuste(prev => ({ ...prev, mesAno: proximo }));
     }
-  }, [formReajuste.beneficiarioId]);
+  }, [formReajuste.beneficiarioId, editandoReajusteId]);
 
   // ── Índices editáveis (sobrepõem os hardcoded INDICES e ANS_ANO) ─────────
   const [indicesCustomMensais, setIndicesCustomMensais] = React.useState(() => ls('indicesCustomMensais', {}));
   const [indicesCustomAns, setIndicesCustomAns] = React.useState(() => ls('indicesCustomAns', {}));
   React.useEffect(() => { try { localStorage.setItem('calc_indicesCustomMensais', JSON.stringify(indicesCustomMensais)); } catch(e) {} }, [indicesCustomMensais]);
   React.useEffect(() => { try { localStorage.setItem('calc_indicesCustomAns', JSON.stringify(indicesCustomAns)); } catch(e) {} }, [indicesCustomAns]);
+
+  // Sanitização one-shot no boot — remove overrides corrompidos (ca/ia/fa/sa fora de [0.3,3] ou an fora de [-0.3,0.5]).
+  const sanitizacaoFeitaRef = React.useRef(false);
+  React.useEffect(() => {
+    if (sanitizacaoFeitaRef.current) return;
+    sanitizacaoFeitaRef.current = true;
+    setIndicesCustomMensais(prev => {
+      const limpo = {};
+      let removidos = 0;
+      Object.keys(prev).forEach(mes => {
+        const d = prev[mes] || {};
+        const caOK = (d.ca === undefined) || (typeof d.ca === 'number' && d.ca >= 0.3 && d.ca <= 3.0);
+        const iaOK = (d.ia === undefined) || (typeof d.ia === 'number' && d.ia >= 0.3 && d.ia <= 3.0);
+        const faOK = (d.fa === undefined) || (typeof d.fa === 'number' && d.fa >= 0.3 && d.fa <= 3.0);
+        const saOK = (d.sa === undefined) || (typeof d.sa === 'number' && d.sa >= 0.3 && d.sa <= 3.0);
+        const anOK = (d.an === undefined) || (typeof d.an === 'number' && d.an >= -0.3 && d.an <= 0.5);
+        if (caOK && iaOK && faOK && saOK && anOK) { limpo[mes] = d; }
+        else { removidos++; try { console.warn('[Saneamento] Removido override corrompido', mes, d); } catch(e) {} }
+      });
+      if (removidos > 0) {
+        try { setTimeout(() => { alert(`⚠️ ${removidos} override(s) de índices mensais foram restaurados ao padrão por conter valores fora de faixa (provável erro de edição anterior).`); }, 500); } catch(e) {}
+      }
+      return removidos === 0 ? prev : limpo;
+    });
+  }, []);
   const INDICES_MERGED = React.useMemo(() => ({ ...INDICES, ...indicesCustomMensais }), [indicesCustomMensais]);
   const ANS_ANO_MERGED = React.useMemo(() => ({ ...ANS_ANO, ...indicesCustomAns }), [indicesCustomAns]);
 
@@ -868,6 +898,14 @@ function CalculadoraSaude() {
   const [formMensalFa, setFormMensalFa] = React.useState('');
   const [formMensalSa, setFormMensalSa] = React.useState('');
   const [filtroAnoMensal, setFiltroAnoMensal] = React.useState('');
+
+  // Edição inline de índices mensais (exibe/edita valores mensais em %)
+  const [editandoIndiceMes, setEditandoIndiceMes] = React.useState(null);
+  const [editIndicePctIpca, setEditIndicePctIpca] = React.useState('');
+  const [editIndicePctInpc, setEditIndicePctInpc] = React.useState('');
+  const [editIndicePctFipe, setEditIndicePctFipe] = React.useState('');
+  const [editIndicePctSelic, setEditIndicePctSelic] = React.useState('');
+  const [editIndicePctAns, setEditIndicePctAns] = React.useState('');
 
   const GH_OWNER = 'gnscozziero-lang';
   const GH_REPO = 'calculadora-plano-saude';
@@ -1087,6 +1125,113 @@ function CalculadoraSaude() {
     }
     if (!window.confirm(`Restaurar ${mesAno} ao valor padrão?`)) return;
     setIndicesCustomMensais(prev => { const n = { ...prev }; delete n[mesAno]; return n; });
+  };
+
+  // ── Conversão acumulado ↔ mensal ──────────────────────────────────────────
+  const calcMensalFrac = (mesAno, field) => {
+    const chaves = Object.keys(INDICES_MERGED).sort();
+    const idx = chaves.indexOf(mesAno);
+    if (idx <= 0) return null;
+    const prev = INDICES_MERGED[chaves[idx - 1]];
+    const cur = INDICES_MERGED[mesAno];
+    if (!prev || !cur) return null;
+    const pv = prev[field];
+    const cv = cur[field];
+    if (!pv || !cv || cv === 0) return null;
+    return (pv / cv) - 1;
+  };
+
+  // Aplica edição monthly-pct com propagação forward (semântica b).
+  const aplicarEdicaoMensalPct = (mesAno, pcts) => {
+    if (!/^\d{4}-\d{2}$/.test(mesAno)) { alert('Mês-Ano inválido.'); return false; }
+    const chaves = Object.keys(INDICES_MERGED).sort();
+    const idx = chaves.indexOf(mesAno);
+    if (idx < 0) { alert('Mês não existe no dataset.'); return false; }
+
+    const limites = { ipca: 0.05, inpc: 0.05, fipe: 0.05, selic: 0.05 };
+    const fora = [];
+    ['ipca','inpc','fipe','selic'].forEach(k => {
+      const v = pcts[k];
+      if (v === null || v === undefined || isNaN(v)) return;
+      if (v < -0.03 || v > limites[k]) fora.push(`${k.toUpperCase()}: ${(v*100).toFixed(4)}%`);
+    });
+    if (pcts.ans !== null && pcts.ans !== undefined && !isNaN(pcts.ans)) {
+      if (pcts.ans < -0.20 || pcts.ans > 0.50) fora.push(`ANS: ${(pcts.ans*100).toFixed(4)}%`);
+    }
+    if (fora.length > 0) {
+      if (!window.confirm(`Os seguintes valores estão fora da faixa usual:\n\n${fora.join('\n')}\n\nConfirmar mesmo assim?`)) return false;
+    }
+
+    const mapFieldFromKey = { ipca: 'ca', inpc: 'ia', fipe: 'fa', selic: 'sa' };
+
+    setIndicesCustomMensais(prev => {
+      const novo = { ...prev };
+      const merged = { ...INDICES, ...prev };
+
+      ['ipca','inpc','fipe','selic'].forEach(k => {
+        const frac = pcts[k];
+        if (frac === null || frac === undefined || isNaN(frac)) return;
+        const field = mapFieldFromKey[k];
+        const prevMes = merged[chaves[idx - 1]];
+        if (!prevMes || !prevMes[field]) { try { console.warn('[Índices] Sem mês anterior para', k, 'em', mesAno); } catch(e) {} return; }
+        const novoAcum = prevMes[field] / (1 + frac);
+        const atualAcum = (merged[mesAno] && merged[mesAno][field]) ? merged[mesAno][field] : novoAcum;
+        if (!atualAcum || atualAcum === 0) return;
+        const fator = novoAcum / atualAcum;
+        for (let i = idx; i < chaves.length; i++) {
+          const mi = chaves[i];
+          const baseMi = novo[mi] || { ...(INDICES[mi] || {}) };
+          const valorAtual = (baseMi[field] !== undefined ? baseMi[field] : (INDICES[mi] && INDICES[mi][field]));
+          if (valorAtual === undefined || valorAtual === null) continue;
+          baseMi[field] = valorAtual * fator;
+          novo[mi] = baseMi;
+        }
+      });
+
+      if (pcts.ans !== null && pcts.ans !== undefined && !isNaN(pcts.ans)) {
+        const baseMi = novo[mesAno] || { ...(INDICES[mesAno] || {}) };
+        baseMi.an = pcts.ans;
+        novo[mesAno] = baseMi;
+      }
+
+      return novo;
+    });
+    return true;
+  };
+
+  const iniciarEdicaoIndiceMes = (mesAno) => {
+    const fmtPctLocal = (f) => f === null ? '' : (f * 100).toFixed(4).replace('.', ',');
+    setEditandoIndiceMes(mesAno);
+    setEditIndicePctIpca(fmtPctLocal(calcMensalFrac(mesAno, 'ca')));
+    setEditIndicePctInpc(fmtPctLocal(calcMensalFrac(mesAno, 'ia')));
+    setEditIndicePctFipe(fmtPctLocal(calcMensalFrac(mesAno, 'fa')));
+    setEditIndicePctSelic(fmtPctLocal(calcMensalFrac(mesAno, 'sa')));
+    const dados = INDICES_MERGED[mesAno] || {};
+    setEditIndicePctAns(dados.an !== undefined ? ((dados.an || 0) * 100).toFixed(4).replace('.', ',') : '');
+  };
+  const cancelarEdicaoIndiceMes = () => {
+    setEditandoIndiceMes(null);
+    setEditIndicePctIpca(''); setEditIndicePctInpc(''); setEditIndicePctFipe(''); setEditIndicePctSelic(''); setEditIndicePctAns('');
+  };
+  const salvarEdicaoIndiceMes = () => {
+    if (!editandoIndiceMes) return;
+    const parsePct = (s) => {
+      const t = String(s).trim().replace(',', '.');
+      if (t === '') return null;
+      const n = parseFloat(t);
+      if (isNaN(n)) return null;
+      return n / 100;
+    };
+    const pcts = {
+      ipca: parsePct(editIndicePctIpca),
+      inpc: parsePct(editIndicePctInpc),
+      fipe: parsePct(editIndicePctFipe),
+      selic: parsePct(editIndicePctSelic),
+      ans: parsePct(editIndicePctAns),
+    };
+    if (aplicarEdicaoMensalPct(editandoIndiceMes, pcts)) {
+      cancelarEdicaoIndiceMes();
+    }
   };
 
   // ── GitHub: persistência de índices globais ───────────────────────────────
@@ -1377,33 +1522,99 @@ function CalculadoraSaude() {
     }
   }, []);
 
-  const addCnpj = () => {
+  // ── CNPJ: adicionar / editar / cancelar / excluir ────────────────────────
+  const salvarCnpj = () => {
     if (!formCnpj.cnpj.trim()) return;
-    setCnpjs([...cnpjs, { id: Date.now(), ...formCnpj }]);
+    if (editandoCnpjId !== null) {
+      setCnpjs(cnpjs.map(c => c.id === editandoCnpjId ? { ...c, ...formCnpj } : c));
+      setEditandoCnpjId(null);
+    } else {
+      setCnpjs([...cnpjs, { id: Date.now(), ...formCnpj }]);
+    }
+    setFormCnpj({ cnpj: '', empresa: '', operadora: '', nrContrato: '' });
+  };
+
+  const iniciarEdicaoCnpj = (c) => {
+    setEditandoCnpjId(c.id);
+    setFormCnpj({ cnpj: c.cnpj || '', empresa: c.empresa || '', operadora: c.operadora || '', nrContrato: c.nrContrato || '' });
+  };
+
+  const cancelarEdicaoCnpj = () => {
+    setEditandoCnpjId(null);
     setFormCnpj({ cnpj: '', empresa: '', operadora: '', nrContrato: '' });
   };
 
   const deleteCnpj = (id) => {
+    if (editandoCnpjId === id) cancelarEdicaoCnpj();
     setCnpjs(cnpjs.filter(c => c.id !== id));
   };
 
-  const addBeneficiario = () => {
+  // ── Beneficiário: adicionar / editar / cancelar / excluir ────────────────
+  const salvarBeneficiario = () => {
     if (!formBeneficiario.cnpjId || !formBeneficiario.nome.trim()) return;
-    setBeneficiarios([...beneficiarios, { id: Date.now(), ...formBeneficiario }]);
+    if (editandoBeneficiarioId !== null) {
+      setBeneficiarios(beneficiarios.map(b => b.id === editandoBeneficiarioId ? { ...b, ...formBeneficiario } : b));
+      setEditandoBeneficiarioId(null);
+    } else {
+      setBeneficiarios([...beneficiarios, { id: Date.now(), ...formBeneficiario }]);
+    }
+    setFormBeneficiario({ cnpjId: '', nome: '', cpf: '', dataNascimento: '', dataAdesao: '', numeroCarteirinha: '' });
+  };
+
+  const iniciarEdicaoBeneficiario = (b) => {
+    setEditandoBeneficiarioId(b.id);
+    setFormBeneficiario({
+      cnpjId: String(b.cnpjId || ''),
+      nome: b.nome || '',
+      cpf: b.cpf || '',
+      dataNascimento: b.dataNascimento || '',
+      dataAdesao: b.dataAdesao || '',
+      numeroCarteirinha: b.numeroCarteirinha || ''
+    });
+  };
+
+  const cancelarEdicaoBeneficiario = () => {
+    setEditandoBeneficiarioId(null);
     setFormBeneficiario({ cnpjId: '', nome: '', cpf: '', dataNascimento: '', dataAdesao: '', numeroCarteirinha: '' });
   };
 
   const deleteBeneficiario = (id) => {
+    if (editandoBeneficiarioId === id) cancelarEdicaoBeneficiario();
     setBeneficiarios(beneficiarios.filter(b => b.id !== id));
   };
 
-  const addReajuste = () => {
+  // ── Reajuste: adicionar / editar / cancelar / excluir ────────────────────
+  const salvarReajuste = () => {
     if (!formReajuste.beneficiarioId || !formReajuste.mesAno) return;
-    setReajustes([...reajustes, { id: Date.now(), ...formReajuste }]);
+    if (editandoReajusteId !== null) {
+      setReajustes(reajustes.map(r => r.id === editandoReajusteId ? { ...r, ...formReajuste } : r));
+      setEditandoReajusteId(null);
+    } else {
+      setReajustes([...reajustes, { id: Date.now(), ...formReajuste }]);
+    }
+    setFormReajuste({ beneficiarioId: '', mesAno: '', valorPago: '', reajusteAplicado: '', reajusteNegativo: '', mudancaIdade: '', observacao: '' });
+  };
+
+  const iniciarEdicaoReajuste = (r) => {
+    setEditandoReajusteId(r.id);
+    setFormReajuste({
+      beneficiarioId: String(r.beneficiarioId || ''),
+      mesAno: r.mesAno || '',
+      valorPago: r.valorPago || '',
+      reajusteAplicado: r.reajusteAplicado || '',
+      reajusteNegativo: r.reajusteNegativo || '',
+      mudancaIdade: r.mudancaIdade || '',
+      observacao: r.observacao || ''
+    });
+  };
+
+  const cancelarEdicaoReajuste = () => {
+    setEditandoReajusteId(null);
     setFormReajuste({ beneficiarioId: '', mesAno: '', valorPago: '', reajusteAplicado: '', reajusteNegativo: '', mudancaIdade: '', observacao: '' });
   };
 
   const deleteReajuste = (id) => {
+    if (editandoReajusteId === id) cancelarEdicaoReajuste();
     setReajustes(reajustes.filter(r => r.id !== id));
   };
 
@@ -1869,14 +2080,28 @@ function CalculadoraSaude() {
                   <input type="text" value={formCnpj.nrContrato} onChange={(e) => setFormCnpj({...formCnpj, nrContrato: e.target.value})} />
                 </div>
               </div>
-              <button onClick={addCnpj}>+ Adicionar CNPJ</button>
+              <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
+                <button onClick={salvarCnpj}>{editandoCnpjId !== null ? '💾 Atualizar CNPJ' : '+ Adicionar CNPJ'}</button>
+                {editandoCnpjId !== null && <button className="secondary" onClick={cancelarEdicaoCnpj}>Cancelar</button>}
+              </div>
               {cnpjs.length > 0 && (
                 <table className="table" style={{marginTop: '20px'}}>
                   <thead>
-                    <tr><th>CNPJ</th><th>Empresa</th><th>Operadora</th><th>Contrato</th><th>Ação</th></tr>
+                    <tr><th>CNPJ</th><th>Empresa</th><th>Operadora</th><th>Contrato</th><th style={{whiteSpace:'nowrap'}}>Ações</th></tr>
                   </thead>
                   <tbody>
-                    {cnpjs.map(c => <tr key={c.id}><td>{c.cnpj}</td><td>{c.empresa}</td><td>{c.operadora}</td><td>{c.nrContrato}</td><td><button className="danger" onClick={() => deleteCnpj(c.id)}>Deletar</button></td></tr>)}
+                    {cnpjs.map(c => (
+                      <tr key={c.id} style={editandoCnpjId === c.id ? {background:'#FFF9E6'} : undefined}>
+                        <td>{c.cnpj}</td>
+                        <td>{c.empresa}</td>
+                        <td>{c.operadora}</td>
+                        <td>{c.nrContrato}</td>
+                        <td style={{whiteSpace:'nowrap'}}>
+                          <button onClick={() => iniciarEdicaoCnpj(c)} style={{marginRight:'6px'}}>✏️ Editar</button>
+                          <button className="danger" onClick={() => deleteCnpj(c.id)}>🗑️ Excluir</button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               )}
@@ -1913,14 +2138,27 @@ function CalculadoraSaude() {
                   <input type="text" value={formBeneficiario.numeroCarteirinha} onChange={(e) => setFormBeneficiario({...formBeneficiario, numeroCarteirinha: e.target.value})} />
                 </div>
               </div>
-              <button onClick={addBeneficiario}>+ Adicionar Beneficiário</button>
+              <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
+                <button onClick={salvarBeneficiario}>{editandoBeneficiarioId !== null ? '💾 Atualizar Beneficiário' : '+ Adicionar Beneficiário'}</button>
+                {editandoBeneficiarioId !== null && <button className="secondary" onClick={cancelarEdicaoBeneficiario}>Cancelar</button>}
+              </div>
               {beneficiarios.length > 0 && (
                 <table className="table" style={{marginTop: '20px'}}>
                   <thead>
-                    <tr><th>Nome</th><th>CPF</th><th>Carteirinha</th><th>Ação</th></tr>
+                    <tr><th>Nome</th><th>CPF</th><th>Carteirinha</th><th style={{whiteSpace:'nowrap'}}>Ações</th></tr>
                   </thead>
                   <tbody>
-                    {beneficiarios.map(b => <tr key={b.id}><td>{b.nome}</td><td>{b.cpf}</td><td>{b.numeroCarteirinha}</td><td><button className="danger" onClick={() => deleteBeneficiario(b.id)}>Deletar</button></td></tr>)}
+                    {beneficiarios.map(b => (
+                      <tr key={b.id} style={editandoBeneficiarioId === b.id ? {background:'#FFF9E6'} : undefined}>
+                        <td>{b.nome}</td>
+                        <td>{b.cpf}</td>
+                        <td>{b.numeroCarteirinha}</td>
+                        <td style={{whiteSpace:'nowrap'}}>
+                          <button onClick={() => iniciarEdicaoBeneficiario(b)} style={{marginRight:'6px'}}>✏️ Editar</button>
+                          <button className="danger" onClick={() => deleteBeneficiario(b.id)}>🗑️ Excluir</button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               )}
@@ -1973,7 +2211,8 @@ function CalculadoraSaude() {
                 </div>
               </div>
               <div className="button-group">
-                <button onClick={addReajuste}>+ Adicionar Reajuste</button>
+                <button onClick={salvarReajuste}>{editandoReajusteId !== null ? '💾 Atualizar Reajuste' : '+ Adicionar Reajuste'}</button>
+                {editandoReajusteId !== null && <button className="secondary" onClick={cancelarEdicaoReajuste}>Cancelar</button>}
                 <label style={{display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer'}}>
                   <button className="secondary">Importar CSV</button>
                   <input type="file" accept=".csv" onChange={handleCsvImport} style={{display: 'none'}} />
@@ -1985,12 +2224,23 @@ function CalculadoraSaude() {
                   <h3>Reajustes Lançados ({reajustes.length})</h3>
                   <table className="table">
                     <thead>
-                      <tr><th>Beneficiário</th><th>Mês</th><th>Valor Pago</th><th>Reajuste %</th><th>Ação</th></tr>
+                      <tr><th>Beneficiário</th><th>Mês</th><th>Valor Pago</th><th>Reajuste %</th><th style={{whiteSpace:'nowrap'}}>Ações</th></tr>
                     </thead>
                     <tbody>
                       {reajustes.sort((a,b) => a.mesAno.localeCompare(b.mesAno)).map(r => {
                         const ben = beneficiarios.find(b => b.id.toString() === r.beneficiarioId);
-                        return <tr key={r.id}><td>{ben?.nome || 'N/A'}</td><td>{fmtMesAno(r.mesAno)}</td><td>{fmtBRL(parseFloat(r.valorPago))}</td><td>{r.reajusteAplicado}%</td><td><button className="danger" onClick={() => deleteReajuste(r.id)}>Deletar</button></td></tr>
+                        return (
+                          <tr key={r.id} style={editandoReajusteId === r.id ? {background:'#FFF9E6'} : undefined}>
+                            <td>{ben?.nome || 'N/A'}</td>
+                            <td>{fmtMesAno(r.mesAno)}</td>
+                            <td>{fmtBRL(parseFloat(r.valorPago))}</td>
+                            <td>{r.reajusteAplicado}%</td>
+                            <td style={{whiteSpace:'nowrap'}}>
+                              <button onClick={() => iniciarEdicaoReajuste(r)} style={{marginRight:'6px'}}>✏️ Editar</button>
+                              <button className="danger" onClick={() => deleteReajuste(r.id)}>🗑️ Excluir</button>
+                            </td>
+                          </tr>
+                        );
                       })}
                     </tbody>
                   </table>
@@ -2481,40 +2731,9 @@ function CalculadoraSaude() {
             <div className="section">
               <h2>Índices Mensais (IPCA, INPC, FIPE, SELIC, ANS)</h2>
               <p style={{color:'#64748B', fontSize:'0.9em', marginTop:'-8px', marginBottom:'14px'}}>
-                Valores acumulados mês a mês. Deixe um campo em branco para preservar o valor atual.
+                Valores mensais em percentual. Ex.: IPCA de 0,70% no mês. O sistema converte automaticamente para os fatores acumulados usados nos cálculos.
+                Ao editar, a alteração propaga os fatores acumulados dos meses seguintes preservando os percentuais deles.
               </p>
-              <div style={{display:'grid', gridTemplateColumns:'110px 100px 100px 100px 100px 100px auto', gap:'8px', alignItems:'flex-end', marginBottom:'16px'}}>
-                <div>
-                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>Mês/Ano</label>
-                  <input type="text" value={formMensalMesAno} onChange={e => setFormMensalMesAno(e.target.value)} placeholder="2026-03" maxLength={7} />
-                </div>
-                <div>
-                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>IPCA (ca)</label>
-                  <input type="text" value={formMensalCa} onChange={e => setFormMensalCa(e.target.value)} placeholder="1,0606" />
-                </div>
-                <div>
-                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>INPC (ia)</label>
-                  <input type="text" value={formMensalIa} onChange={e => setFormMensalIa(e.target.value)} placeholder="1,0095" />
-                </div>
-                <div>
-                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>FIPE (fa)</label>
-                  <input type="text" value={formMensalFa} onChange={e => setFormMensalFa(e.target.value)} placeholder="1,0011" />
-                </div>
-                <div>
-                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>SELIC (sa)</label>
-                  <input type="text" value={formMensalSa} onChange={e => setFormMensalSa(e.target.value)} placeholder="1,0015" />
-                </div>
-                <div>
-                  <label style={{display:'block', fontSize:'0.85em', color:'#64748B'}}>ANS (an)</label>
-                  <input type="text" value={formMensalAn} onChange={e => setFormMensalAn(e.target.value)} placeholder="0,0606" />
-                </div>
-                <button onClick={() => {
-                  const campos = { ca: formMensalCa, ia: formMensalIa, fa: formMensalFa, sa: formMensalSa, an: formMensalAn };
-                  if (addOrUpdateIndiceMensal(formMensalMesAno.trim(), campos)) {
-                    setFormMensalMesAno(''); setFormMensalCa(''); setFormMensalIa(''); setFormMensalFa(''); setFormMensalSa(''); setFormMensalAn('');
-                  }
-                }} className="btn-primary">➕ Adicionar / Atualizar</button>
-              </div>
 
               <div style={{marginBottom:'12px'}}>
                 <label style={{fontSize:'0.9em', marginRight:'8px'}}>Filtrar por ano:</label>
@@ -2533,13 +2752,13 @@ function CalculadoraSaude() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Mês/Ano</th>
-                    <th className="text-right">IPCA</th>
-                    <th className="text-right">INPC</th>
-                    <th className="text-right">FIPE</th>
-                    <th className="text-right">SELIC</th>
-                    <th className="text-right">ANS</th>
-                    <th>Fonte</th>
+                    <th style={{width:'90px'}}>Mês/Ano</th>
+                    <th className="text-right" style={{width:'110px'}}>IPCA</th>
+                    <th className="text-right" style={{width:'110px'}}>INPC</th>
+                    <th className="text-right" style={{width:'110px'}}>FIPE</th>
+                    <th className="text-right" style={{width:'110px'}}>SELIC</th>
+                    <th className="text-right" style={{width:'110px'}}>ANS</th>
+                    <th style={{width:'80px'}}>Fonte</th>
                     <th style={{width:'230px'}}>Ações</th>
                   </tr>
                 </thead>
@@ -2547,27 +2766,57 @@ function CalculadoraSaude() {
                   {(() => {
                     const chaves = Object.keys(INDICES_MERGED).sort();
                     const filtradas = filtroAnoMensal ? chaves.filter(k => k.startsWith(filtroAnoMensal)) : chaves;
+                    const fmtMensalPct = (field, mesAno) => {
+                      const chavesAll = Object.keys(INDICES_MERGED).sort();
+                      const idx = chavesAll.indexOf(mesAno);
+                      if (idx <= 0) return null;
+                      const prev = INDICES_MERGED[chavesAll[idx - 1]];
+                      const cur = INDICES_MERGED[mesAno];
+                      if (!prev || !cur) return null;
+                      const pv = prev[field], cv = cur[field];
+                      if (!pv || !cv || cv === 0) return null;
+                      return (pv / cv) - 1;
+                    };
+                    const celMensal = (field, mesAno) => {
+                      const f = fmtMensalPct(field, mesAno);
+                      if (f === null) return <span style={{color:'#CBD5E1'}}>—</span>;
+                      return (f * 100).toFixed(4).replace('.', ',') + '%';
+                    };
+                    const inputEdit = (val, setter, placeholder) => (
+                      <input type="text" value={val} onChange={e => setter(e.target.value)} placeholder={placeholder} style={{width:'90px', padding:'4px 6px', fontSize:'0.9em', textAlign:'right'}} />
+                    );
                     return filtradas.map(mesAno => {
                       const dados = INDICES_MERGED[mesAno] || {};
                       const ehCustom = Object.prototype.hasOwnProperty.call(indicesCustomMensais, mesAno);
+                      const editando = editandoIndiceMes === mesAno;
+                      if (editando) {
+                        return (
+                          <tr key={mesAno} style={{backgroundColor:'#FFF9E6'}}>
+                            <td>{mesAno}</td>
+                            <td className="text-right">{inputEdit(editIndicePctIpca, setEditIndicePctIpca, '0,70')}</td>
+                            <td className="text-right">{inputEdit(editIndicePctInpc, setEditIndicePctInpc, '0,48')}</td>
+                            <td className="text-right">{inputEdit(editIndicePctFipe, setEditIndicePctFipe, '0,55')}</td>
+                            <td className="text-right">{inputEdit(editIndicePctSelic, setEditIndicePctSelic, '0,90')}</td>
+                            <td className="text-right">{inputEdit(editIndicePctAns, setEditIndicePctAns, '6,06')}</td>
+                            <td><span style={{fontSize:'0.85em', color:'#C8A96E'}}>✏️ Editando</span></td>
+                            <td>
+                              <button onClick={salvarEdicaoIndiceMes} style={{marginRight:'6px', fontSize:'0.85em'}}>💾 Salvar</button>
+                              <button onClick={cancelarEdicaoIndiceMes} style={{fontSize:'0.85em'}} className="secondary">Cancelar</button>
+                            </td>
+                          </tr>
+                        );
+                      }
                       return (
                         <tr key={mesAno} style={ehCustom ? {backgroundColor:'#FFF9E6'} : {}}>
                           <td>{mesAno}</td>
-                          <td className="text-right">{(dados.ca ?? 0).toFixed(6)}</td>
-                          <td className="text-right">{(dados.ia ?? 0).toFixed(6)}</td>
-                          <td className="text-right">{(dados.fa ?? 0).toFixed(6)}</td>
-                          <td className="text-right">{(dados.sa ?? 0).toFixed(6)}</td>
-                          <td className="text-right">{((dados.an ?? 0) * 100).toFixed(4)}%</td>
+                          <td className="text-right">{celMensal('ca', mesAno)}</td>
+                          <td className="text-right">{celMensal('ia', mesAno)}</td>
+                          <td className="text-right">{celMensal('fa', mesAno)}</td>
+                          <td className="text-right">{celMensal('sa', mesAno)}</td>
+                          <td className="text-right">{((dados.an ?? 0) * 100).toFixed(4).replace('.', ',')}%</td>
                           <td><span style={{fontSize:'0.85em', color: ehCustom ? '#C8A96E' : '#64748B'}}>{ehCustom ? '✏️ Custom' : 'Padrão'}</span></td>
                           <td>
-                            <button onClick={() => {
-                              setFormMensalMesAno(mesAno);
-                              setFormMensalCa((dados.ca ?? 1).toString());
-                              setFormMensalIa((dados.ia ?? 1).toString());
-                              setFormMensalFa((dados.fa ?? 1).toString());
-                              setFormMensalSa((dados.sa ?? 1).toString());
-                              setFormMensalAn((dados.an ?? 0).toString());
-                            }} style={{marginRight:'6px', fontSize:'0.85em'}}>✏️ Editar</button>
+                            <button onClick={() => iniciarEdicaoIndiceMes(mesAno)} disabled={editandoIndiceMes !== null} style={{marginRight:'6px', fontSize:'0.85em'}}>✏️ Editar</button>
                             <button onClick={() => deleteIndiceMensal(mesAno)} style={{fontSize:'0.85em', color:'#B91C1C'}}>{ehCustom ? '↩️ Restaurar' : '🗑️ Excluir'}</button>
                           </td>
                         </tr>
