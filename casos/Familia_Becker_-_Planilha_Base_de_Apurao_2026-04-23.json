@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Familia_Becker_-_Planilha_Base_de_Apurao_2026-04-23",
-    "salvoEm": "2026-04-27T14:08:19.282Z",
+    "salvoEm": "2026-04-27T14:21:01.150Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -81,10 +81,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938001,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2021-07",
+      "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038001,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2021-07",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138001,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2021-07",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838002,
       "beneficiarioId": "1776957335739",
       "mesAno": "2021-08",
       "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938002,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2021-08",
+      "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038002,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2021-08",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138002,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2021-08",
+      "valorPago": "315.9",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -101,10 +161,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938003,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2021-09",
+      "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038003,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2021-09",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138003,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2021-09",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838004,
       "beneficiarioId": "1776957335739",
       "mesAno": "2021-10",
       "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938004,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2021-10",
+      "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038004,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2021-10",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138004,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2021-10",
+      "valorPago": "315.9",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -121,10 +241,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938005,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2021-11",
+      "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038005,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2021-11",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138005,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2021-11",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838006,
       "beneficiarioId": "1776957335739",
       "mesAno": "2021-12",
       "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938006,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2021-12",
+      "valorPago": "758.54",
+      "reajusteAplicado": "18.999733",
+      "reajusteNegativo": "",
+      "mudancaIdade": "19",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038006,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2021-12",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138006,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2021-12",
+      "valorPago": "315.9",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -141,10 +321,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938007,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-01",
+      "valorPago": "758.54",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038007,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-01",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138007,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-01",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838008,
       "beneficiarioId": "1776957335739",
       "mesAno": "2022-02",
       "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938008,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-02",
+      "valorPago": "758.54",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038008,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-02",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138008,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-02",
+      "valorPago": "315.9",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -161,10 +401,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938009,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-03",
+      "valorPago": "758.54",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038009,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-03",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138009,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-03",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838010,
       "beneficiarioId": "1776957335739",
       "mesAno": "2022-04",
       "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938010,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-04",
+      "valorPago": "758.54",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038010,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-04",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138010,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-04",
+      "valorPago": "315.9",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -181,10 +481,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938011,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-05",
+      "valorPago": "758.54",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038011,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-05",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138011,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-05",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838012,
       "beneficiarioId": "1776957335739",
       "mesAno": "2022-06",
       "valorPago": "637.43",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938012,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-06",
+      "valorPago": "758.54",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038012,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-06",
+      "valorPago": "315.9",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138012,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-06",
+      "valorPago": "315.9",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -201,10 +561,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938013,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-07",
+      "valorPago": "904.55",
+      "reajusteAplicado": "19.24882",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038013,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-07",
+      "valorPago": "376.71",
+      "reajusteAplicado": "19.249763",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138013,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-07",
+      "valorPago": "376.71",
+      "reajusteAplicado": "19.249763",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838014,
       "beneficiarioId": "1776957335739",
       "mesAno": "2022-08",
       "valorPago": "760.13",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938014,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-08",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038014,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-08",
+      "valorPago": "376.71",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138014,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-08",
+      "valorPago": "376.71",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -221,10 +641,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938015,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-09",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038015,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-09",
+      "valorPago": "452.04",
+      "reajusteAplicado": "19.996815",
+      "reajusteNegativo": "",
+      "mudancaIdade": "20",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138015,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-09",
+      "valorPago": "376.71",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838016,
       "beneficiarioId": "1776957335739",
       "mesAno": "2022-10",
       "valorPago": "760.13",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938016,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-10",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038016,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-10",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138016,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-10",
+      "valorPago": "376.71",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -241,10 +721,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938017,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-11",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038017,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-11",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138017,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-11",
+      "valorPago": "376.71",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838018,
       "beneficiarioId": "1776957335739",
       "mesAno": "2022-12",
       "valorPago": "760.13",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938018,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2022-12",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038018,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2022-12",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138018,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2022-12",
+      "valorPago": "376.71",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -261,10 +801,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938019,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-01",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038019,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-01",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138019,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-01",
+      "valorPago": "376.71",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838020,
       "beneficiarioId": "1776957335739",
       "mesAno": "2023-02",
       "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938020,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-02",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038020,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-02",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138020,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-02",
+      "valorPago": "376.71",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -281,10 +881,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938021,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-03",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038021,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-03",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138021,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-03",
+      "valorPago": "376.71",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838022,
       "beneficiarioId": "1776957335739",
       "mesAno": "2023-04",
       "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938022,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-04",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038022,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-04",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138022,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-04",
+      "valorPago": "376.71",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -301,10 +961,70 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938023,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-05",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038023,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-05",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138023,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-05",
+      "valorPago": "376.71",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838024,
       "beneficiarioId": "1776957335739",
       "mesAno": "2023-06",
       "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938024,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-06",
+      "valorPago": "904.55",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038024,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-06",
+      "valorPago": "452.04",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138024,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-06",
+      "valorPago": "376.71",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -321,6 +1041,36 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938025,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-07",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "23.790835",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038025,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-07",
+      "valorPago": "559.58",
+      "reajusteAplicado": "23.78993",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138025,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-07",
+      "valorPago": "466.33",
+      "reajusteAplicado": "23.790183",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838026,
       "beneficiarioId": "1776957335739",
       "mesAno": "2023-08",
@@ -331,8 +1081,78 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938026,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-08",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038026,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-08",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138026,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-08",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838027,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2023-09",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938027,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-09",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038027,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-09",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138027,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-09",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338001,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2023-09",
       "valorPago": "1119.75",
       "reajusteAplicado": "",
@@ -351,8 +1171,88 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938028,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-10",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038028,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-10",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138028,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-10",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338002,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2023-10",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838029,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2023-11",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938029,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-11",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038029,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-11",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138029,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-11",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338003,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2023-11",
       "valorPago": "1119.75",
       "reajusteAplicado": "",
@@ -371,8 +1271,98 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938030,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2023-12",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038030,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2023-12",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138030,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2023-12",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338004,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2023-12",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838031,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2024-01",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938031,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-01",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038031,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-01",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138031,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-01",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238001,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-01",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338005,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2024-01",
       "valorPago": "1119.75",
       "reajusteAplicado": "",
@@ -391,8 +1381,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938032,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-02",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038032,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-02",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138032,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-02",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238002,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-02",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338006,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2024-02",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838033,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2024-03",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938033,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-03",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038033,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-03",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138033,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-03",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238003,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-03",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338007,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2024-03",
       "valorPago": "1119.75",
       "reajusteAplicado": "",
@@ -411,8 +1501,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938034,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-04",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038034,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-04",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138034,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-04",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238004,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-04",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338008,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2024-04",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838035,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2024-05",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938035,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-05",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038035,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-05",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138035,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-05",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238005,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-05",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338009,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2024-05",
       "valorPago": "1119.75",
       "reajusteAplicado": "",
@@ -431,8 +1621,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938036,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-06",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038036,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-06",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138036,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-06",
+      "valorPago": "466.33",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238006,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-06",
+      "valorPago": "559.58",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338010,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2024-06",
+      "valorPago": "1119.75",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838037,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2024-07",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "20.960036",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938037,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-07",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "20.960036",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038037,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-07",
+      "valorPago": "676.86",
+      "reajusteAplicado": "20.958576",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138037,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-07",
+      "valorPago": "564.07",
+      "reajusteAplicado": "20.959406",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238007,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-07",
+      "valorPago": "676.86",
+      "reajusteAplicado": "20.958576",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338011,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2024-07",
       "valorPago": "1354.45",
       "reajusteAplicado": "20.960036",
@@ -451,8 +1741,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938038,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-08",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038038,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-08",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138038,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-08",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238008,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-08",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338012,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2024-08",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838039,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2024-09",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938039,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-09",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038039,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-09",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138039,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-09",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238009,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-09",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338013,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2024-09",
       "valorPago": "1354.45",
       "reajusteAplicado": "",
@@ -471,8 +1861,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938040,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-10",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038040,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-10",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138040,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-10",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238010,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-10",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338014,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2024-10",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838041,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2024-11",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938041,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-11",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038041,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-11",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138041,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-11",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238011,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-11",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338015,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2024-11",
       "valorPago": "1354.45",
       "reajusteAplicado": "",
@@ -491,8 +1981,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938042,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2024-12",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038042,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2024-12",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138042,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2024-12",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238012,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2024-12",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338016,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2024-12",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838043,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2025-01",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938043,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2025-01",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038043,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2025-01",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138043,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2025-01",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238013,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2025-01",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338017,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2025-01",
       "valorPago": "1354.45",
       "reajusteAplicado": "",
@@ -511,8 +2101,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938044,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2025-02",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038044,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2025-02",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138044,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2025-02",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238014,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2025-02",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338018,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2025-02",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838045,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2025-03",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938045,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2025-03",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038045,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2025-03",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138045,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2025-03",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238015,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2025-03",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338019,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2025-03",
       "valorPago": "1354.45",
       "reajusteAplicado": "",
@@ -531,8 +2221,108 @@
       "observacao": ""
     },
     {
+      "id": 1776957335938046,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2025-04",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038046,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2025-04",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138046,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2025-04",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238016,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2025-04",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338020,
+      "beneficiarioId": "1776957335744",
+      "mesAno": "2025-04",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1776957335838047,
       "beneficiarioId": "1776957335739",
+      "mesAno": "2025-05",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957335938047,
+      "beneficiarioId": "1776957335740",
+      "mesAno": "2025-05",
+      "valorPago": "1354.45",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336038047,
+      "beneficiarioId": "1776957335741",
+      "mesAno": "2025-05",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336138047,
+      "beneficiarioId": "1776957335742",
+      "mesAno": "2025-05",
+      "valorPago": "564.07",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336238017,
+      "beneficiarioId": "1776957335743",
+      "mesAno": "2025-05",
+      "valorPago": "676.86",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1776957336338021,
+      "beneficiarioId": "1776957335744",
       "mesAno": "2025-05",
       "valorPago": "1354.45",
       "reajusteAplicado": "",
@@ -551,950 +2341,10 @@
       "observacao": ""
     },
     {
-      "id": 1776957335938001,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2021-07",
-      "valorPago": "637.43",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938002,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2021-08",
-      "valorPago": "637.43",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938003,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2021-09",
-      "valorPago": "637.43",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938004,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2021-10",
-      "valorPago": "637.43",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938005,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2021-11",
-      "valorPago": "637.43",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938006,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2021-12",
-      "valorPago": "758.54",
-      "reajusteAplicado": "18.999733",
-      "reajusteNegativo": "",
-      "mudancaIdade": "19",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938007,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-01",
-      "valorPago": "758.54",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938008,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-02",
-      "valorPago": "758.54",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938009,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-03",
-      "valorPago": "758.54",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938010,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-04",
-      "valorPago": "758.54",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938011,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-05",
-      "valorPago": "758.54",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938012,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-06",
-      "valorPago": "758.54",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938013,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-07",
-      "valorPago": "904.55",
-      "reajusteAplicado": "19.24882",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938014,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-08",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938015,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-09",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938016,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-10",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938017,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-11",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938018,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2022-12",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938019,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-01",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938020,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-02",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938021,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-03",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938022,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-04",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938023,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-05",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938024,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-06",
-      "valorPago": "904.55",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938025,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-07",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "23.790835",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938026,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-08",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938027,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-09",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938028,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-10",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938029,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-11",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938030,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2023-12",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938031,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-01",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938032,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-02",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938033,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-03",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938034,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-04",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938035,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-05",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938036,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-06",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938037,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-07",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "20.960036",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938038,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-08",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938039,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-09",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938040,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-10",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938041,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-11",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938042,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2024-12",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938043,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2025-01",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938044,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2025-02",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938045,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2025-03",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938046,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2025-04",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957335938047,
-      "beneficiarioId": "1776957335740",
-      "mesAno": "2025-05",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
       "id": 1776957335938048,
       "beneficiarioId": "1776957335740",
       "mesAno": "2025-06",
       "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038001,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2021-07",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038002,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2021-08",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038003,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2021-09",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038004,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2021-10",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038005,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2021-11",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038006,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2021-12",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038007,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-01",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038008,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-02",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038009,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-03",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038010,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-04",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038011,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-05",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038012,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-06",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038013,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-07",
-      "valorPago": "376.71",
-      "reajusteAplicado": "19.249763",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038014,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-08",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038015,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-09",
-      "valorPago": "452.04",
-      "reajusteAplicado": "19.996815",
-      "reajusteNegativo": "",
-      "mudancaIdade": "20",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038016,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-10",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038017,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-11",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038018,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2022-12",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038019,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-01",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038020,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-02",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038021,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-03",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038022,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-04",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038023,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-05",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038024,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-06",
-      "valorPago": "452.04",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038025,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-07",
-      "valorPago": "559.58",
-      "reajusteAplicado": "23.78993",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038026,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-08",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038027,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-09",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038028,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-10",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038029,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-11",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038030,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2023-12",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038031,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-01",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038032,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-02",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038033,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-03",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038034,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-04",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038035,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-05",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038036,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-06",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038037,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-07",
-      "valorPago": "676.86",
-      "reajusteAplicado": "20.958576",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038038,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-08",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038039,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-09",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038040,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-10",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038041,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-11",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038042,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2024-12",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038043,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2025-01",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038044,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2025-02",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038045,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2025-03",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038046,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2025-04",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336038047,
-      "beneficiarioId": "1776957335741",
-      "mesAno": "2025-05",
-      "valorPago": "676.86",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -1511,476 +2361,6 @@
       "observacao": ""
     },
     {
-      "id": 1776957336138001,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2021-07",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138002,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2021-08",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138003,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2021-09",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138004,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2021-10",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138005,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2021-11",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138006,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2021-12",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138007,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-01",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138008,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-02",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138009,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-03",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138010,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-04",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138011,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-05",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138012,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-06",
-      "valorPago": "315.9",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138013,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-07",
-      "valorPago": "376.71",
-      "reajusteAplicado": "19.249763",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138014,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-08",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138015,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-09",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138016,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-10",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138017,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-11",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138018,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2022-12",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138019,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-01",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138020,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-02",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138021,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-03",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138022,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-04",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138023,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-05",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138024,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-06",
-      "valorPago": "376.71",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138025,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-07",
-      "valorPago": "466.33",
-      "reajusteAplicado": "23.790183",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138026,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-08",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138027,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-09",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138028,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-10",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138029,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-11",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138030,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2023-12",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138031,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-01",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138032,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-02",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138033,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-03",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138034,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-04",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138035,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-05",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138036,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-06",
-      "valorPago": "466.33",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138037,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-07",
-      "valorPago": "564.07",
-      "reajusteAplicado": "20.959406",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138038,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-08",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138039,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-09",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138040,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-10",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138041,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-11",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138042,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2024-12",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138043,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2025-01",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138044,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2025-02",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138045,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2025-03",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138046,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2025-04",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336138047,
-      "beneficiarioId": "1776957335742",
-      "mesAno": "2025-05",
-      "valorPago": "564.07",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
       "id": 1776957336138048,
       "beneficiarioId": "1776957335742",
       "mesAno": "2025-06",
@@ -1991,390 +2371,10 @@
       "observacao": ""
     },
     {
-      "id": 1776957336238001,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-01",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238002,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-02",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238003,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-03",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238004,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-04",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238005,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-05",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238006,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-06",
-      "valorPago": "559.58",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238007,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-07",
-      "valorPago": "676.86",
-      "reajusteAplicado": "20.958576",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238008,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-08",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238009,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-09",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238010,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-10",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238011,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-11",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238012,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2024-12",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238013,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2025-01",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238014,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2025-02",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238015,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2025-03",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238016,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2025-04",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336238017,
-      "beneficiarioId": "1776957335743",
-      "mesAno": "2025-05",
-      "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
       "id": 1776957336238018,
       "beneficiarioId": "1776957335743",
       "mesAno": "2025-06",
       "valorPago": "676.86",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338001,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2023-09",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338002,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2023-10",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338003,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2023-11",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338004,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2023-12",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338005,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-01",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338006,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-02",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338007,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-03",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338008,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-04",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338009,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-05",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338010,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-06",
-      "valorPago": "1119.75",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338011,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-07",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "20.960036",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338012,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-08",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338013,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-09",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338014,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-10",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338015,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-11",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338016,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2024-12",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338017,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2025-01",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338018,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2025-02",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338019,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2025-03",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338020,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2025-04",
-      "valorPago": "1354.45",
-      "reajusteAplicado": "",
-      "reajusteNegativo": "",
-      "mudancaIdade": "",
-      "observacao": ""
-    },
-    {
-      "id": 1776957336338021,
-      "beneficiarioId": "1776957335744",
-      "mesAno": "2025-05",
-      "valorPago": "1354.45",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -2395,7 +2395,7 @@
     "indexador": "ca",
     "juros": "hybrid",
     "refMes": "baseplanilha",
-    "dataFim": "2025-06",
+    "dataFim": "2026-04",
     "dataInicio": "2022-07-01",
     "dataAjuizamento": "",
     "mesReajuste": 7
