@@ -2799,9 +2799,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                 </span>
                 <button
                   onClick={() => {
-                    if (!window.confirm('Aplicar saneamento manual?
-
-Remove overrides com fatores fora de faixa e limpa meses sem dataset padrão que tenham fatores placeholder (mantém só ANS desses).')) return;
+                    if (!window.confirm('Aplicar saneamento manual?\n\nRemove overrides com fatores fora de faixa e limpa meses sem dataset padrão que tenham fatores placeholder (mantém só ANS desses).')) return;
                     setIndicesCustomMensais(prev => {
                       const sane = sanearMensaisObj(prev);
                       try { setTimeout(() => alert(`Saneamento manual concluído:
@@ -3040,4 +3038,4 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<CalculadoraSaude />);
   </script>
 </body>
-</html>
+</html
