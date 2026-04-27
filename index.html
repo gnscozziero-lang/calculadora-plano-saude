@@ -879,10 +879,16 @@ function CalculadoraSaude() {
         try { console.warn('[Saneamento] Removido override corrompido', mes, d); } catch(e) {}
         return;
       }
-      const placeholder = (d.ca === 1 && d.ia === 1 && d.fa === 1 && d.sa === 1);
-      if (!INDICES[mes] && placeholder) {
-        adelgacados++;
-        try { console.warn('[Saneamento] Adelgaçado (mantém só ANS)', mes); } catch(e) {}
+      // Adelgaçamento agressivo: meses fora de INDICES nunca devem ter fatores ca/ia/fa/sa
+      // (eles só devem entrar via fluxo explícito de "adicionar mês novo" no formulário, que
+      // grava ca/ia/fa/sa válidos derivados do predecessor + % mensal). Aqui descartamos
+      // qualquer fator residual e mantemos só `an` se for válido.
+      if (!INDICES[mes]) {
+        const temFatores = (d.ca !== undefined || d.ia !== undefined || d.fa !== undefined || d.sa !== undefined);
+        if (temFatores) {
+          adelgacados++;
+          try { console.warn('[Saneamento] Adelgaçado (mês fora do dataset, fatores descartados)', mes, d); } catch(e) {}
+        }
         if (d.an !== undefined) limpo[mes] = { an: d.an };
         return;
       }
@@ -925,6 +931,14 @@ function CalculadoraSaude() {
   const [editIndicePctFipe, setEditIndicePctFipe] = React.useState('');
   const [editIndicePctSelic, setEditIndicePctSelic] = React.useState('');
   const [editIndicePctAns, setEditIndicePctAns] = React.useState('');
+
+  // Form para adicionar mês novo
+  const [formAddMesAno, setFormAddMesAno] = React.useState('');
+  const [formAddIpca, setFormAddIpca] = React.useState('');
+  const [formAddInpc, setFormAddInpc] = React.useState('');
+  const [formAddFipe, setFormAddFipe] = React.useState('');
+  const [formAddSelic, setFormAddSelic] = React.useState('');
+  const [formAddAns, setFormAddAns] = React.useState('');
 
   const GH_OWNER = 'gnscozziero-lang';
   const GH_REPO = 'calculadora-plano-saude';
@@ -1261,6 +1275,60 @@ function CalculadoraSaude() {
     if (aplicarEdicaoMensalPct(editandoIndiceMes, pcts)) {
       cancelarEdicaoIndiceMes();
     }
+  };
+
+
+  // Calcula mês imediatamente anterior no formato AAAA-MM
+  const _mesAnterior = (mesAno) => {
+    const [a, m] = mesAno.split('-').map(Number);
+    const d = new Date(a, m - 2, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  };
+
+  // Adiciona um mês novo a partir de % mensais. Calcula ca/ia/fa/sa a partir do predecessor.
+  const adicionarMensalPct = (mesAno, pcts) => {
+    if (!/^\d{4}-\d{2}$/.test(mesAno)) { alert('Mês-Ano inválido. Use formato AAAA-MM (ex.: 2026-03).'); return false; }
+    const mm = parseInt(mesAno.slice(5), 10);
+    if (mm < 1 || mm > 12) { alert('Mês inválido.'); return false; }
+
+    const mesAnt = _mesAnterior(mesAno);
+    const prev = INDICES_MERGED[mesAnt];
+    if (!prev) { alert('Predecessor ' + mesAnt + ' não existe no sistema. Adicione ' + mesAnt + ' antes.'); return false; }
+
+    const limites = { ipca: 0.05, inpc: 0.05, fipe: 0.05, selic: 0.05 };
+    const fora = [];
+    ['ipca','inpc','fipe','selic'].forEach(k => {
+      const v = pcts[k];
+      if (v === null || v === undefined || isNaN(v)) return;
+      if (v < -0.03 || v > limites[k]) fora.push(`${k.toUpperCase()}: ${(v*100).toFixed(4)}%`);
+    });
+    if (pcts.ans !== null && pcts.ans !== undefined && !isNaN(pcts.ans)) {
+      if (pcts.ans < -0.20 || pcts.ans > 0.50) fora.push(`ANS: ${(pcts.ans*100).toFixed(4)}%`);
+    }
+    if (fora.length > 0) {
+      if (!window.confirm('Os seguintes valores estão fora da faixa usual:\n\n' + fora.join('\n') + '\n\nConfirmar mesmo assim?')) return false;
+    }
+
+    const mapField = { ipca: 'ca', inpc: 'ia', fipe: 'fa', selic: 'sa' };
+    const novo = {};
+    ['ipca','inpc','fipe','selic'].forEach(k => {
+      const frac = pcts[k];
+      const field = mapField[k];
+      const prevAcum = prev[field];
+      if (frac === null || frac === undefined || isNaN(frac) || !prevAcum) return;
+      novo[field] = prevAcum / (1 + frac);
+    });
+    if (pcts.ans !== null && pcts.ans !== undefined && !isNaN(pcts.ans)) {
+      novo.an = pcts.ans;
+    } else if (prev.an !== undefined) {
+      // herda ANS do mês anterior se não foi informado (cobre edge case de mês fora do aniversário)
+      novo.an = prev.an;
+    }
+
+    if (Object.keys(novo).length === 0) { alert('Nenhum campo informado.'); return false; }
+
+    setIndicesCustomMensais(prev2 => ({ ...prev2, [mesAno]: novo }));
+    return true;
   };
 
   // ── GitHub: persistência de índices globais ───────────────────────────────
@@ -2784,6 +2852,62 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                 Valores mensais em percentual. Ex.: IPCA de 0,70% no mês. O sistema converte automaticamente para os fatores acumulados usados nos cálculos.
                 Ao editar, a alteração propaga os fatores acumulados dos meses seguintes preservando os percentuais deles.
               </p>
+
+              <div style={{background:'#F8FAFC', border:'1px solid #E2E8F0', borderRadius:'6px', padding:'12px', marginBottom:'14px'}}>
+                <div style={{fontSize:'0.9em', fontWeight:600, color:'#1B3A5C', marginBottom:'8px'}}>+ Adicionar mês novo</div>
+                <div style={{display:'grid', gridTemplateColumns:'100px 90px 90px 90px 90px 90px auto', gap:'8px', alignItems:'flex-end'}}>
+                  <div>
+                    <label style={{display:'block', fontSize:'0.8em', color:'#64748B'}}>Mês/Ano</label>
+                    <input type="text" value={formAddMesAno} onChange={e => setFormAddMesAno(e.target.value)} placeholder="2026-03" maxLength={7} style={{width:'100%'}} />
+                  </div>
+                  <div>
+                    <label style={{display:'block', fontSize:'0.8em', color:'#64748B'}}>IPCA %</label>
+                    <input type="text" value={formAddIpca} onChange={e => setFormAddIpca(e.target.value)} placeholder="0,70" style={{width:'100%', textAlign:'right'}} />
+                  </div>
+                  <div>
+                    <label style={{display:'block', fontSize:'0.8em', color:'#64748B'}}>INPC %</label>
+                    <input type="text" value={formAddInpc} onChange={e => setFormAddInpc(e.target.value)} placeholder="0,48" style={{width:'100%', textAlign:'right'}} />
+                  </div>
+                  <div>
+                    <label style={{display:'block', fontSize:'0.8em', color:'#64748B'}}>FIPE %</label>
+                    <input type="text" value={formAddFipe} onChange={e => setFormAddFipe(e.target.value)} placeholder="0,55" style={{width:'100%', textAlign:'right'}} />
+                  </div>
+                  <div>
+                    <label style={{display:'block', fontSize:'0.8em', color:'#64748B'}}>SELIC %</label>
+                    <input type="text" value={formAddSelic} onChange={e => setFormAddSelic(e.target.value)} placeholder="0,90" style={{width:'100%', textAlign:'right'}} />
+                  </div>
+                  <div>
+                    <label style={{display:'block', fontSize:'0.8em', color:'#64748B'}}>ANS %</label>
+                    <input type="text" value={formAddAns} onChange={e => setFormAddAns(e.target.value)} placeholder="6,06" style={{width:'100%', textAlign:'right'}} />
+                  </div>
+                  <button
+                    onClick={() => {
+                      const parsePct = (s) => {
+                        const t = String(s).trim().replace(',', '.');
+                        if (t === '') return null;
+                        const n = parseFloat(t);
+                        if (isNaN(n)) return null;
+                        return n / 100;
+                      };
+                      const pcts = {
+                        ipca: parsePct(formAddIpca),
+                        inpc: parsePct(formAddInpc),
+                        fipe: parsePct(formAddFipe),
+                        selic: parsePct(formAddSelic),
+                        ans: parsePct(formAddAns),
+                      };
+                      if (adicionarMensalPct(formAddMesAno.trim(), pcts)) {
+                        setFormAddMesAno(''); setFormAddIpca(''); setFormAddInpc(''); setFormAddFipe(''); setFormAddSelic(''); setFormAddAns('');
+                      }
+                    }}
+                    className="btn-primary"
+                    style={{padding:'6px 12px'}}
+                  >➕ Adicionar</button>
+                </div>
+                <div style={{fontSize:'0.8em', color:'#64748B', marginTop:'8px'}}>
+                  Calcula os fatores acumulados a partir do mês imediatamente anterior + percentual mensal informado. Predecessor precisa existir no sistema.
+                </div>
+              </div>
 
               <div style={{marginBottom:'12px'}}>
                 <label style={{fontSize:'0.9em', marginRight:'8px'}}>Filtrar por ano:</label>
