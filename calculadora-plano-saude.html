@@ -861,30 +861,49 @@ function CalculadoraSaude() {
   React.useEffect(() => { try { localStorage.setItem('calc_indicesCustomMensais', JSON.stringify(indicesCustomMensais)); } catch(e) {} }, [indicesCustomMensais]);
   React.useEffect(() => { try { localStorage.setItem('calc_indicesCustomAns', JSON.stringify(indicesCustomAns)); } catch(e) {} }, [indicesCustomAns]);
 
-  // Sanitização one-shot no boot — remove overrides corrompidos (ca/ia/fa/sa fora de [0.3,3] ou an fora de [-0.3,0.5]).
+  // Sanitiza um objeto de overrides mensais. Retorna { limpo, removidos, adelgacados }.
+  // - removidos: meses descartados por ca/ia/fa/sa fora de [0.3,3] ou an fora de [-0.3,0.5]
+  // - adelgacados: meses fora de INDICES com fatores placeholder (ca=ia=fa=sa=1); mantém só `an`
+  const sanearMensaisObj = React.useCallback((prev) => {
+    const limpo = {};
+    let removidos = 0, adelgacados = 0;
+    Object.keys(prev || {}).forEach(mes => {
+      const d = prev[mes] || {};
+      const caOK = (d.ca === undefined) || (typeof d.ca === 'number' && d.ca >= 0.3 && d.ca <= 3.0);
+      const iaOK = (d.ia === undefined) || (typeof d.ia === 'number' && d.ia >= 0.3 && d.ia <= 3.0);
+      const faOK = (d.fa === undefined) || (typeof d.fa === 'number' && d.fa >= 0.3 && d.fa <= 3.0);
+      const saOK = (d.sa === undefined) || (typeof d.sa === 'number' && d.sa >= 0.3 && d.sa <= 3.0);
+      const anOK = (d.an === undefined) || (typeof d.an === 'number' && d.an >= -0.3 && d.an <= 0.5);
+      if (!(caOK && iaOK && faOK && saOK && anOK)) {
+        removidos++;
+        try { console.warn('[Saneamento] Removido override corrompido', mes, d); } catch(e) {}
+        return;
+      }
+      const placeholder = (d.ca === 1 && d.ia === 1 && d.fa === 1 && d.sa === 1);
+      if (!INDICES[mes] && placeholder) {
+        adelgacados++;
+        try { console.warn('[Saneamento] Adelgaçado (mantém só ANS)', mes); } catch(e) {}
+        if (d.an !== undefined) limpo[mes] = { an: d.an };
+        return;
+      }
+      limpo[mes] = d;
+    });
+    return { limpo, removidos, adelgacados };
+  }, []);
+
+  // Sanitização one-shot no boot — limpa o estado inicial (vindo do localStorage)
   const sanitizacaoFeitaRef = React.useRef(false);
   React.useEffect(() => {
     if (sanitizacaoFeitaRef.current) return;
     sanitizacaoFeitaRef.current = true;
     setIndicesCustomMensais(prev => {
-      const limpo = {};
-      let removidos = 0;
-      Object.keys(prev).forEach(mes => {
-        const d = prev[mes] || {};
-        const caOK = (d.ca === undefined) || (typeof d.ca === 'number' && d.ca >= 0.3 && d.ca <= 3.0);
-        const iaOK = (d.ia === undefined) || (typeof d.ia === 'number' && d.ia >= 0.3 && d.ia <= 3.0);
-        const faOK = (d.fa === undefined) || (typeof d.fa === 'number' && d.fa >= 0.3 && d.fa <= 3.0);
-        const saOK = (d.sa === undefined) || (typeof d.sa === 'number' && d.sa >= 0.3 && d.sa <= 3.0);
-        const anOK = (d.an === undefined) || (typeof d.an === 'number' && d.an >= -0.3 && d.an <= 0.5);
-        if (caOK && iaOK && faOK && saOK && anOK) { limpo[mes] = d; }
-        else { removidos++; try { console.warn('[Saneamento] Removido override corrompido', mes, d); } catch(e) {} }
-      });
-      if (removidos > 0) {
-        try { setTimeout(() => { alert(`⚠️ ${removidos} override(s) de índices mensais foram restaurados ao padrão por conter valores fora de faixa (provável erro de edição anterior).`); }, 500); } catch(e) {}
+      const { limpo, removidos, adelgacados } = sanearMensaisObj(prev);
+      if (removidos > 0 || adelgacados > 0) {
+        try { setTimeout(() => { alert(`⚠️ Saneamento de índices: ${removidos} mês(es) corrompido(s) restaurado(s) ao padrão; ${adelgacados} mês(es) com fatores placeholder limpo(s).`); }, 500); } catch(e) {}
       }
-      return removidos === 0 ? prev : limpo;
+      return (removidos === 0 && adelgacados === 0) ? prev : limpo;
     });
-  }, []);
+  }, [sanearMensaisObj]);
   const INDICES_MERGED = React.useMemo(() => ({ ...INDICES, ...indicesCustomMensais }), [indicesCustomMensais]);
   const ANS_ANO_MERGED = React.useMemo(() => ({ ...ANS_ANO, ...indicesCustomAns }), [indicesCustomAns]);
 
@@ -1046,8 +1065,14 @@ function CalculadoraSaude() {
     for (let m = 5; m <= 12; m++) mesesAbrangidos.push(`${ano}-${String(m).padStart(2,'0')}`);
     for (let m = 1; m <= 4; m++) mesesAbrangidos.push(`${parseInt(ano,10)+1}-${String(m).padStart(2,'0')}`);
     mesesAbrangidos.forEach(mesAno => {
-      const base = INDICES[mesAno] || novoMensais[mesAno] || { ia: 1, an: 0, ca: 1, fa: 1, sa: 1 };
-      novoMensais[mesAno] = { ...base, ...(novoMensais[mesAno] || {}), an: valor };
+      const existeNoBase = INDICES[mesAno] !== undefined;
+      if (existeNoBase) {
+        const base = INDICES[mesAno];
+        novoMensais[mesAno] = { ...base, ...(novoMensais[mesAno] || {}), an: valor };
+      } else {
+        const existente = novoMensais[mesAno] || {};
+        novoMensais[mesAno] = { ...existente, an: valor };
+      }
     });
     return novoMensais;
   }, []);
@@ -1123,7 +1148,11 @@ function CalculadoraSaude() {
       setIndicesCustomMensais(prev => ({ ...prev, [mesAno]: { ia: 1, an: 0, ca: 1, fa: 1, sa: 1 } }));
       return;
     }
-    if (!window.confirm(`Restaurar ${mesAno} ao valor padrão?`)) return;
+    const existeNoBase = INDICES[mesAno] !== undefined;
+    const msg = existeNoBase
+      ? `Restaurar ${mesAno} ao valor padrão?`
+      : `⚠️ ${mesAno} não existe no dataset padrão (que vai até 2026-02). Restaurar vai REMOVER esse mês da tabela. Continuar?`;
+    if (!window.confirm(msg)) return;
     setIndicesCustomMensais(prev => { const n = { ...prev }; delete n[mesAno]; return n; });
   };
 
@@ -1269,9 +1298,20 @@ function CalculadoraSaude() {
       else if (res.ok) {
         const file = await res.json();
         const content = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+        const saneIdx = sanearMensaisObj(content.mensais || {});
         setIndicesCustomAns(content.ansAnual || {});
-        setIndicesCustomMensais(content.mensais || {});
-        setGhIndicesStatus(`✅ Índices carregados (${Object.keys(content.ansAnual || {}).length} ANS custom, ${Object.keys(content.mensais || {}).length} mensais custom)`);
+        setIndicesCustomMensais(saneIdx.limpo);
+        const extraMsg = (saneIdx.removidos > 0 || saneIdx.adelgacados > 0)
+          ? ` · Saneados: ${saneIdx.removidos} corrompido(s), ${saneIdx.adelgacados} placeholder(s)`
+          : '';
+        setGhIndicesStatus(`✅ Índices carregados (${Object.keys(content.ansAnual || {}).length} ANS custom, ${Object.keys(saneIdx.limpo).length} mensais custom)${extraMsg}`);
+        if (saneIdx.removidos > 0 || saneIdx.adelgacados > 0) {
+          try { setTimeout(() => alert(`⚠️ Saneamento aplicado ao carregar do GitHub:
+• ${saneIdx.removidos} mês(es) corrompido(s) restaurado(s)
+• ${saneIdx.adelgacados} mês(es) com fatores placeholder limpo(s).
+
+O próximo auto-save vai gravar a versão limpa no repositório.`), 600); } catch(e) {}
+        }
       } else { const e = await res.json(); setGhIndicesStatus(`❌ ${e.message}`); }
     } catch(e) { setGhIndicesStatus(`❌ ${e.message}`); }
     setGhIndicesLoading(false);
@@ -1288,7 +1328,17 @@ function CalculadoraSaude() {
           const file = await res.json();
           const content = JSON.parse(decodeURIComponent(escape(atob(file.content))));
           if (content.ansAnual) setIndicesCustomAns(content.ansAnual);
-          if (content.mensais) setIndicesCustomMensais(content.mensais);
+          if (content.mensais) {
+            const saneBoot = sanearMensaisObj(content.mensais);
+            setIndicesCustomMensais(saneBoot.limpo);
+            if (saneBoot.removidos > 0 || saneBoot.adelgacados > 0) {
+              try { setTimeout(() => alert(`⚠️ Saneamento ao carregar índices do GitHub:
+• ${saneBoot.removidos} mês(es) corrompido(s)
+• ${saneBoot.adelgacados} mês(es) placeholder limpo(s)
+
+O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } catch(e) {}
+            }
+          }
         }
       } catch(e) { /* silencioso no boot */ }
     })();
@@ -2747,6 +2797,21 @@ function CalculadoraSaude() {
                 <span style={{marginLeft:'16px', fontSize:'0.85em', color:'#64748B'}}>
                   {Object.keys(indicesCustomMensais).length} mês(es) customizado(s)
                 </span>
+                <button
+                  onClick={() => {
+                    if (!window.confirm('Aplicar saneamento manual?
+
+Remove overrides com fatores fora de faixa e limpa meses sem dataset padrão que tenham fatores placeholder (mantém só ANS desses).')) return;
+                    setIndicesCustomMensais(prev => {
+                      const sane = sanearMensaisObj(prev);
+                      try { setTimeout(() => alert(`Saneamento manual concluído:
+• ${sane.removidos} corrompido(s) removido(s)
+• ${sane.adelgacados} placeholder(s) adelgaçado(s).`), 100); } catch(e) {}
+                      return sane.limpo;
+                    });
+                  }}
+                  style={{marginLeft:'16px', padding:'4px 10px', fontSize:'0.85em', background:'#FEF3C7', borderColor:'#F59E0B', color:'#92400E'}}
+                >🧹 Sanear índices</button>
               </div>
 
               <table className="table">
