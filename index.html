@@ -817,7 +817,7 @@ function CalculadoraSaude() {
   const [editandoReajusteId, setEditandoReajusteId] = React.useState(null);
   const [configIndexador, setConfigIndexador] = React.useState(() => ls('configIndexador', 'ca'));
   const [configJuros, setConfigJuros] = React.useState(() => ls('configJuros', 'hybrid'));
-  const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'baseplanilha'));
+  const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'ultimo'));
   const [configDataFim, setConfigDataFim] = React.useState(() => ls('configDataFim', '2026-02'));
   const [configDataInicio, setConfigDataInicio] = React.useState(() => ls('configDataInicio', '2000-01-01'));
   const [configDataAjuizamento, setConfigDataAjuizamento] = React.useState(() => ls('configDataAjuizamento', ''));
@@ -1017,7 +1017,7 @@ function CalculadoraSaude() {
       if (res.ok) {
         const data = await res.json();
         setCnpjs(data.cnpjs || []); setBeneficiarios(data.beneficiarios || []); setReajustes(data.reajustes || []);
-        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); }
+        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'ultimo'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); }
         setGhCasoNome(data.metadados?.nome || file.name.replace('.json',''));
         setGhStatus(`✅ Caso carregado: "${data.metadados?.nome || file.name}"`);
         setActiveTab('dashboard');
@@ -1542,7 +1542,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
   // Limpa estado local para começar um caso novo "em branco"
   const novoCasoEmBranco = () => {
     setCnpjs([]); setBeneficiarios([]); setReajustes([]);
-    setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha');
+    setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('ultimo');
     setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento(''); setConfigMesReajuste(12);
     setGhCasoNome('');
     setActiveTab('cnpjs');
@@ -1591,7 +1591,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
       if (payload.config) {
         setConfigIndexador(payload.config.indexador || 'ca');
         setConfigJuros(payload.config.juros || 'hybrid');
-        setConfigRefMes(payload.config.refMes || 'baseplanilha');
+        setConfigRefMes(payload.config.refMes || 'ultimo');
         setConfigDataFim(payload.config.dataFim || '2026-02');
         setConfigDataInicio(payload.config.dataInicio || '');
         setConfigDataAjuizamento(payload.config.dataAjuizamento || '');
@@ -1796,17 +1796,23 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           const years = Math.floor(daysDiff) / 365.25;
           const prescrito = years >= 3;
 
-          // Modo "padrão planilha": quando configRefMes === 'baseplanilha' ou vazio,
-          // usa o Fator IPCA/INPC/FIPE/SELIC acumulado DIRETO (sem dividir por refMes).
-          // Equivale a uma data-base virtual pós-tabela com acum=1.0. A planilha original
-          // do escritório trabalha exatamente assim e foi aceita em juízo.
-          const isBasePlanilha = !configRefMes || configRefMes === 'baseplanilha' || !INDICES_MERGED[configRefMes];
+          // Modo "padrão planilha" (legado, Scozziero): usa fator acumulado direto.
+          // Modo "ultimo" (novo default): normaliza pelo último mês do dataset — alinha com
+          // planilhas modernas que usam IPCA real divulgado como data-base.
+          // Modo "custom": divide pelo fator do mês de referência configurado.
+          const isUltimo = configRefMes === 'ultimo';
+          const isBasePlanilha = !isUltimo && (!configRefMes || configRefMes === 'baseplanilha' || !INDICES_MERGED[configRefMes]);
+          const _chavesAllRef = Object.keys(INDICES_MERGED).sort();
+          const _ultimoMesRef = _chavesAllRef.length > 0 ? _chavesAllRef[_chavesAllRef.length - 1] : null;
 
           let fatorCorrecao = 1.0;
           if (configIndexador !== 'sem') {
             const correcaoMes = INDICES_MERGED[mesAno]?.[configIndexador];
             if (isBasePlanilha) {
               if (correcaoMes) fatorCorrecao = correcaoMes;
+            } else if (isUltimo) {
+              const correcaoUltimo = _ultimoMesRef ? INDICES_MERGED[_ultimoMesRef]?.[configIndexador] : null;
+              if (correcaoUltimo && correcaoMes) fatorCorrecao = correcaoMes / correcaoUltimo;
             } else {
               const correcaoRef = INDICES_MERGED[configRefMes]?.[configIndexador];
               if (correcaoRef && correcaoMes) fatorCorrecao = correcaoMes / correcaoRef;
@@ -1816,7 +1822,14 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           let jurosPercent = 0;
           if (configJuros !== 'sem') {
             const selicMes = INDICES_MERGED[mesAno]?.sa || 1;
-            const selicRef = isBasePlanilha ? 1 : (INDICES_MERGED[configRefMes]?.sa || 1);
+            let selicRef = 1;
+            if (!isBasePlanilha) {
+              if (isUltimo) {
+                selicRef = (_ultimoMesRef && INDICES_MERGED[_ultimoMesRef]?.sa) || 1;
+              } else {
+                selicRef = INDICES_MERGED[configRefMes]?.sa || 1;
+              }
+            }
             const selicAccum = selicMes / selicRef - 1;
 
             if (configJuros === 'selic') {
@@ -1999,7 +2012,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
             if (!window.confirm('Iniciar novo caso? Todos os dados atuais serão apagados.')) return;
             ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configDataAjuizamento','configMesReajuste','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
             setCnpjs([]); setBeneficiarios([]); setReajustes([]);
-            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('2026-02'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento('');
+            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('ultimo'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento('');
             setGhCasoNome(''); setActiveTab('cadastro');
           }} style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
             🆕 Novo Caso
@@ -2019,7 +2032,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                   if (data.config) {
                     setConfigIndexador(data.config.indexador || 'ca');
                     setConfigJuros(data.config.juros || 'hybrid');
-                    setConfigRefMes(data.config.refMes || 'baseplanilha');
+                    setConfigRefMes(data.config.refMes || 'ultimo');
                     setConfigDataFim(data.config.dataFim || '2026-02');
                     setConfigDataInicio(data.config.dataInicio || '2000-01-01');
                     setConfigDataAjuizamento(data.config.dataAjuizamento || '');
@@ -2408,14 +2421,23 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                 </div>
                 <div className="form-group">
                   <label>Data Referência (correção)</label>
-                  <select value={configRefMes === 'baseplanilha' ? 'baseplanilha' : 'custom'} onChange={(e) => { if (e.target.value === 'baseplanilha') setConfigRefMes('baseplanilha'); else setConfigRefMes('2026-02'); }}>
-                    <option value="baseplanilha">Padrão planilha (fator direto)</option>
+                  <select value={configRefMes === 'baseplanilha' ? 'baseplanilha' : (configRefMes === 'ultimo' ? 'ultimo' : 'custom')} onChange={(e) => {
+                    if (e.target.value === 'baseplanilha') setConfigRefMes('baseplanilha');
+                    else if (e.target.value === 'ultimo') setConfigRefMes('ultimo');
+                    else setConfigRefMes('2026-02');
+                  }}>
+                    <option value="ultimo">Último mês do dataset (recomendado)</option>
+                    <option value="baseplanilha">Padrão planilha extrapolada (legado)</option>
                     <option value="custom">Data específica (dividir fator)</option>
                   </select>
-                  {configRefMes !== 'baseplanilha' && (
+                  {configRefMes !== 'baseplanilha' && configRefMes !== 'ultimo' && (
                     <input type="month" value={configRefMes} onChange={(e) => setConfigRefMes(e.target.value)} style={{marginTop:'6px'}} />
                   )}
-                  <div className="info-text">{configRefMes === 'baseplanilha' ? 'Usa Fator IPCA/SELIC acumulado direto (compatível com planilha do escritório).' : 'Divide fator do mês pelo fator do mês de referência.'}</div>
+                  <div className="info-text">{
+                    configRefMes === 'ultimo' ? 'Normaliza pelo último mês cadastrado em INDICES — alinha com planilhas modernas que usam IPCA real divulgado.' :
+                    configRefMes === 'baseplanilha' ? 'Usa Fator IPCA/SELIC acumulado direto — convenção legada (Scozziero).' :
+                    'Divide fator do mês pelo fator do mês de referência específico.'
+                  }</div>
                 </div>
                 <div className="form-group">
                   <label>Data Inicial das Diferenças</label>
