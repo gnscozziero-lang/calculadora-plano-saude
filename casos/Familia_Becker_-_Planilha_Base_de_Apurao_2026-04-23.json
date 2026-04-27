@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Familia_Becker_-_Planilha_Base_de_Apurao_2026-04-23",
-    "salvoEm": "2026-04-27T13:53:00.464Z",
+    "salvoEm": "2026-04-27T14:08:19.282Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -2397,6 +2397,7 @@
     "refMes": "baseplanilha",
     "dataFim": "2025-06",
     "dataInicio": "2022-07-01",
+    "dataAjuizamento": "",
     "mesReajuste": 7
   }
 }
