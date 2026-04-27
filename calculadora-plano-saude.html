@@ -820,6 +820,7 @@ function CalculadoraSaude() {
   const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'baseplanilha'));
   const [configDataFim, setConfigDataFim] = React.useState(() => ls('configDataFim', '2026-02'));
   const [configDataInicio, setConfigDataInicio] = React.useState(() => ls('configDataInicio', '2000-01-01'));
+  const [configDataAjuizamento, setConfigDataAjuizamento] = React.useState(() => ls('configDataAjuizamento', ''));
   const [configMesReajuste, setConfigMesReajuste] = React.useState(() => ls('configMesReajuste', 12));
   const [configCnpjFilter, setConfigCnpjFilter] = React.useState('');
   const [resultadosTab, setResultadosTab] = React.useState('segurado');
@@ -835,6 +836,7 @@ function CalculadoraSaude() {
   React.useEffect(() => { try { localStorage.setItem('calc_configRefMes', JSON.stringify(configRefMes)); } catch(e) {} }, [configRefMes]);
   React.useEffect(() => { try { localStorage.setItem('calc_configDataFim', JSON.stringify(configDataFim)); } catch(e) {} }, [configDataFim]);
   React.useEffect(() => { try { localStorage.setItem('calc_configDataInicio', JSON.stringify(configDataInicio)); } catch(e) {} }, [configDataInicio]);
+  React.useEffect(() => { try { localStorage.setItem('calc_configDataAjuizamento', JSON.stringify(configDataAjuizamento)); } catch(e) {} }, [configDataAjuizamento]);
   React.useEffect(() => { try { localStorage.setItem('calc_configMesReajuste', JSON.stringify(configMesReajuste)); } catch(e) {} }, [configMesReajuste]);
 
   // GitHub integration state
@@ -994,7 +996,7 @@ function CalculadoraSaude() {
     const payload = {
       metadados: { nome: ghCasoNome.trim(), salvoEm: new Date().toISOString(), versao: '1.0' },
       cnpjs, beneficiarios, reajustes,
-      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, mesReajuste: configMesReajuste }
+      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste }
     };
     try {
       const checkRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`, { headers: ghHdrs() });
@@ -1015,7 +1017,7 @@ function CalculadoraSaude() {
       if (res.ok) {
         const data = await res.json();
         setCnpjs(data.cnpjs || []); setBeneficiarios(data.beneficiarios || []); setReajustes(data.reajustes || []);
-        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigMesReajuste(data.config.mesReajuste || 12); }
+        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); }
         setGhCasoNome(data.metadados?.nome || file.name.replace('.json',''));
         setGhStatus(`✅ Caso carregado: "${data.metadados?.nome || file.name}"`);
         setActiveTab('dashboard');
@@ -1455,7 +1457,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
       const payload = {
         metadados: { nome: ghCasoNome.trim(), salvoEm: new Date().toISOString(), versao: '1.0' },
         cnpjs, beneficiarios, reajustes,
-        config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, mesReajuste: configMesReajuste }
+        config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste }
       };
       ghAutoSave(ghToken, ghCasoNome, payload);
     }, 5000);
@@ -1541,7 +1543,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
   const novoCasoEmBranco = () => {
     setCnpjs([]); setBeneficiarios([]); setReajustes([]);
     setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha');
-    setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigMesReajuste(12);
+    setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento(''); setConfigMesReajuste(12);
     setGhCasoNome('');
     setActiveTab('cnpjs');
     setBootModal(null);
@@ -1592,6 +1594,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
         setConfigRefMes(payload.config.refMes || 'baseplanilha');
         setConfigDataFim(payload.config.dataFim || '2026-02');
         setConfigDataInicio(payload.config.dataInicio || '');
+        setConfigDataAjuizamento(payload.config.dataAjuizamento || '');
         setConfigMesReajuste(payload.config.mesReajuste || 12);
       }
       setGhCasoNome(payload.metadados?.nome || nomePadrao);
@@ -1786,7 +1789,9 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           const mesAnoDate = new Date(mesAno + '-01');
           const diferenca = mesAnoDate >= dataInicioCobr ? Math.max(0, valorPago - valorDevido) : 0;
 
-          const fimDate = new Date(configDataFim + '-01');
+          // Prescrição: contagem regressiva de 3 anos a partir do ajuizamento (fallback: configDataFim).
+          const dataPrescricao = (configDataAjuizamento && /^\d{4}-\d{2}$/.test(configDataAjuizamento)) ? configDataAjuizamento : configDataFim;
+          const fimDate = new Date(dataPrescricao + '-01');
           const daysDiff = (fimDate - new Date(mesAno + '-01')) / (1000 * 60 * 60 * 24);
           const years = Math.floor(daysDiff) / 365.25;
           const prescrito = years >= 3;
@@ -1856,7 +1861,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
 
       return { todosPorSeguro, todosPorCNPJ };
     };
-  }, [beneficiarios, reajustes, cnpjs, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configMesReajuste]);
+  }, [beneficiarios, reajustes, cnpjs, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configDataAjuizamento, configMesReajuste]);
 
   const resultados = calcularResultados();
 
@@ -1992,9 +1997,9 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           )}
           <button onClick={() => {
             if (!window.confirm('Iniciar novo caso? Todos os dados atuais serão apagados.')) return;
-            ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configMesReajuste','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
+            ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configDataAjuizamento','configMesReajuste','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
             setCnpjs([]); setBeneficiarios([]); setReajustes([]);
-            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('2026-02'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01');
+            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('2026-02'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento('');
             setGhCasoNome(''); setActiveTab('cadastro');
           }} style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
             🆕 Novo Caso
@@ -2017,6 +2022,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                     setConfigRefMes(data.config.refMes || 'baseplanilha');
                     setConfigDataFim(data.config.dataFim || '2026-02');
                     setConfigDataInicio(data.config.dataInicio || '2000-01-01');
+                    setConfigDataAjuizamento(data.config.dataAjuizamento || '');
                     setConfigMesReajuste(data.config.mesReajuste || 12);
                   }
                   setGhCasoNome(data.metadados?.nome || f.name.replace('.json',''));
@@ -2391,9 +2397,14 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Até quando calcular</label>
+                  <label>Até quando calcular (data-fim do período)</label>
                   <input type="month" value={configDataFim} onChange={(e) => setConfigDataFim(e.target.value)} />
-                  <div className="info-text">Prescrição: meses antes de {(() => { if(!configDataFim||!/^\d{4}-\d{2}$/.test(configDataFim)) return '—'; const [y,m]=configDataFim.split('-').map(Number); const d=new Date(y,m-1,1); d.setFullYear(d.getFullYear()-3); return `${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })()}</div>
+                  <div className="info-text">Mês final do período sob análise (último valor pago a apurar).</div>
+                </div>
+                <div className="form-group">
+                  <label>Data do ajuizamento (prescrição)</label>
+                  <input type="month" value={configDataAjuizamento} onChange={(e) => setConfigDataAjuizamento(e.target.value)} />
+                  <div className="info-text">Mês de protocolo da ação. Prescreve tudo anterior a {(() => { const ref = (configDataAjuizamento && /^\d{4}-\d{2}$/.test(configDataAjuizamento)) ? configDataAjuizamento : configDataFim; if(!ref||!/^\d{4}-\d{2}$/.test(ref)) return '—'; const [y,m]=ref.split('-').map(Number); const d=new Date(y,m-1,1); d.setFullYear(d.getFullYear()-3); return `${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })()}. Se vazio, usa a data-fim acima.</div>
                 </div>
                 <div className="form-group">
                   <label>Data Referência (correção)</label>
