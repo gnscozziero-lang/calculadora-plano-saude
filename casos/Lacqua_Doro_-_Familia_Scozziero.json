@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "L´acqua D´oro - Familia Scozziero",
-    "salvoEm": "2026-04-27T13:47:32.061Z",
+    "salvoEm": "2026-04-27T14:08:14.056Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -2579,6 +2579,7 @@
     "refMes": "baseplanilha",
     "dataFim": "2026-02",
     "dataInicio": "2021-12-01",
+    "dataAjuizamento": "",
     "mesReajuste": 12
   }
 }
