@@ -817,7 +817,7 @@ function CalculadoraSaude() {
   const [editandoReajusteId, setEditandoReajusteId] = React.useState(null);
   const [configIndexador, setConfigIndexador] = React.useState(() => ls('configIndexador', 'ca'));
   const [configJuros, setConfigJuros] = React.useState(() => ls('configJuros', 'hybrid'));
-  const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'ultimo'));
+  const [configRefMes, setConfigRefMes] = React.useState(() => ls('configRefMes', 'baseplanilha'));
   const [configDataFim, setConfigDataFim] = React.useState(() => ls('configDataFim', '2026-02'));
   const [configDataInicio, setConfigDataInicio] = React.useState(() => ls('configDataInicio', '2000-01-01'));
   const [configDataAjuizamento, setConfigDataAjuizamento] = React.useState(() => ls('configDataAjuizamento', ''));
@@ -1017,7 +1017,7 @@ function CalculadoraSaude() {
       if (res.ok) {
         const data = await res.json();
         setCnpjs(data.cnpjs || []); setBeneficiarios(data.beneficiarios || []); setReajustes(data.reajustes || []);
-        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'ultimo'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); }
+        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); }
         setGhCasoNome(data.metadados?.nome || file.name.replace('.json',''));
         setGhStatus(`✅ Caso carregado: "${data.metadados?.nome || file.name}"`);
         setActiveTab('dashboard');
@@ -1542,7 +1542,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
   // Limpa estado local para começar um caso novo "em branco"
   const novoCasoEmBranco = () => {
     setCnpjs([]); setBeneficiarios([]); setReajustes([]);
-    setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('ultimo');
+    setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha');
     setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento(''); setConfigMesReajuste(12);
     setGhCasoNome('');
     setActiveTab('cnpjs');
@@ -1591,7 +1591,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
       if (payload.config) {
         setConfigIndexador(payload.config.indexador || 'ca');
         setConfigJuros(payload.config.juros || 'hybrid');
-        setConfigRefMes(payload.config.refMes || 'ultimo');
+        setConfigRefMes(payload.config.refMes || 'baseplanilha');
         setConfigDataFim(payload.config.dataFim || '2026-02');
         setConfigDataInicio(payload.config.dataInicio || '');
         setConfigDataAjuizamento(payload.config.dataAjuizamento || '');
@@ -2012,7 +2012,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
             if (!window.confirm('Iniciar novo caso? Todos os dados atuais serão apagados.')) return;
             ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configDataAjuizamento','configMesReajuste','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
             setCnpjs([]); setBeneficiarios([]); setReajustes([]);
-            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('ultimo'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento('');
+            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento('');
             setGhCasoNome(''); setActiveTab('cadastro');
           }} style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
             🆕 Novo Caso
@@ -2032,7 +2032,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                   if (data.config) {
                     setConfigIndexador(data.config.indexador || 'ca');
                     setConfigJuros(data.config.juros || 'hybrid');
-                    setConfigRefMes(data.config.refMes || 'ultimo');
+                    setConfigRefMes(data.config.refMes || 'baseplanilha');
                     setConfigDataFim(data.config.dataFim || '2026-02');
                     setConfigDataInicio(data.config.dataInicio || '2000-01-01');
                     setConfigDataAjuizamento(data.config.dataAjuizamento || '');
@@ -2426,16 +2426,16 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                     else if (e.target.value === 'ultimo') setConfigRefMes('ultimo');
                     else setConfigRefMes('2026-02');
                   }}>
-                    <option value="ultimo">Último mês do dataset (recomendado)</option>
-                    <option value="baseplanilha">Padrão planilha extrapolada (legado)</option>
+                    <option value="baseplanilha">Padrão planilha (recomendado)</option>
+                    <option value="ultimo">Último mês excluindo o próprio (legado)</option>
                     <option value="custom">Data específica (dividir fator)</option>
                   </select>
                   {configRefMes !== 'baseplanilha' && configRefMes !== 'ultimo' && (
                     <input type="month" value={configRefMes} onChange={(e) => setConfigRefMes(e.target.value)} style={{marginTop:'6px'}} />
                   )}
                   <div className="info-text">{
-                    configRefMes === 'ultimo' ? 'Normaliza pelo último mês cadastrado em INDICES — alinha com planilhas modernas que usam IPCA real divulgado.' :
-                    configRefMes === 'baseplanilha' ? 'Usa Fator IPCA/SELIC acumulado direto — convenção legada (Scozziero).' :
+                    configRefMes === 'baseplanilha' ? 'Usa Fator IPCA/SELIC acumulado direto. Como o dataset agora é compilado em escala da planilha do escritório (data-base = último mês), este modo bate com a planilha. RECOMENDADO.' :
+                    configRefMes === 'ultimo' ? 'Divide ca[mes] por ca[último mês]. Subestima por ~IPCA do próprio último mês. Legado de quando o dataset era extrapolado.' :
                     'Divide fator do mês pelo fator do mês de referência específico.'
                   }</div>
                 </div>
