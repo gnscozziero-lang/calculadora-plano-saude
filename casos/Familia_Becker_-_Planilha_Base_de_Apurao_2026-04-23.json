@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Familia_Becker_-_Planilha_Base_de_Apurao_2026-04-23",
-    "salvoEm": "2026-05-11T18:32:41.902Z",
+    "salvoEm": "2026-05-11T18:34:58.429Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -55,8 +55,8 @@
       "cnpjId": "1776957335738",
       "nome": "ANELISE GAZZANEO CARLOS",
       "cpf": "",
-      "dataNascimento": "",
-      "dataAdesao": "",
+      "dataNascimento": "1992-08-30",
+      "dataAdesao": "2023-10-11",
       "numeroCarteirinha": ""
     },
     {
