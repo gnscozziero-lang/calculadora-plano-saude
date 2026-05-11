@@ -1,16 +1,16 @@
 {
   "metadados": {
     "nome": "Familia_Becker_-_Planilha_Base_de_Apurao_2026-04-23",
-    "salvoEm": "2026-05-11T12:16:32.032Z",
+    "salvoEm": "2026-05-11T18:25:42.245Z",
     "versao": "1.0"
   },
   "cnpjs": [
     {
       "id": 1776957335738,
-      "cnpj": "",
-      "empresa": "",
+      "cnpj": "00.178.594/0001-70",
+      "empresa": "ANTEA PATICIPAÇÕES LTDA",
       "operadora": "BRADESCO SEGUROS",
-      "nrContrato": "8697070001 - ANTEA PARTICIPAÇÕES"
+      "nrContrato": "869707 - ANTEA PARTICIPAÇÕES"
     }
   ],
   "beneficiarios": [
@@ -2398,6 +2398,7 @@
     "dataFim": "2025-06",
     "dataInicio": "2022-07-01",
     "dataAjuizamento": "2026-04",
-    "mesReajuste": 7
+    "mesReajuste": 7,
+    "escritorio": "Thurmann Adv.Associados"
   }
 }
