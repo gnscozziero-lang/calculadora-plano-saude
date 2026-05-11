@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Familia_Becker_-_Planilha_Base_de_Apurao_2026-04-23",
-    "salvoEm": "2026-05-11T18:27:37.121Z",
+    "salvoEm": "2026-05-11T18:27:58.480Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -18,9 +18,9 @@
       "id": 1776957335739,
       "cnpjId": "1776957335738",
       "nome": "FREDERICO BECKER",
-      "cpf": "",
-      "dataNascimento": "",
-      "dataAdesao": "",
+      "cpf": "458.578.900-63",
+      "dataNascimento": "1968-12-01",
+      "dataAdesao": "2021-07-13",
       "numeroCarteirinha": ""
     },
     {
