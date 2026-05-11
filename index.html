@@ -497,6 +497,12 @@
       .kpi-label { font-size: 11px; }
       .kpi-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 6px; }
       .page-break { page-break-after: always; }
+      /* Impressão completa (Dashboard + todos os relatórios) */
+      #print-all-doc { display: none; }
+      @media print {
+        body.printing-all > #root > div > *:not(#print-all-doc) { display: none !important; }
+        body.printing-all #print-all-doc { display: block !important; }
+      }
       /* Numeração de páginas no rodapé (Chromium/Edge/Firefox) */
       @page {
         margin: 1.5cm 1.5cm 2cm 1.5cm;
@@ -507,12 +513,7 @@
           font-size: 10px;
           color: #555;
         }
-        @bottom-left {
-          content: "Scozziero Advocacia · Revisão de Mensalidade de Plano de Saúde";
-          font-family: 'Segoe UI', Arial, sans-serif;
-          font-size: 10px;
-          color: #555;
-        }
+
       }
       /* Capa institucional — fundo claro com acentos azul e dourado para economizar tinta sem perder identidade */
       .capa-caso {
@@ -822,6 +823,8 @@ function CalculadoraSaude() {
   const [configDataInicio, setConfigDataInicio] = React.useState(() => ls('configDataInicio', '2000-01-01'));
   const [configDataAjuizamento, setConfigDataAjuizamento] = React.useState(() => ls('configDataAjuizamento', ''));
   const [configMesReajuste, setConfigMesReajuste] = React.useState(() => ls('configMesReajuste', 12));
+  const [configEscritorio, setConfigEscritorio] = React.useState(() => ls('configEscritorio', 'Scozziero Advocacia'));
+  const [imprimirTudo, setImprimirTudo] = React.useState(false);
   const [configCnpjFilter, setConfigCnpjFilter] = React.useState('');
   const [resultadosTab, setResultadosTab] = React.useState('segurado');
   const [relatorioBenId, setRelatorioBenId] = React.useState('');
@@ -838,6 +841,24 @@ function CalculadoraSaude() {
   React.useEffect(() => { try { localStorage.setItem('calc_configDataInicio', JSON.stringify(configDataInicio)); } catch(e) {} }, [configDataInicio]);
   React.useEffect(() => { try { localStorage.setItem('calc_configDataAjuizamento', JSON.stringify(configDataAjuizamento)); } catch(e) {} }, [configDataAjuizamento]);
   React.useEffect(() => { try { localStorage.setItem('calc_configMesReajuste', JSON.stringify(configMesReajuste)); } catch(e) {} }, [configMesReajuste]);
+  React.useEffect(() => { try { localStorage.setItem('calc_configEscritorio', JSON.stringify(configEscritorio)); } catch(e) {} }, [configEscritorio]);
+  React.useEffect(() => { document.title = 'Revisão de Plano de Saúde - ' + configEscritorio; }, [configEscritorio]);
+  React.useEffect(() => {
+    let el = document.getElementById('dyn-print-css');
+    if (!el) { el = document.createElement('style'); el.id = 'dyn-print-css'; document.head.appendChild(el); }
+    const esc = configEscritorio.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    el.textContent = '@page { @bottom-left { content: "' + esc + ' \\00B7 Revisão de Mensalidade de Plano de Saúde"; font-family: \'Segoe UI\', Arial, sans-serif; font-size: 10px; color: #555; } }';
+  }, [configEscritorio]);
+  React.useEffect(() => {
+    if (!imprimirTudo) return;
+    document.body.classList.add('printing-all');
+    const timer = setTimeout(() => {
+      window.print();
+      document.body.classList.remove('printing-all');
+      setImprimirTudo(false);
+    }, 400);
+    return () => { clearTimeout(timer); document.body.classList.remove('printing-all'); };
+  }, [imprimirTudo]);
 
   // GitHub integration state
   // Auto-avança mês: quando troca o beneficiário, pré-preenche o mês seguinte ao último lançado.
@@ -996,7 +1017,7 @@ function CalculadoraSaude() {
     const payload = {
       metadados: { nome: ghCasoNome.trim(), salvoEm: new Date().toISOString(), versao: '1.0' },
       cnpjs, beneficiarios, reajustes,
-      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste }
+      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste, escritorio: configEscritorio }
     };
     try {
       const checkRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`, { headers: ghHdrs() });
@@ -1017,7 +1038,7 @@ function CalculadoraSaude() {
       if (res.ok) {
         const data = await res.json();
         setCnpjs(data.cnpjs || []); setBeneficiarios(data.beneficiarios || []); setReajustes(data.reajustes || []);
-        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); }
+        if (data.config) { setConfigIndexador(data.config.indexador||'ca'); setConfigJuros(data.config.juros||'hybrid'); setConfigRefMes(data.config.refMes||'baseplanilha'); setConfigDataFim(data.config.dataFim||'2026-02'); setConfigDataInicio(data.config.dataInicio||'2000-01-01'); setConfigDataAjuizamento(data.config.dataAjuizamento || ''); setConfigMesReajuste(data.config.mesReajuste || 12); setConfigEscritorio(data.config.escritorio || 'Scozziero Advocacia'); }
         setGhCasoNome(data.metadados?.nome || file.name.replace('.json',''));
         setGhStatus(`✅ Caso carregado: "${data.metadados?.nome || file.name}"`);
         setActiveTab('dashboard');
@@ -1457,7 +1478,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
       const payload = {
         metadados: { nome: ghCasoNome.trim(), salvoEm: new Date().toISOString(), versao: '1.0' },
         cnpjs, beneficiarios, reajustes,
-        config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste }
+        config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste, escritorio: configEscritorio }
       };
       ghAutoSave(ghToken, ghCasoNome, payload);
     }, 5000);
@@ -1543,7 +1564,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
   const novoCasoEmBranco = () => {
     setCnpjs([]); setBeneficiarios([]); setReajustes([]);
     setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha');
-    setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento(''); setConfigMesReajuste(12);
+    setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento(''); setConfigMesReajuste(12); setConfigEscritorio('Scozziero Advocacia');
     setGhCasoNome('');
     setActiveTab('cnpjs');
     setBootModal(null);
@@ -1596,6 +1617,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
         setConfigDataInicio(payload.config.dataInicio || '');
         setConfigDataAjuizamento(payload.config.dataAjuizamento || '');
         setConfigMesReajuste(payload.config.mesReajuste || 12);
+        setConfigEscritorio(payload.config.escritorio || 'Scozziero Advocacia');
       }
       setGhCasoNome(payload.metadados?.nome || nomePadrao);
       setActiveTab('cadastro');
@@ -1945,7 +1967,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           <div className="capa-sub">Falso Coletivo · Aplicação do Teto ANS (art. 35-E, Lei 9.656/98)</div>
         </div>
         <div className="capa-escritorio">
-          <strong>SCOZZIERO ADVOCACIA</strong>
+          <strong>{configEscritorio.toUpperCase()}</strong>
           Saúde Suplementar · Direito do Consumidor<br/>
           Emissão: {dataRelatorioHoje}
         </div>
@@ -1990,7 +2012,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'18px 40px'}}>
         <div>
           <h1 style={{marginBottom:'2px'}}>Revisão de Plano de Saúde</h1>
-          <p style={{margin:0}}>Scozziero Advocacia — Falso Coletivo (ANS)</p>
+          <p style={{margin:0}}>{configEscritorio} — Falso Coletivo (ANS)</p>
         </div>
         <div style={{display:'flex',gap:'10px',alignItems:'center'}}>
           {ghToken && ghCasoNome && autoSaveStatus && (
@@ -2010,9 +2032,9 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           )}
           <button onClick={() => {
             if (!window.confirm('Iniciar novo caso? Todos os dados atuais serão apagados.')) return;
-            ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configDataAjuizamento','configMesReajuste','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
+            ['cnpjs','beneficiarios','reajustes','configIndexador','configJuros','configRefMes','configDataFim','configDataInicio','configDataAjuizamento','configMesReajuste','configEscritorio','ghCasoNome','activeTab'].forEach(k => localStorage.removeItem('calc_' + k));
             setCnpjs([]); setBeneficiarios([]); setReajustes([]);
-            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento('');
+            setConfigIndexador('ca'); setConfigJuros('hybrid'); setConfigRefMes('baseplanilha'); setConfigDataFim('2026-02'); setConfigDataInicio('2000-01-01'); setConfigDataAjuizamento(''); setConfigEscritorio('Scozziero Advocacia');
             setGhCasoNome(''); setActiveTab('cadastro');
           }} style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
             🆕 Novo Caso
@@ -2037,6 +2059,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                     setConfigDataInicio(data.config.dataInicio || '2000-01-01');
                     setConfigDataAjuizamento(data.config.dataAjuizamento || '');
                     setConfigMesReajuste(data.config.mesReajuste || 12);
+                    setConfigEscritorio(data.config.escritorio || 'Scozziero Advocacia');
                   }
                   setGhCasoNome(data.metadados?.nome || f.name.replace('.json',''));
                   setActiveTab('dashboard');
@@ -2085,8 +2108,9 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
         {activeTab === 'dashboard' && (
           <div className="tab-content active">
             {renderCapa('Demonstrativo Consolidado de Revisão de Mensalidades', null)}
-            <div className="no-print" style={{display:'flex',justifyContent:'flex-end',marginBottom:'14px'}}>
+            <div className="no-print" style={{display:'flex',justifyContent:'flex-end',gap:'10px',marginBottom:'14px'}}>
               <button onClick={() => window.print()} style={{background:'#1B3A5C',color:'white',border:'none',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Imprimir Dashboard</button>
+              <button onClick={() => setImprimirTudo(true)} style={{background:'#2D6A4F',color:'white',border:'none',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Relatório Completo (PDF)</button>
             </div>
             <div className="kpi-grid">
               <div className="kpi-card green">
@@ -2449,6 +2473,11 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                     {[1,2,3,4,5,6,7,8,9,10,11,12].map(m => <option key={m} value={m}>{String(m).padStart(2,'0')} — {['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][m-1]}</option>)}
                   </select>
                   <div className="info-text">Mês em que o índice ANS é aplicado como limitador (aniversário do contrato). Nos demais meses, o limite não se aplica.</div>
+                </div>
+                <div className="form-group">
+                  <label>Nome do Escritório</label>
+                  <input type="text" value={configEscritorio} onChange={(e) => setConfigEscritorio(e.target.value)} placeholder="Ex.: Scozziero Advocacia" />
+                  <div className="info-text">Usado nos relatórios, cabeçalhos e rodapé de impressão.</div>
                 </div>
                 <div className="form-group">
                   <label>CNPJ</label>
@@ -3185,6 +3214,146 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
               )}
             </div>
           </div>
+        </div>
+      )}
+      {/* ═══════════════════════════════════════════════════════════════
+          IMPRESSÃO COMPLETA — renderizado fora das abas, visível só @print
+          ═══════════════════════════════════════════════════════════════ */}
+      {imprimirTudo && (
+        <div id="print-all-doc">
+          {/* ── DASHBOARD ── */}
+          {renderCapa('Demonstrativo Consolidado de Revisão de Mensalidades', null)}
+          <div className="kpi-grid">
+            <div className="kpi-card green">
+              <div className="kpi-label">Total a Restituir</div>
+              <div className="kpi-value"><BRLStack n={metricas.totalRestituir}/></div>
+              <div className="info-text">Repetição Indébito: {fmtBRL(metricas.totalRestituir * 2)}</div>
+            </div>
+            <div className="kpi-card orange">
+              <div className="kpi-label">Excesso Bruto</div>
+              <div className="kpi-value"><BRLStack n={metricas.excesso}/></div>
+              <div className="info-text">{beneficiarios.length} Segurado{beneficiarios.length !== 1 ? 's' : ''}</div>
+            </div>
+            <div className="kpi-card blue">
+              <div className="kpi-label">Correção Monetária</div>
+              <div className="kpi-value"><BRLStack n={metricas.correcao}/></div>
+              <div className="info-text">{cnpjs.length} CNPJ{cnpjs.length !== 1 ? 's' : ''}</div>
+            </div>
+            <div className="kpi-card purple">
+              <div className="kpi-label">Juros de Mora</div>
+              <div className="kpi-value"><BRLStack n={metricas.juros}/></div>
+            </div>
+            <div className="kpi-card gray">
+              <div className="kpi-label">Prescrito</div>
+              <div className="kpi-value"><BRLStack n={metricas.prescrito}/></div>
+            </div>
+          </div>
+          <div className="section">
+            <h3 style={{marginBottom:'12px'}}>Consolidado por Segurado</h3>
+            {(() => {
+              const porBen = {};
+              resultados.todosPorSeguro.forEach(r => {
+                if (!porBen[r.beneficiario]) porBen[r.beneficiario] = { pago:0, devido:0, excesso:0, correcao:0, juros:0, prescrito:0, total:0, cnpj:r.cnpj };
+                porBen[r.beneficiario].pago   += r.valorPago;
+                porBen[r.beneficiario].devido += r.valorDevido;
+                if (r.prescrito) { porBen[r.beneficiario].prescrito += r.diferenca; }
+                else { porBen[r.beneficiario].excesso += r.diferenca; porBen[r.beneficiario].correcao += r.diferenca*(r.fatorCorrecao-1); porBen[r.beneficiario].juros += r.diferenca*r.fatorCorrecao*r.jurosPercent; porBen[r.beneficiario].total += r.totalAtualizado; }
+              });
+              const nomes = Object.keys(porBen).sort();
+              const tot = { pago:0, devido:0, excesso:0, correcao:0, juros:0, prescrito:0, total:0 };
+              nomes.forEach(n => { tot.pago+=porBen[n].pago; tot.devido+=porBen[n].devido; tot.excesso+=porBen[n].excesso; tot.correcao+=porBen[n].correcao; tot.juros+=porBen[n].juros; tot.prescrito+=porBen[n].prescrito; tot.total+=porBen[n].total; });
+              return (
+                <table className="table">
+                  <thead><tr><th>Segurado</th><th>CNPJ</th><th className="text-right">Total Pago</th><th className="text-right">Total Devido</th><th className="text-right">Excesso</th><th className="text-right">Correção</th><th className="text-right">Juros</th><th className="text-right">Prescrito</th><th className="text-right">A Restituir</th></tr></thead>
+                  <tbody>
+                    {nomes.map(n => (<tr key={n}><td>{n}</td><td>{porBen[n].cnpj}</td><td className="text-right"><BRLStack n={porBen[n].pago}/></td><td className="text-right"><BRLStack n={porBen[n].devido}/></td><td className="text-right"><BRLStack n={porBen[n].excesso}/></td><td className="text-right"><BRLStack n={porBen[n].correcao}/></td><td className="text-right"><BRLStack n={porBen[n].juros}/></td><td className="text-right"><BRLStack n={porBen[n].prescrito}/></td><td className="text-right"><strong><BRLStack n={porBen[n].total}/></strong></td></tr>))}
+                    <tr style={{background:'#f0f4f8',fontWeight:'700'}}><td colSpan="2">TOTAL</td><td className="text-right"><BRLStack n={tot.pago}/></td><td className="text-right"><BRLStack n={tot.devido}/></td><td className="text-right"><BRLStack n={tot.excesso}/></td><td className="text-right"><BRLStack n={tot.correcao}/></td><td className="text-right"><BRLStack n={tot.juros}/></td><td className="text-right"><BRLStack n={tot.prescrito}/></td><td className="text-right"><BRLStack n={tot.total}/></td></tr>
+                  </tbody>
+                </table>
+              );
+            })()}
+          </div>
+          {/* ── RELATÓRIOS INDIVIDUAIS ── */}
+          {beneficiarios.map((benItem) => {
+            const cnpjItem = cnpjs.find(c => c.id.toString() === benItem.cnpjId);
+            const rowsItem = resultados.todosPorSeguro.filter(r => r.beneficiario === benItem.nome);
+            let totItem = { pago:0, devido:0, excesso:0, prescrito:0, correcao:0, juros:0, total:0 };
+            rowsItem.forEach(r => {
+              totItem.pago += r.valorPago; totItem.devido += r.valorDevido;
+              if (r.prescrito) { totItem.prescrito += r.diferenca; }
+              else { totItem.excesso += r.diferenca; totItem.correcao += r.diferenca*(r.fatorCorrecao-1); totItem.juros += r.diferenca*r.fatorCorrecao*r.jurosPercent; totItem.total += r.totalAtualizado; }
+            });
+            const yearOrderI = []; const yearIdxI = {};
+            rowsItem.forEach(r => { const y = (r.mesAno||'').slice(0,4); if (!yearOrderI.includes(y)) yearOrderI.push(y); });
+            yearOrderI.forEach((y, idx) => { yearIdxI[y] = idx; });
+            return (
+              <React.Fragment key={benItem.id}>
+                <div className="page-break"></div>
+                {renderCapa('Relatório Analítico Individual — Revisão de Mensalidades', benItem.nome)}
+                <div className="kpi-grid">
+                  <div className="kpi-card green"><div className="kpi-label">A Restituir (atualizado)</div><div className="kpi-value"><BRLStack n={totItem.total}/></div><div className="info-text">Repetição Indébito: {fmtBRL(totItem.total*2)}</div></div>
+                  <div className="kpi-card orange"><div className="kpi-label">Excesso Bruto</div><div className="kpi-value"><BRLStack n={totItem.excesso}/></div><div className="info-text">{rowsItem.filter(r=>!r.prescrito).length} parcela{rowsItem.filter(r=>!r.prescrito).length!==1?'s exigíveis':' exigível'}</div></div>
+                  <div className="kpi-card blue"><div className="kpi-label">Correção Monetária</div><div className="kpi-value"><BRLStack n={totItem.correcao}/></div><div className="info-text">{configIndexador==='ca'?'IPCA':configIndexador==='ia'?'INPC':configIndexador==='fa'?'FIPE':'Sem correção'}</div></div>
+                  <div className="kpi-card purple"><div className="kpi-label">Juros de Mora</div><div className="kpi-value"><BRLStack n={totItem.juros}/></div><div className="info-text">{configJuros==='hybrid'?'1% a.m. + SELIC':configJuros==='selic'?'SELIC':'Sem juros'}</div></div>
+                  <div className="kpi-card gray"><div className="kpi-label">Prescrito</div><div className="kpi-value"><BRLStack n={totItem.prescrito}/></div><div className="info-text">{rowsItem.filter(r=>r.prescrito).length} parcela{rowsItem.filter(r=>r.prescrito).length!==1?'s prescritas':' prescrita'}</div></div>
+                </div>
+                <div className="section">
+                  <h3>Identificação</h3>
+                  <table className="table"><tbody>
+                    <tr><th style={{width:'40%'}}>Nome</th><td>{benItem.nome||'—'}</td></tr>
+                    <tr><th>CPF</th><td>{benItem.cpf||'—'}</td></tr>
+                    <tr><th>Data de Nascimento</th><td>{benItem.dataNascimento||'—'}</td></tr>
+                    <tr><th>Data de Adesão</th><td>{benItem.dataAdesao||'—'}</td></tr>
+                    <tr><th>Carteirinha</th><td>{benItem.numeroCarteirinha||'—'}</td></tr>
+                    <tr><th>CNPJ Contratante</th><td>{cnpjItem?.cnpj||'—'}</td></tr>
+                    <tr><th>Empresa</th><td>{cnpjItem?.empresa||'—'}</td></tr>
+                    <tr><th>Operadora</th><td>{cnpjItem?.operadora||'—'}</td></tr>
+                    <tr><th>Contrato</th><td>{cnpjItem?.nrContrato||'—'}</td></tr>
+                  </tbody></table>
+                </div>
+                <div className="section">
+                  <h3>Parâmetros da Revisão</h3>
+                  <table className="table"><tbody>
+                    <tr><th style={{width:'40%'}}>Indexador</th><td>{configIndexador==='ca'?'IPCA':configIndexador==='ia'?'INPC':configIndexador==='fa'?'FIPE':'Sem correção'}</td></tr>
+                    <tr><th>Juros</th><td>{configJuros==='hybrid'?'1% a.m. até ago/2024 + SELIC acumulada':configJuros==='selic'?'SELIC acumulada':'Sem juros'}</td></tr>
+                    <tr><th>Modo Fator</th><td>{configRefMes==='baseplanilha'?'Padrão planilha (fator direto)':`Dividir por ${configRefMes}`}</td></tr>
+                    <tr><th>Mês de aniversário</th><td>{['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][configMesReajuste-1]}</td></tr>
+                    <tr><th>Data-limite do cálculo</th><td>{fmtMesAno(configDataFim)}</td></tr>
+                    <tr><th>Data inicial das diferenças</th><td>{configDataInicio}</td></tr>
+                  </tbody></table>
+                </div>
+                <div className="section">
+                  <h3>Demonstrativo Mês a Mês</h3>
+                  {rowsItem.length===0 ? <p style={{color:'#999'}}>Sem reajustes lançados.</p> : (
+                    <table className="table table-ano">
+                      <thead><tr><th>Mês</th><th className="text-right">Valor Pago</th><th className="text-right">Valor Devido</th><th className="text-right">Excesso</th><th className="text-center">Prescrito</th><th className="text-right">Fator</th><th className="text-right">Juros %</th><th className="text-right">Total Atualizado</th></tr></thead>
+                      <tbody>
+                        {rowsItem.map((r,i) => {
+                          const y=(r.mesAno||'').slice(0,4); const idx=yearIdxI[y]??0;
+                          const bg=r.prescrito?'#EDE5ED':(idx%2===0?'#FFFFFF':'#F1F5F9');
+                          return (<tr key={i} style={{backgroundColor:bg}}><td>{fmtMesAno(r.mesAno)}</td><td className="text-right">{fmtBRL(r.valorPago)}</td><td className="text-right">{fmtBRL(r.valorDevido)}</td><td className="text-right">{fmtBRL(r.diferenca)}</td><td className="text-center">{r.prescrito?'Sim':'Não'}</td><td className="text-right">{r.fatorCorrecao.toFixed(6)}</td><td className="text-right">{(r.jurosPercent*100).toFixed(2)}%</td><td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td></tr>);
+                        })}
+                        <tr style={{background:'#E2E8F0',fontWeight:'700'}}><td>TOTAL</td><td className="text-right">{fmtBRL(totItem.pago)}</td><td className="text-right">{fmtBRL(totItem.devido)}</td><td className="text-right">{fmtBRL(totItem.excesso)}</td><td></td><td></td><td></td><td className="text-right">{fmtBRL(totItem.total)}</td></tr>
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+                <div className="section">
+                  <h3>Resumo Financeiro</h3>
+                  <table className="table"><tbody>
+                    <tr><th style={{width:'60%'}}>Total Pago ao longo do período</th><td className="text-right">{fmtBRL(totItem.pago)}</td></tr>
+                    <tr><th>Total Devido (conforme limite ANS)</th><td className="text-right">{fmtBRL(totItem.devido)}</td></tr>
+                    <tr><th>Excesso Bruto (cobrança a maior)</th><td className="text-right">{fmtBRL(totItem.excesso)}</td></tr>
+                    <tr><th>Correção Monetária aplicada</th><td className="text-right">{fmtBRL(totItem.correcao)}</td></tr>
+                    <tr><th>Juros de Mora aplicados</th><td className="text-right">{fmtBRL(totItem.juros)}</td></tr>
+                    <tr><th>Parcelas Prescritas (não exigíveis)</th><td className="text-right">{fmtBRL(totItem.prescrito)}</td></tr>
+                    <tr style={{background:'#d4edda',fontWeight:'700'}}><th>VALOR A RESTITUIR (atualizado)</th><td className="text-right"><strong>{fmtBRL(totItem.total)}</strong></td></tr>
+                    <tr style={{background:'#fff3cd',fontWeight:'700'}}><th>REPETIÇÃO DE INDÉBITO (dobro — art. 42 CDC)</th><td className="text-right"><strong>{fmtBRL(totItem.total*2)}</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </React.Fragment>
+            );
+          })}
         </div>
       )}
     </div>
