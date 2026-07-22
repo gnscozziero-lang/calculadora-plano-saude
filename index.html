@@ -2026,6 +2026,23 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
     link.click();
   };
 
+  const exportJson = () => {
+    const nomeBase = (ghCasoNome && ghCasoNome.trim()) || 'caso_sem_nome';
+    const payload = {
+      metadados: { nome: nomeBase, salvoEm: new Date().toISOString(), versao: '1.0' },
+      cnpjs, beneficiarios, reajustes,
+      config: { indexador: configIndexador, juros: configJuros, refMes: configRefMes, dataFim: configDataFim, dataInicio: configDataInicio, dataAjuizamento: configDataAjuizamento, mesReajuste: configMesReajuste, escritorio: configEscritorio }
+    };
+    const conteudo = JSON.stringify(payload, null, 2);
+    const blob = new Blob([conteudo], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link2 = document.createElement('a');
+    link2.href = url;
+    link2.download = nomeBase.replace(/[^\w\s\-]/g, '').replace(/\s+/g, '_') + '.json';
+    link2.click();
+    URL.revokeObjectURL(url);
+  };
+
   const filteredResults = configCnpjFilter
     ? resultados.todosPorSeguro.filter(r => r.cnpjId === parseInt(configCnpjFilter))
     : resultados.todosPorSeguro;
@@ -2117,6 +2134,9 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
             setGhCasoNome(''); setActiveTab('cadastro');
           }} style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
             🆕 Novo Caso
+          </button>
+          <button onClick={exportJson} style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px'}}>
+            📤 Exportar Caso (JSON)
           </button>
           <label style={{background:'rgba(255,255,255,0.1)',color:'white',border:'1px solid rgba(255,255,255,0.3)',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',display:'inline-block'}}>
             📥 Importar Caso (JSON)
@@ -2557,6 +2577,11 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                   <label>Nome do Escritório</label>
                   <input type="text" value={configEscritorio} onChange={(e) => setConfigEscritorio(e.target.value)} placeholder="Ex.: Scozziero Advocacia" />
                   <div className="info-text">Usado nos relatórios, cabeçalhos e rodapé de impressão.</div>
+                </div>
+                <div className="form-group">
+                  <label>Nome do Caso</label>
+                  <input type="text" value={ghCasoNome} onChange={(e) => setGhCasoNome(e.target.value)} placeholder="Ex.: Fulano vs Amil — 2024" />
+                  <div className="info-text">Identifica o caso para auto-save no GitHub e para o nome do arquivo em "Exportar Caso (JSON)". (Também editável na aba ☁️ GitHub.)</div>
                 </div>
                 <div className="form-group">
                   <label>CNPJ</label>
