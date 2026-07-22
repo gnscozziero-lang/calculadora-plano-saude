@@ -1884,6 +1884,16 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
             }
           }
 
+          // Arredonda para centavos IMEDIATAMENTE após o cálculo (não só na exibição).
+          // Sem isso, um percentual informado com precisão limitada (ex.: mudança de faixa
+          // etária arredondada para "10,0%") pode gerar um valorDevido com resíduo de fração
+          // de centavo (ex.: R$563,365) que a coluna já exibe arredondado como igual ao valor
+          // pago — mas o resíduo não-arredondado seguia sendo usado no cálculo de correção e
+          // juros, produzindo um "Total Atualizado" de R$0,01 mesmo quando Valor Pago e Valor
+          // Devido aparecem idênticos no relatório. Arredondar aqui garante que colunas iguais
+          // no relatório sempre produzam diferença e total zerados.
+          valorDevido = parseFloat(valorDevido.toFixed(2));
+
           const dataInicioCobr = new Date(configDataInicio);
           const mesAnoDate = new Date(mesAno + '-01');
           const diferenca = mesAnoDate >= dataInicioCobr ? Math.max(0, valorPago - valorDevido) : 0;
