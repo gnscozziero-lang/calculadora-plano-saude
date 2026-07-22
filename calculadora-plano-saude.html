@@ -2618,8 +2618,8 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                               <td className="text-right">{fmtBRL(row.valorDevido)}</td>
                               <td className="text-right"><span className={`badge ${status}`}>{status === 'prescrito' ? 'Prescrito' : status === 'excesso' ? 'Excesso' : 'OK'}</span></td>
                               <td className="text-center">{row.prescrito ? 'Sim' : 'Não'}</td>
-                              <td className="text-right">{row.fatorCorrecao.toFixed(6)}</td>
-                              <td className="text-right">{(row.jurosPercent * 100).toFixed(2)}%</td>
+                              <td className="text-right">{row.prescrito ? '—' : row.fatorCorrecao.toFixed(6)}</td>
+                              <td className="text-right">{row.prescrito ? '—' : (row.jurosPercent * 100).toFixed(2) + '%'}</td>
                               <td className="text-right"><strong>{fmtBRL(row.totalAtualizado)}</strong></td>
                             </tr>
                           );
@@ -2806,8 +2806,8 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                                 <td className="text-right">{fmtBRL(r.valorDevido)}</td>
                                 <td className="text-right">{fmtBRL(r.diferenca)}</td>
                                 <td className="text-center">{r.prescrito ? 'Sim' : 'Não'}</td>
-                                <td className="text-right">{r.fatorCorrecao.toFixed(6)}</td>
-                                <td className="text-right">{(r.jurosPercent * 100).toFixed(2)}%</td>
+                                <td className="text-right">{r.prescrito ? '—' : r.fatorCorrecao.toFixed(6)}</td>
+                                <td className="text-right">{r.prescrito ? '—' : (r.jurosPercent * 100).toFixed(2) + '%'}</td>
                                 <td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td>
                               </tr>
                             );
@@ -2848,6 +2848,19 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                         </tr>
                       </tbody>
                     </table>
+                    {(() => {
+                      const qtdPrescrita = rowsBen.filter(r => r.prescrito).length;
+                      if (qtdPrescrita === 0) return null;
+                      return tot.prescrito > 0 ? (
+                        <p className="info-text" style={{marginTop:'10px'}}>
+                          Os {qtdPrescrita} mês{qtdPrescrita !== 1 ? 'es' : ''} atingido{qtdPrescrita !== 1 ? 's' : ''} pela prescrição trienal {qtdPrescrita !== 1 ? 'totalizam' : 'totaliza'} {fmtBRL(tot.prescrito)} de diferença apurada, valor excluído do pedido por força da prescrição e não somado ao "Valor a Restituir".
+                        </p>
+                      ) : (
+                        <p className="info-text" style={{marginTop:'10px'}}>
+                          Não há diferença apurada nos {qtdPrescrita} mês{qtdPrescrita !== 1 ? 'es' : ''} atingido{qtdPrescrita !== 1 ? 's' : ''} pela prescrição trienal — o valor pago nesse período já correspondia ao devido, sem excesso a recompor.
+                        </p>
+                      );
+                    })()}
                   </div>
                 </React.Fragment>
               )}
@@ -3435,7 +3448,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                         {rowsItem.map((r,i) => {
                           const y=(r.mesAno||'').slice(0,4); const idx=yearIdxI[y]??0;
                           const bg=r.prescrito?'#EDE5ED':(idx%2===0?'#FFFFFF':'#F1F5F9');
-                          return (<tr key={i} style={{backgroundColor:bg}}><td>{fmtMesAno(r.mesAno)}</td><td className="text-right">{fmtBRL(r.valorPago)}</td><td className="text-right">{fmtBRL(r.valorDevido)}</td><td className="text-right">{fmtBRL(r.diferenca)}</td><td className="text-center">{r.prescrito?'Sim':'Não'}</td><td className="text-right">{r.fatorCorrecao.toFixed(6)}</td><td className="text-right">{(r.jurosPercent*100).toFixed(2)}%</td><td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td></tr>);
+                          return (<tr key={i} style={{backgroundColor:bg}}><td>{fmtMesAno(r.mesAno)}</td><td className="text-right">{fmtBRL(r.valorPago)}</td><td className="text-right">{fmtBRL(r.valorDevido)}</td><td className="text-right">{fmtBRL(r.diferenca)}</td><td className="text-center">{r.prescrito?'Sim':'Não'}</td><td className="text-right">{r.prescrito?'—':r.fatorCorrecao.toFixed(6)}</td><td className="text-right">{r.prescrito?'—':(r.jurosPercent*100).toFixed(2)+'%'}</td><td className="text-right"><strong>{fmtBRL(r.totalAtualizado)}</strong></td></tr>);
                         })}
                         <tr style={{background:'#E2E8F0',fontWeight:'700'}}><td>TOTAL</td><td className="text-right">{fmtBRL(totItem.pago)}</td><td className="text-right">{fmtBRL(totItem.devido)}</td><td className="text-right">{fmtBRL(totItem.excesso)}</td><td></td><td></td><td></td><td className="text-right">{fmtBRL(totItem.total)}</td></tr>
                       </tbody>
@@ -3454,6 +3467,19 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                     <tr style={{background:'#d4edda',fontWeight:'700'}}><th>VALOR A RESTITUIR (atualizado)</th><td className="text-right"><strong>{fmtBRL(totItem.total)}</strong></td></tr>
                     <tr style={{background:'#fff3cd',fontWeight:'700'}}><th>REPETIÇÃO DE INDÉBITO (dobro — art. 42 CDC)</th><td className="text-right"><strong>{fmtBRL(totItem.total*2)}</strong></td></tr>
                   </tbody></table>
+                  {(() => {
+                    const qtdPrescritaItem = rowsItem.filter(r => r.prescrito).length;
+                    if (qtdPrescritaItem === 0) return null;
+                    return totItem.prescrito > 0 ? (
+                      <p className="info-text" style={{marginTop:'10px'}}>
+                        Os {qtdPrescritaItem} mês{qtdPrescritaItem !== 1 ? 'es' : ''} atingido{qtdPrescritaItem !== 1 ? 's' : ''} pela prescrição trienal {qtdPrescritaItem !== 1 ? 'totalizam' : 'totaliza'} {fmtBRL(totItem.prescrito)} de diferença apurada, valor excluído do pedido por força da prescrição e não somado ao "Valor a Restituir".
+                      </p>
+                    ) : (
+                      <p className="info-text" style={{marginTop:'10px'}}>
+                        Não há diferença apurada nos {qtdPrescritaItem} mês{qtdPrescritaItem !== 1 ? 'es' : ''} atingido{qtdPrescritaItem !== 1 ? 's' : ''} pela prescrição trienal — o valor pago nesse período já correspondia ao devido, sem excesso a recompor.
+                      </p>
+                    );
+                  })()}
                 </div>
               </React.Fragment>
             );
