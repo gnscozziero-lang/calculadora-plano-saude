@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Nosso Recanto",
-    "salvoEm": "2026-07-22T17:48:45.840Z",
+    "salvoEm": "2026-07-22T17:49:52.958Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -1369,7 +1369,7 @@
     "juros": "hybrid",
     "refMes": "baseplanilha",
     "dataFim": "2026-07",
-    "dataInicio": "2000-01-01",
+    "dataInicio": "2023-01-01",
     "dataAjuizamento": "",
     "mesReajuste": 12,
     "escritorio": "Scozziero Advocacia"
