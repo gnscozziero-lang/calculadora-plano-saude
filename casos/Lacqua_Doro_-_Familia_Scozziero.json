@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "L´acqua D´oro - Familia Scozziero",
-    "salvoEm": "2026-07-22T12:24:57.872Z",
+    "salvoEm": "2026-07-22T12:58:06.152Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -11,6 +11,13 @@
       "empresa": "L´acqua D´oro Axa Metais – Ind.Com.Serv.Ltda",
       "operadora": "BRADESCO SEGUROS",
       "nrContrato": "0829697"
+    },
+    {
+      "id": 1784725081135,
+      "cnpj": "35.292.478/0001-17",
+      "empresa": "NOSSO RECANTO - GRASIELI DARTORA KNEVITZ DOS SANTOS ",
+      "operadora": "AMIL SAÚDE",
+      "nrContrato": "1844679000"
     }
   ],
   "beneficiarios": [
