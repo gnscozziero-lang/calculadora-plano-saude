@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Elbrus",
-    "salvoEm": "2026-09-03T17:48:14.428Z",
+    "salvoEm": "2026-09-03T18:01:55.251Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -183,7 +183,7 @@
       "beneficiarioId": 1,
       "mesAno": "2021-12",
       "valorPago": 623.84,
-      "reajusteAplicado": 0.0935,
+      "reajusteAplicado": 9.35,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -266,7 +266,7 @@
       "valorPago": 731.13,
       "reajusteAplicado": 0,
       "reajusteNegativo": 0,
-      "mudancaIdade": 0.171983
+      "mudancaIdade": 17.1983
     },
     {
       "id": 23,
@@ -291,7 +291,7 @@
       "beneficiarioId": 1,
       "mesAno": "2022-12",
       "valorPago": 872.97,
-      "reajusteAplicado": 0.193964,
+      "reajusteAplicado": 19.3964,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -399,7 +399,7 @@
       "beneficiarioId": 1,
       "mesAno": "2023-12",
       "valorPago": 1089.11,
-      "reajusteAplicado": 0.247626,
+      "reajusteAplicado": 24.7626,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -507,7 +507,7 @@
       "beneficiarioId": 1,
       "mesAno": "2024-12",
       "valorPago": 1303.34,
-      "reajusteAplicado": 0.196697,
+      "reajusteAplicado": 19.6697,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -615,7 +615,7 @@
       "beneficiarioId": 1,
       "mesAno": "2025-12",
       "valorPago": 1501.83,
-      "reajusteAplicado": 0.15226,
+      "reajusteAplicado": 15.226,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -804,7 +804,7 @@
       "beneficiarioId": 2,
       "mesAno": "2021-12",
       "valorPago": 244.37,
-      "reajusteAplicado": 0.0935,
+      "reajusteAplicado": 9.35,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -912,7 +912,7 @@
       "beneficiarioId": 2,
       "mesAno": "2022-12",
       "valorPago": 291.78,
-      "reajusteAplicado": 0.193964,
+      "reajusteAplicado": 19.3964,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1020,7 +1020,7 @@
       "beneficiarioId": 2,
       "mesAno": "2023-12",
       "valorPago": 364.02,
-      "reajusteAplicado": 0.247626,
+      "reajusteAplicado": 24.7626,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1128,7 +1128,7 @@
       "beneficiarioId": 2,
       "mesAno": "2024-12",
       "valorPago": 435.62,
-      "reajusteAplicado": 0.196697,
+      "reajusteAplicado": 19.6697,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1236,7 +1236,7 @@
       "beneficiarioId": 2,
       "mesAno": "2025-12",
       "valorPago": 501.97,
-      "reajusteAplicado": 0.15226,
+      "reajusteAplicado": 15.226,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1425,7 +1425,7 @@
       "beneficiarioId": 3,
       "mesAno": "2021-12",
       "valorPago": 1466.21,
-      "reajusteAplicado": 0.0935,
+      "reajusteAplicado": 9.35,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1533,7 +1533,7 @@
       "beneficiarioId": 3,
       "mesAno": "2022-12",
       "valorPago": 1750.65,
-      "reajusteAplicado": 0.193964,
+      "reajusteAplicado": 19.3964,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1641,7 +1641,7 @@
       "beneficiarioId": 3,
       "mesAno": "2023-12",
       "valorPago": 2184.11,
-      "reajusteAplicado": 0.247626,
+      "reajusteAplicado": 24.7626,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1749,7 +1749,7 @@
       "beneficiarioId": 3,
       "mesAno": "2024-12",
       "valorPago": 2613.71,
-      "reajusteAplicado": 0.196697,
+      "reajusteAplicado": 19.6697,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -1857,7 +1857,7 @@
       "beneficiarioId": 3,
       "mesAno": "2025-12",
       "valorPago": 3011.77,
-      "reajusteAplicado": 0.15226,
+      "reajusteAplicado": 15.226,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2046,7 +2046,7 @@
       "beneficiarioId": 4,
       "mesAno": "2021-12",
       "valorPago": 731.13,
-      "reajusteAplicado": 0.0935,
+      "reajusteAplicado": 9.35,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2129,7 +2129,7 @@
       "valorPago": 870.41,
       "reajusteAplicado": 0,
       "reajusteNegativo": 0,
-      "mudancaIdade": 0.1905
+      "mudancaIdade": 19.05
     },
     {
       "id": 230,
@@ -2154,7 +2154,7 @@
       "beneficiarioId": 4,
       "mesAno": "2022-12",
       "valorPago": 1039.26,
-      "reajusteAplicado": 0.193964,
+      "reajusteAplicado": 19.3964,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2262,7 +2262,7 @@
       "beneficiarioId": 4,
       "mesAno": "2023-12",
       "valorPago": 1296.58,
-      "reajusteAplicado": 0.247626,
+      "reajusteAplicado": 24.7626,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2370,7 +2370,7 @@
       "beneficiarioId": 4,
       "mesAno": "2024-12",
       "valorPago": 1551.62,
-      "reajusteAplicado": 0.196697,
+      "reajusteAplicado": 19.6697,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2478,7 +2478,7 @@
       "beneficiarioId": 4,
       "mesAno": "2025-12",
       "valorPago": 1787.92,
-      "reajusteAplicado": 0.15226,
+      "reajusteAplicado": 15.226,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2667,7 +2667,7 @@
       "beneficiarioId": 5,
       "mesAno": "2021-12",
       "valorPago": 521.86,
-      "reajusteAplicado": 0.0935,
+      "reajusteAplicado": 9.35,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2775,7 +2775,7 @@
       "beneficiarioId": 5,
       "mesAno": "2022-12",
       "valorPago": 623.09,
-      "reajusteAplicado": 0.193964,
+      "reajusteAplicado": 19.3964,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2883,7 +2883,7 @@
       "beneficiarioId": 5,
       "mesAno": "2023-12",
       "valorPago": 777.37,
-      "reajusteAplicado": 0.247626,
+      "reajusteAplicado": 24.7626,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -2984,14 +2984,14 @@
       "valorPago": 929.28,
       "reajusteAplicado": 0,
       "reajusteNegativo": 0,
-      "mudancaIdade": 0.195415
+      "mudancaIdade": 19.5415
     },
     {
       "id": 325,
       "beneficiarioId": 5,
       "mesAno": "2024-12",
       "valorPago": 1112.07,
-      "reajusteAplicado": 0.196697,
+      "reajusteAplicado": 19.6697,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -3099,7 +3099,7 @@
       "beneficiarioId": 5,
       "mesAno": "2025-12",
       "valorPago": 1281.43,
-      "reajusteAplicado": 0.15226,
+      "reajusteAplicado": 15.226,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
@@ -3216,7 +3216,7 @@
       "beneficiarioId": 6,
       "mesAno": "2025-12",
       "valorPago": 1281.43,
-      "reajusteAplicado": 0.15226,
+      "reajusteAplicado": 15.226,
       "reajusteNegativo": 0,
       "mudancaIdade": 0
     },
