@@ -606,6 +606,20 @@ function fmtMesAno(mesAno) {
   return `${_MESES_ABR[m-1]}/${y}`;
 }
 
+// Prescrição trienal (CC, art. 206, § 3º, IV; STJ Tema 610). Marco: mês do ajuizamento (CPC, art. 240, § 1º).
+// Regra por mês, sem contagem de dias: ajuizamento em M/AAAA prescreve as parcelas até M/(AAAA-3), inclusive.
+// Sem ajuizamento informado, usa a data-fim do período e o cálculo é marcado como provisório.
+function prescricaoRef(dataAjuizamento, dataFim) {
+  const ok = s => /^\d{4}-\d{2}$/.test(s || '');
+  if (ok(dataAjuizamento)) return { ref: dataAjuizamento, provisoria: false };
+  return { ref: ok(dataFim) ? dataFim : null, provisoria: true };
+}
+function mesLimitePrescricao(ref) {
+  if (!/^\d{4}-\d{2}$/.test(ref || '')) return null;
+  const [y, m] = ref.split('-');
+  return `${Number(y) - 3}-${m}`;
+}
+
 // ── Crypto helpers para Link Mágico (AES-GCM + PBKDF2) ──────────────────────
 // Cifra o token do GitHub com um PIN do usuário. Permite distribuir um URL com
 // o token embutido no hash fragment (que não vai ao servidor do GitHub Pages).
@@ -1017,6 +1031,27 @@ function CalculadoraSaude() {
       return (removidos === 0 && adelgacados === 0) ? prev : limpo;
     });
   }, [sanearMensaisObj]);
+  const _presc = prescricaoRef(configDataAjuizamento, configDataFim);
+  const _mesLimitePresc = mesLimitePrescricao(_presc.ref);
+  const linhasParamPrescricao = (
+    <React.Fragment>
+      <tr><th>Data do ajuizamento</th><td>{_presc.provisoria ? 'Não informada (prescrição calculada provisoriamente pela data-limite do cálculo)' : fmtMesAno(configDataAjuizamento)}</td></tr>
+      <tr><th>Prescrição trienal (CC, art. 206, § 3º, IV)</th><td>{_mesLimitePresc ? `Parcelas até ${fmtMesAno(_mesLimitePresc)}, inclusive` : '—'}</td></tr>
+    </React.Fragment>
+  );
+  const notaMarcoPrescricao = _mesLimitePresc ? (
+    <p className="info-text" style={_presc.provisoria ? {marginTop:'6px', color:'#9A3412', fontWeight:600} : {marginTop:'6px'}}>
+      {_presc.provisoria
+        ? `Data do ajuizamento não informada: a prescrição foi calculada provisoriamente a partir da data-limite do cálculo (${fmtMesAno(_presc.ref)}), com parcelas prescritas até ${fmtMesAno(_mesLimitePresc)}, inclusive.`
+        : `Prescrição trienal contada do ajuizamento em ${fmtMesAno(configDataAjuizamento)}: prescritas as parcelas até ${fmtMesAno(_mesLimitePresc)}, inclusive.`}
+    </p>
+  ) : null;
+  const alertaAjuizamento = _presc.provisoria ? (
+    <div style={{background:'#FFF7ED', border:'1px solid #FDBA74', color:'#9A3412', borderRadius:'8px', padding:'10px 14px', marginBottom:'14px', fontWeight:600}}>
+      Data do ajuizamento não informada. A prescrição está calculada provisoriamente pela data-limite do cálculo ({fmtMesAno(configDataFim) || '—'}){_mesLimitePresc ? `: parcelas até ${fmtMesAno(_mesLimitePresc)} tratadas como prescritas` : ''}. Informe a data na aba Resultados.
+    </div>
+  ) : null;
+
   const INDICES_MERGED = React.useMemo(() => {
     // Mescla campo a campo: um override só de 'an' não pode apagar ca/ia/fa/sa do mês (bug corrigido em 10/11/2026).
     const out = { ...INDICES };
@@ -1916,12 +1951,9 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           const mesAnoDate = new Date(mesAno + '-01');
           const diferenca = mesAnoDate >= dataInicioCobr ? Math.max(0, valorPago - valorDevido) : 0;
 
-          // Prescrição: contagem regressiva de 3 anos a partir do ajuizamento (fallback: configDataFim).
-          const dataPrescricao = (configDataAjuizamento && /^\d{4}-\d{2}$/.test(configDataAjuizamento)) ? configDataAjuizamento : configDataFim;
-          const fimDate = new Date(dataPrescricao + '-01');
-          const daysDiff = (fimDate - new Date(mesAno + '-01')) / (1000 * 60 * 60 * 24);
-          const years = Math.floor(daysDiff) / 365.25;
-          const prescrito = years >= 3;
+          // Prescrição: mês-limite fixo (ajuizamento - 36 meses, inclusive). Ver prescricaoRef/mesLimitePrescricao.
+          const _limitePresc = mesLimitePrescricao(prescricaoRef(configDataAjuizamento, configDataFim).ref);
+          const prescrito = !!_limitePresc && mesAno <= _limitePresc;
 
           // Modo "padrão planilha" (legado, Scozziero): usa fator acumulado direto.
           // Modo "ultimo" (novo default): normaliza pelo último mês do dataset — alinha com
@@ -2119,6 +2151,10 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
           <span className="rotulo">Período Apurado</span>
           <span className="valor">{configDataInicio || '—'} a {fmtMesAno(configDataFim)}</span>
         </div>
+        <div className="capa-item">
+          <span className="rotulo">Ajuizamento</span>
+          <span className="valor">{_presc.provisoria ? 'não informado' : fmtMesAno(configDataAjuizamento)}</span>
+        </div>
         {beneficiarioNome && (
           <div className="capa-item" style={{gridColumn: '1 / -1', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', marginTop: '4px'}}>
             <span className="rotulo">Beneficiário(a)</span>
@@ -2239,6 +2275,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
               <button onClick={() => window.print()} style={{background:'#1B3A5C',color:'white',border:'none',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Imprimir Dashboard</button>
               <button onClick={() => setImprimirTudo(true)} style={{background:'#2D6A4F',color:'white',border:'none',padding:'8px 18px',borderRadius:'6px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>🖨️ Relatório Completo (PDF)</button>
             </div>
+            {alertaAjuizamento}
             <div className="kpi-grid">
               <div className="kpi-card green">
                 <div className="kpi-icon">💰</div>
@@ -2568,7 +2605,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                 <div className="form-group">
                   <label>Data do ajuizamento (prescrição)</label>
                   <input type="month" value={configDataAjuizamento} onChange={(e) => setConfigDataAjuizamento(e.target.value)} />
-                  <div className="info-text">Mês de protocolo da ação. Prescreve tudo anterior a {(() => { const ref = (configDataAjuizamento && /^\d{4}-\d{2}$/.test(configDataAjuizamento)) ? configDataAjuizamento : configDataFim; if(!ref||!/^\d{4}-\d{2}$/.test(ref)) return '—'; const [y,m]=ref.split('-').map(Number); const d=new Date(y,m-1,1); d.setFullYear(d.getFullYear()-3); return `${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; })()}. Se vazio, usa a data-fim acima.</div>
+                  <div className="info-text">Mês de protocolo da ação. {_mesLimitePresc ? `Prescritas as parcelas até ${fmtMesAno(_mesLimitePresc)}, inclusive.` : ''} Se vazio, usa a data-fim acima (cálculo provisório).</div>
                 </div>
                 <div className="form-group">
                   <label>Data Referência (correção)</label>
@@ -2787,6 +2824,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                         <tr><th>Mês de aniversário</th><td>{['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][configMesReajuste-1]}</td></tr>
                         <tr><th>Data-limite do cálculo</th><td>{fmtMesAno(configDataFim)}</td></tr>
                         <tr><th>Data inicial das diferenças</th><td>{configDataInicio}</td></tr>
+                        {linhasParamPrescricao}
                       </tbody>
                     </table>
                   </div>
@@ -2889,6 +2927,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                         </p>
                       );
                     })()}
+                    {notaMarcoPrescricao}
                   </div>
                 </React.Fragment>
               )}
@@ -3368,6 +3407,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
         <div id="print-all-doc">
           {/* ── DASHBOARD ── */}
           {renderCapa('Demonstrativo Consolidado de Revisão de Mensalidades', null)}
+          {alertaAjuizamento}
           <div className="kpi-grid">
             <div className="kpi-card green">
               <div className="kpi-label">Total a Restituir</div>
@@ -3465,6 +3505,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                     <tr><th>Mês de aniversário</th><td>{['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][configMesReajuste-1]}</td></tr>
                     <tr><th>Data-limite do cálculo</th><td>{fmtMesAno(configDataFim)}</td></tr>
                     <tr><th>Data inicial das diferenças</th><td>{configDataInicio}</td></tr>
+                    {linhasParamPrescricao}
                   </tbody></table>
                 </div>
                 <div className="section">
@@ -3508,6 +3549,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
                       </p>
                     );
                   })()}
+                  {notaMarcoPrescricao}
                 </div>
               </React.Fragment>
             );
