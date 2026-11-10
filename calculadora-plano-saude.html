@@ -1578,7 +1578,7 @@ O próximo auto-save sobrescreve o repositório com a versão limpa.`), 800); } 
       ghAutoSave(ghToken, ghCasoNome, payload);
     }, 5000);
     return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
-  }, [cnpjs, beneficiarios, reajustes, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configMesReajuste]);
+  }, [cnpjs, beneficiarios, reajustes, configIndexador, configJuros, configRefMes, configDataFim, configDataInicio, configDataAjuizamento, configMesReajuste, configEscritorio]); // auto-save dispara com qualquer campo salvo no caso (ajuizamento e escritório incluídos em 10/11/2026)
 
   // ── Link Mágico — gerador ────────────────────────────────────────────────
   const gerarLinkMagico = async () => {
