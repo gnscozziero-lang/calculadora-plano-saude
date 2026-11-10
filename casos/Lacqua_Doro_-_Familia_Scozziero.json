@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "L´acqua D´oro - Familia Scozziero",
-    "salvoEm": "2026-11-10T14:28:23.140Z",
+    "salvoEm": "2026-11-10T14:28:53.565Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -2593,6 +2593,16 @@
       "observacao": ""
     },
     {
+      "id": 1794320915420,
+      "beneficiarioId": "1776771361753",
+      "mesAno": "2026-03",
+      "valorPago": "832.77",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1794320735918,
       "beneficiarioId": "1776771361743",
       "mesAno": "2026-04",
@@ -2607,6 +2617,16 @@
       "beneficiarioId": "1776771361733",
       "mesAno": "2026-04",
       "valorPago": "1666.42",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1794320919666,
+      "beneficiarioId": "1776771361753",
+      "mesAno": "2026-04",
+      "valorPago": "832.77",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
@@ -2633,6 +2653,16 @@
       "observacao": ""
     },
     {
+      "id": 1794320923924,
+      "beneficiarioId": "1776771361753",
+      "mesAno": "2026-05",
+      "valorPago": "832.77",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
       "id": 1794320758694,
       "beneficiarioId": "1776771361743",
       "mesAno": "2026-06",
@@ -2647,6 +2677,16 @@
       "beneficiarioId": "1776771361733",
       "mesAno": "2026-06",
       "valorPago": "1666.42",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1794320928554,
+      "beneficiarioId": "1776771361753",
+      "mesAno": "2026-06",
+      "valorPago": "832.77",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
