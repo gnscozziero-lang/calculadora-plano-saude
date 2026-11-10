@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "L´acqua D´oro - Familia Scozziero",
-    "salvoEm": "2026-11-10T14:26:16.195Z",
+    "salvoEm": "2026-11-10T14:26:27.471Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -2617,6 +2617,16 @@
       "beneficiarioId": "1776771361743",
       "mesAno": "2026-07",
       "valorPago": "1666.42",
+      "reajusteAplicado": "",
+      "reajusteNegativo": "",
+      "mudancaIdade": "",
+      "observacao": ""
+    },
+    {
+      "id": 1794320782456,
+      "beneficiarioId": "1776771361743",
+      "mesAno": "2026-08",
+      "valorPago": "1447.67",
       "reajusteAplicado": "",
       "reajusteNegativo": "",
       "mudancaIdade": "",
