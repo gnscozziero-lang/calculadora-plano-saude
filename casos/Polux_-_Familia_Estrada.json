@@ -1,7 +1,7 @@
 {
   "metadados": {
     "nome": "Polux - Familia Estrada",
-    "salvoEm": "2026-11-22T10:56:33.156Z",
+    "salvoEm": "2026-11-22T10:57:33.618Z",
     "versao": "1.0"
   },
   "cnpjs": [
@@ -27,8 +27,8 @@
       "id": 2,
       "cnpjId": "1",
       "nome": "MARIA MARLEI AVILA ESTRADA",
-      "cpf": "",
-      "dataNascimento": "",
+      "cpf": "801.780.650-72",
+      "dataNascimento": "1940-05-10",
       "dataAdesao": "2017-12-15",
       "numeroCarteirinha": "0055.5118.000001.01-2"
     }
